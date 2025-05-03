@@ -1,8 +1,6 @@
 {
-  "version": "1.7.6",
+  "version": "1.8.0",
   "language": "en",
-  "useEnvForCredentials": false,
-  "envGuide": "When useEnvForCredentials enabled, it will use the process.env key provided for email and password, which helps hide your credentials, you can find env in render's environment tab, you can also find it in replit secrets.",
   "DeveloperMode": true,
   "autoCreateDB": true,
   "allowInbox": false,
@@ -15,7 +13,8 @@
     "EXCLUDED": [
       "chalk",
       "mqtt",
-      "https-proxy-agent"
+      "https-proxy-agent",
+      "gradient-string"
     ],
     "Info": "This section manages the bot's automatic package updates. To disable this function, set 'Package' to false. If you only want to exclude specific packages, set them to true and add them in the 'EXCLUDED' list."
   },
@@ -33,7 +32,7 @@
     "Admin": "YOUR_NAME",
     "Setup": {
       "Info": "Design your own custom terminal Titlebar for the title and must contain no numbers",
-      "Theme": "Customize your console effortlessly with various theme colors. Explore Aqua, Fiery, Blue, Orange, Pink, Red, Retro, Sunlight, Teen, Summer, Flower, Ghost, Purple, Rainbow, and Hacker themes to enhance your terminal logs."
+      "Themes": "Customize your console effortlessly with various theme colors. Explore Aqua, Fiery, Blue, Orange, Pink, Red, Retro, Sunlight, Teen, Summer, Flower, Ghost, Purple, Rainbow, and Hacker themes to enhance your terminal logs."
     }
   },
   "APPSTATEPATH": "appstate.json",
@@ -47,7 +46,8 @@
     "logLevel": "error",
     "selfListen": false,
     "online": true,
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18"
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18",
+    "byPassRegion": "PNB"
   },
   "daily": {
     "cooldownTime": 43200000,

@@ -6,7 +6,7 @@ module.exports = function ({ api }) {
   const Currencies = require("./database/currencies")({ api, Users });
   const utils = require("../utils/log.js");
   const { getThemeColors } = utils;
-  const { cra, cb, co } = getThemeColors();
+  const { main, subcolor, secondary } = getThemeColors();
   //////////////////////////////////////////////////////////////////////
   //========= Push all variable from database to environment =========//
   //////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ module.exports = function ({ api }) {
       });
       if (global.config.autoCreateDB) {
         global.loading.log(
-          `Successfully loaded ${cb(`${global.data.allThreadID.length}`)} threads and ${cb(`${global.data.allUserID.length}`)} users`,
+          `Successfully loaded ${secondary(`${global.data.allThreadID.length}`)} threads and ${secondary(`${global.data.allUserID.length}`)} users`,
           "LOADED",
         );
       }
@@ -74,7 +74,7 @@ module.exports = function ({ api }) {
   })();
 
   global.loading.log(
-    `${cra(`[ BOT_INFO ]`)} success!\n${co(`[ LOADED ] `)}${cra(`[ NAME ]:`)} ${!global.config.BOTNAME ? "Bot Messenger" : global.config.BOTNAME} \n${co(`[ LOADED ] `)}${cra(`[ BotID ]: `)}${api.getCurrentUserID()}\n${co(`[ LOADED ] `)}${cra(`[ PREFIX ]:`)} ${global.config.PREFIX}`,
+    `${main(`[ BOT_INFO ]`)} success!\n${subcolor(`[ LOADED ] `)}${main(`[ NAME ]:`)} ${!global.config.BOTNAME ? "Bot Messenger" : global.config.BOTNAME} \n${subcolor(`[ LOADED ] `)}${main(`[ BotID ]: `)}${api.getCurrentUserID()}\n${subcolor(`[ LOADED ] `)}${main(`[ PREFIX ]:`)} ${global.config.PREFIX}`,
     "LOADED",
   );
 
@@ -87,7 +87,7 @@ module.exports = function ({ api }) {
 
       if (compareVersions(gitVersion, v) > 0) {
         global.loading.log(
-          `Version ${co(gitVersion)} is available! Consider checking out '${cb("https://github.com/YANDEVA/BotPack")}' for the latest updates.`,
+          `Version ${subcolor(gitVersion)} is available! Consider checking out '${secondary("https://github.com/YANDEVA/BotPack")}' for the latest updates.`,
           "UPDATE",
         );
       } else {
@@ -109,19 +109,19 @@ module.exports = function ({ api }) {
     return 0;
   }
 
-  const logarithms = "includes/login/src/markAsDelivered.js";
+  const logarithms = "includes/login/utils.js";
 
   fs.readFile("main.js", "utf8", (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
-    const { logs } = require("./../" + logarithms);
+    const { botLog } = require("./../" + logarithms);
 
     if (!data.includes("const login = require('./includes/login');")) {
-      logs();
+      botLog();
     } else {
-      logs();
+      botLog();
     }
   });
   ///////////////////////////////////////////////
@@ -156,12 +156,10 @@ module.exports = function ({ api }) {
   //========= Send event to handle need =========//
   /////////////////////////////////////////////////
 
-  const Box = require("./liane-box");
   // abstraction! - lianecagara
   return (event) => {
     const listenObj = {
       event,
-      box: new Box(api, event),
     };
     switch (event.type) {
       case "message":

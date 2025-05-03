@@ -13,14 +13,13 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     const dateNow = Date.now();
     const time = moment.tz("Asia/Manila").format("HH:MM:ss DD/MM/YYYY");
     const { allowInbox, PREFIX, ADMINBOT, DeveloperMode, adminOnly } = global.config;
-    const { userBanned, threadBanned, threadInfo, threadData, commandBanned } = global.data;
-    const { commands, cooldowns } = global.client;
+    const { userBanned, threadBanned, threadInfo, commandBanned } = global.data;
+    const { commands } = global.client;
 
     var { body, senderID, threadID, messageID } = event;
     var senderID = String(senderID),
       threadID = String(threadID);
 
-    const threadSetting = threadData.get(threadID) || {};
     const args = (body || "").trim().split(/ +/);
     const commandName = args.shift()?.toLowerCase();
     var command = commands.get(commandName);
@@ -74,7 +73,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
                 dateAdded,
               ),
               threadID,
-              async (err, info) => {
+              async (_, info) => {
                 await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
                 return api.unsendMessage(info.messageID);
               },
@@ -119,7 +118,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
               command.config.name,
             ),
             threadID,
-            async (err, info) => {
+            async (_, info) => {
               await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
               return api.unsendMessage(info.messageID);
             },
@@ -133,7 +132,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
               command.config.name,
             ),
             threadID,
-            async (err, info) => {
+            async (_, info) => {
               await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
               return api.unsendMessage(info.messageID);
             },
@@ -186,7 +185,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       return api.sendMessage(
         global.getText("handleCommand", "threadNotAllowNSFW"),
         threadID,
-        async (err, info) => {
+        async (_, info) => {
           await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
           return api.unsendMessage(info.messageID);
         },

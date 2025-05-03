@@ -3,6 +3,7 @@ const chalk = require("chalk");
 const check = require("get-latest-version");
 const fs = require("fs");
 const semver = require("semver");
+global.loading = require("./utils/log.js");
 
 let configJson;
 let packageJson;
@@ -123,12 +124,24 @@ setTimeout(() => {
 
 const path = require("path");
 const express = require("express");
+const parser = require("body-parser");
 const app = express();
-global.loading = require("./utils/log.js");
 
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/includes/cover/index.html"));
+app.use(parser.json());
+
+// Serve all static files from the whole project
+app.use(express.static(path.join(__dirname, "includes/cover")));
+
+// Route to serve config.json
+app.get("/themes", (req, res) => {
+  res.sendFile(path.join(__dirname, "includes/cover/html.json"));
 });
+
+// Serve index.html from includes/cover
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "includes/cover/index.html"));
+});
+
 app.listen(2024, () => {
   global.loading.log(
     `Bot is running on port: 2024`,

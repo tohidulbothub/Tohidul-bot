@@ -1,14 +1,8 @@
 const path = require('path');
 const fs = require('fs');
+
 const cacheDir = path.join(__dirname, 'cache');
-
 const rankpng = path.join(__dirname, 'cache', 'rankup');
-
-const avt = path.join(__dirname, 'cache', 'Avtmot.png');
-
-if (!fs.existsSync(avt)) {
-    fs.mkdirSync(avt, { recursive: true });
-}
 
 if (!fs.existsSync(rankpng)) {
     fs.mkdirSync(rankpng, { recursive: true });
@@ -20,9 +14,9 @@ if (!fs.existsSync(cacheDir)) {
 
 module.exports.config = {
   name: "rankup",
-  version: "7.3.1",
+  version: "1.0.0",
   hasPermssion: 1,
-  credits: "John Lester",
+  credits: "Yan Maglinte",
   description: "Announce rankup for each group, user",
   usePrefix: true,
   commandCategory: "Edit-IMG",
@@ -33,7 +27,7 @@ module.exports.config = {
 };
 
 module.exports.handleEvent = async function({
-  api, event, Currencies, Users, getText }) {
+  api, event, Currencies, getText }) {
   var { threadID, senderID } = event;
   const { loadImage, createCanvas } = require("canvas");
   const fs = global.nodemodule["fs-extra"];
@@ -41,7 +35,6 @@ module.exports.handleEvent = async function({
   let pathImg = __dirname + "/cache/rankup/rankup.png";
   let pathAvt1 = __dirname + "/cache/Avtmot.png";
   var id1 = event.senderID;
-
 
   threadID = String(threadID);
   senderID = String(senderID);
@@ -65,29 +58,19 @@ module.exports.handleEvent = async function({
   const level = Math.floor((Math.sqrt(1 + (4 * (exp + 1) / 3) + 1) / 2));
 
   if (level > curLevel && level != 1) {
-    const name = global.data.userName.get(senderID) || await Users.getNameUser(senderID);
-    var messsage = (typeof thread.customRankup == "undefined") ? msg = getText("levelup") : msg = thread.customRankup
-      , arrayContent;
+    const getName =
+await api.getUserInfo(id1);
+    const name = getName[id1].name;
+    var messsage = (typeof thread.customRankup == "undefined") ? msg = getText("levelup") : msg = thread.customRankup;
 
     messsage = messsage
       .replace(/\{name}/g, name)
       .replace(/\{level}/g, level);
 
-    const moduleName = this.config.name;
-
     var background = [
-      "https://i.imgur.com/mXmaIFr.jpeg",
-      "https://i.imgur.com/SeLdZua.jpeg",
-      "https://i.imgur.com/HrHPulp.jpeg",
-      "https://i.imgur.com/zZpub9k.jpeg",
-      "https://i.imgur.com/EP7gdQy.jpeg",
-      "https://i.imgur.com/pKOgCjs.jpeg",
-      "https://i.imgur.com/1jPLnZX.jpeg",
-      "https://i.imgur.com/QmtNkyQ.jpg",
-      "https://i.imgur.com/qybgIRD.jpg",
-      "https://i.imgur.com/RFRARpY.jpg",
-      "https://i.imgur.com/B7i6dhL.jpg",
-      "https://i.imgur.com/LkHUQMJ.jpeg"
+      "https://i.ibb.co/7xrf2Px8/rankup.png",
+      "https://i.ibb.co/JFFDjqFk/rankup.png",
+      "https://i.ibb.co/jZHb2st9/rankup.png"
     ];
     var rd = background[Math.floor(Math.random() * background.length)];
     let getAvtmot = (
@@ -141,7 +124,7 @@ module.exports.languages = {
     "on": "on",
     "off": "off",
     "successText": "success notification rankup!",
-    "levelup": "{name}, You just leveled up to level {level}",
+    "levelup": "Congratulations {name}, being talkative helped you level up to level {level}!",
   }
 }
 

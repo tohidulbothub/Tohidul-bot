@@ -1,7 +1,6 @@
 "use strict";
 
 const utils = require("../utils");
-const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
 	return function markAsReadAll(callback) {
@@ -41,7 +40,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 				return callback();
 			})
 			.catch(function (err) {
-				log.error("markAsReadAll", err);
+				//log.error("markAsReadAll", err);
 				return callback(err);
 			});
 

@@ -1,4 +1,4 @@
-# BotPack🤖<sub><sub>v1.7.6🚀</sub></sub>
+# BotPack🤖<sub><sub>v1.8.0🚀</sub></sub>
 <p align="center">
 	<a href="https://nodejs.org/dist/v16.20.0">
 		<img src="https://img.shields.io/badge/Nodejs%20Support-18.x-brightgreen.svg?style=flat-square" alt="Nodejs Support v18.x">
@@ -20,39 +20,15 @@ Hello there! Thank you for using BotPack! Join us at [ChatBot Community Ltd.](ht
 
 ---
 
-### BOT DETECTION
-__=>__ Have you ever experienced this type of issue in facebook?
-  
-<img align="center" src="https://i.ibb.co/4SChsvH/facebook.jpg">
-
-Maybe, I can help you with that. So these are the things to do. Go to your **config.json** and look for **autoCreateDB**. If you found it, then simply replace true to false.
-<br><br>
-__BEFORE:__
-```json
-{
-  "autoCreateDB": true,
-}
-```
-__AFTER:__
-```json
-{
- "autoCreateDB": false,
-}
-```
-<br>
-By setting this to false, some commands like checktt, rankup and other commands that needs database may not work but it has a good benefit making your bot last longer and might avoid being suspended for a long period of time.
-
----
-
 <details>
   <summary>What's New?</summary>
   
   __UPDATE!__
-  - Fixed Render Issue.
-  - Added unfont.js
-  - Added sharecontact.js
+  - Major fixes!
+  - Fixed FCA now using Neth's W3S-FCA!
+  - Imgur links are removed!
+  - HTML Color Preview will now base on Theme set!
   - Bug fixed!
-  - HandleReply.js issue fixed!
 </details>
 
 <details>
@@ -104,7 +80,7 @@ __=>__ Host your botfile on [render.com](https://dashboard.render.com) to make y
   <summary>Tutorials</summary>
 
  > __How to Host BotPack on render.com?__
- ><br> Watch the tutorial [here!](https://www.facebook.com/share/v/JXGAppBJ6A9TNzjb/?mibextid=oFDknk)
+ ><br>Watch the tutorial [here!](https://www.facebook.com/share/v/JXGAppBJ6A9TNzjb/?mibextid=oFDknk)
  > [<img align="center" src="https://i.ibb.co/wKkZ6Lc/render.jpg">](https://www.facebook.com/share/v/JXGAppBJ6A9TNzjb/?mibextid=oFDknk)
   
 </details>
@@ -164,20 +140,6 @@ Go to your `config.json` and set it in the language property:
 
 <img align="center" src="https://i.ibb.co/pnm38zY/yanmaglinte.png"/>
 
-### **HOW TO START USING BOTPACK?**
-
-1. Begin by navigating to [Replit](https://replit.com).
-2. Log in to your existing account or sign up for a new one.
-3. Utilize the search bar to find [BotPack](https://replit.com/@YanMaglinte/BotPack).
-4. Click on `templates`.
-5. Upon searching, select the most popular BotPack template from the results.
-6. Afterwards, click `Use Template`.
-7. After forking the template, setup your PREFIX, BOTNAME and other properties in your `config.json`.
-8. Open your `Facebook Account` that you want to turn into a chatbot.
-9. After logging in, get your appstate using [C3C fbstate](https://github.com/c3cbot/c3c-fbstate/archive/refs/tags/1.5.zip) extension.
-10. Copy the appstate, return to the repository, and paste it into your appstate.json.
-11. Now, run it, and there you have your bot!
-
 > [!WARNING]
 > *There is a risk of your account being banned after running the code, so please ensure proper account management and handling. If it happens, please try logging in again and retrieve your app state.*
 
@@ -189,10 +151,11 @@ Special thanks to the following fellows for their amazing projects making this m
 - NTKhang03
 - KhangGia1810
 - XaviaTeam
+- NethWs3Dev
 <br><br> __In collaboration with__
   - [Liane Cagara 🎀](https://www.facebook.com/nealiana.kaye.cagara?mibextid=ZbWKwL)
 
-_Updated on: May 12, 2024 (PST)<br>Creation Date: June 11, 2023_
+_Updated on: May 3, 2025 (PST)<br>Creation Date: June 11, 2023_
 
 ---
 Copyright © 2024 Yan Maglinte (YANDEVA), Philippines.<br>
