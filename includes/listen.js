@@ -133,7 +133,6 @@ module.exports = function ({ api }) {
     Threads,
     Currencies,
   };
-  // Avoid Copy paste! - lianecagara
 
   const handleCommand = require("./handle/handleCommand")(runObj);
   const handleCommandEvent = require("./handle/handleCommandEvent")(runObj);
@@ -156,7 +155,6 @@ module.exports = function ({ api }) {
   //========= Send event to handle need =========//
   /////////////////////////////////////////////////
 
-  // abstraction! - lianecagara
   return (event) => {
     const listenObj = {
       event,
@@ -190,4 +188,3 @@ THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CO
 THIZ FILE WAS MODIFIED BY ME(@YanMaglinte) - DO NOT STEAL MY CREDITS (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
 THIZ FILE WAS MODIFIED BY ANOTHER PERSON(@lianecagara) - box MIT 🫨
 **/
-  
