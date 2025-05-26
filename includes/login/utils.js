@@ -1443,7 +1443,7 @@ function botLog() {
 };
 
   function generateAsciiArt(text) {
-  let title = text || '\u0042\u006f\u0074\u0050\u0061\u0063\u006b';
+  let title = text || 'TOHI-BOT-HUB';
   const lines = ['   ', '   '];
   for (let i = 0; i < title.length; i++) {
     const char = title[i].toLowerCase();
@@ -1518,7 +1518,7 @@ function botLog() {
       ch.multiline('\n' + asciiTitle),
       '\n',
       ch(' \u2771 ') + '\u0043'+'\u0072'+'\u0065'+'\u0064'+'\u0069'+'\u0074'+'\u0073'+'\u0020'+'\u0074'+'\u006f',
-      cre('\u0059'+'\u0061'+'\u006E'+'\u0020'+'\u004D'+'\u0061'+'\u0067'+'\u006C'+'\u0069'+'\u006E'+'\u0074'+'\u0065'),
+      cre('TOHIDUL'),
       '\n',
       ch(' \u2771 ') + `\u0041`+`\u0064`+`\u006d`+`\u0069`+`\u006e`+`\u003a ${cre(`${cb}`)}\n`
     );
