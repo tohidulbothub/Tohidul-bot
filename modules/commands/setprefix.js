@@ -2,12 +2,12 @@ module.exports.config = {
 	name: "setprefix",
 	version: "0.0.2",
 	permission: 2,
-  prefix: false,
+	usePrefix: true,
 	credits: "nayan",
 	description: "Change prefix",
-	category: "admin",
+	commandCategory: "admin",
 	usages: "prefix",
-    cooldowns: 5,
+	cooldowns: 5,
 };
 
 module.exports.languages ={

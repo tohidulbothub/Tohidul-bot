@@ -1,14 +1,14 @@
 //idea by Adrestia Croimoux
 module.exports.config = {
-  name: "dictionary ",
+  name: "dictionary",
   version: "1.0.0",
   permssion: 0,
-  prefix: true,
+  usePrefix: true,
   credits: "nayan",
-  description: "",
+  description: "Get word definitions",
   usage: "[text]",
-  category: "study",
-    cooldowns: 5
+  commandCategory: "education",
+  cooldowns: 5
 }
 
 module.exports.run = function({api,event,args}) {

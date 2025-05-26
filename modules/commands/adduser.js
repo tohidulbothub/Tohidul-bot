@@ -1,4 +1,5 @@
 module.exports.config = {
+	usePrefix: true,
     name: "adduser",
     commandCategory: "Admin",
     version: "1.0.3",

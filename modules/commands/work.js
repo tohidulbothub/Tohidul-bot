@@ -3,9 +3,9 @@ module.exports.config = {
 	version: "1.0.1",
 	permission: 0,
 	credits: "ryuko",
-	prefix: true,
+	usePrefix: true,
 	description: "earning money",
-	category: "with prefix",
+	commandCategory: "economy",
   cooldowns: 5,
   envConfig: {
     cooldownTime: 1200000

@@ -1,4 +1,5 @@
 module.exports.config = {
+	usePrefix: true,
   name: "accept",
   version: "2.0.0",
   permission: 3,

@@ -3,9 +3,9 @@ module.exports.config = {
 	version: "1.0.2",
 	permission: 2,
 	credits: "nayan",
-	prefix: false,
-	description: "",
-	category: "without prefix",
+	usePrefix: false,
+	description: "Murgi command",
+	commandCategory: "fun",
 	usages: "[tag]",
 	cooldowns: 5
 };

@@ -56,8 +56,10 @@
     "semver": "^7.7.2",
     "simple-youtube-api": "^5.2.1",
     "string-similarity": "^4.0.4",
+    "tinyurl": "^1.1.7",
     "websocket-stream": "^5.5.2",
-    "youtube-search-api": "^1.2.2"
+    "youtube-search-api": "^1.2.2",
+    "ytdl-core": "^4.11.5"
   },
   "repository": {
     "type": "git",
