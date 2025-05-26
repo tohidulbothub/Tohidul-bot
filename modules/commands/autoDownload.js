@@ -16,7 +16,7 @@ module.exports.config = {
     usePrefix: true,
     credits: "Tohidul",
     description: "Download videos or images from social media links.",
-    category: "media",
+    commandCategory: "Media",
     usages: "Reply with a valid video/image URL (Facebook, TikTok, Instagram, YouTube, Pinterest, Imgur)",
     cooldowns: 2,
     dependencies: {

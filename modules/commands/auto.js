@@ -9,7 +9,7 @@ module.exports.config = {
     usePrefix: true,
     credits: "Tohidul",
     description: "Automatically download and send videos from provided links.",
-    category: "media",
+    commandCategory: "Media",
     usages: "Reply with a video URL",
     cooldowns: 5
 };

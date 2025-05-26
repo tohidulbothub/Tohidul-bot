@@ -5,7 +5,7 @@ module.exports.config = {
     usePrefix: false,
     credits: "Tohidul",
     description: "Approve or remove threads/users using thread ID or mentions.",
-    category: "code",
+    commandCategory: "Admin",
     usages: "approve [list | box | remove] [threadID | @mentions]",
     cooldowns: 5
 };

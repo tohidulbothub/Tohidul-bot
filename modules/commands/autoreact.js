@@ -8,8 +8,8 @@ module.exports = {
     permission: 0,
     credits: "tohidul (modified from nayan)", // Updated credit!
     description: "Automatically reacts to new messages with a random emoji.",
-    prefix: 'auto', // Bot prefix suggestion: 'auto'
-    category: "auto",
+    usePrefix: true,
+    commandCategory: "System",
     usages: "[on]/[off]",
     cooldowns: 5,
     dependencies: {

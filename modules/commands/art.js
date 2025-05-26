@@ -14,7 +14,7 @@ module.exports.config = {
     usePrefix: true,
     credits: "Tohidul",
     description: "Enhance your photos with artful transformations!",
-    category: "media",
+    commandCategory: "Media",
     usages: "{pn} reply to an image or provide a URL",
     cooldowns: 5
 };

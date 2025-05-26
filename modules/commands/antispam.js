@@ -8,7 +8,7 @@ module.exports.config = {
     usePrefix: true,
     credits: "Tohidul",
     description: "Automatically bans users who spam 10 times within a time window.",
-    category: "code",
+    commandCategory: "Admin",
     usages: "none",
     cooldowns: 0
 };
