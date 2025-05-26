@@ -3,7 +3,7 @@ cheerio = require('cheerio')
 module.exports.config = {
   name: 'wattpad',
   version: '1.0.0',
-  prefix: false,
+  usePrefix: false,
   permission: 0,
   credits: 'ryuko',
   description: '',

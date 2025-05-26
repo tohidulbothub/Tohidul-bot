@@ -4,7 +4,7 @@ module.exports.config = {
 	permission: 0,
 	credits: "ryuko",
 	description: "get box id", 
-	prefix: false,
+	usePrefix: false,
 	category: "without prefix",
 	usages: "groupid",
 	cooldowns: 5, 

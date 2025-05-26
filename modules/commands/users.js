@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.5",
 	permission: 2,
 	credits: "ryuko",
-	prefix: true,
+	usePrefix: true,
 	description: "ban or unblock users",
 	category: "admin",
 	usages: "[unban/ban/search] [id or text]",

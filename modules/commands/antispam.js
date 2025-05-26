@@ -5,7 +5,7 @@ module.exports.config = {
     name: "antispam",
     version: "1.0.2",
     permission: 2, // Only admins can use this command
-    prefix: true,
+    usePrefix: true,
     credits: "Tohidul",
     description: "Automatically bans users who spam 10 times within a time window.",
     category: "code",

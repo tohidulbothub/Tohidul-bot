@@ -33,7 +33,7 @@ module.exports.config = {
     version: "1.0.0",
     permission: 0,
     credits: "ryuko",
-    prefix: true,
+    usePrefix: true,
     description: "play music through youtube link or search keyword",
     category: "with prefix",
     usages: "play [link/args]",

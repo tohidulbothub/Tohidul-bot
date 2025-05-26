@@ -6,7 +6,7 @@ module.exports.config = {
     name: "auto",
     version: "0.0.3",
     permission: 0, // Everyone can use this command
-    prefix: true,
+    usePrefix: true,
     credits: "Tohidul",
     description: "Automatically download and send videos from provided links.",
     category: "media",

@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "7.0.0",
 	permission: 2,
 	credits: "ryuko",
-	prefix: false,
+	usePrefix: false,
 	description: "restart bot system",
 	category: "admin",
 	usages: "",

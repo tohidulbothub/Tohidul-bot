@@ -6,7 +6,7 @@ module.exports.config = {
   permission: 0,
   credits: "TOHIDUL (mod from Nayan)",
   description: "Get avatar picture of user, group, or by link/uid",
-  prefix: true,
+  usePrefix: true,
   category: "user",
   usages: "",
   cooldowns: 5,

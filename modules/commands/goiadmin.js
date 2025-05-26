@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0,
   credits: "তহিদুল",
   description: "mention",
-  prefix: true,
+  usePrefix: true,
   category: "user",
   usages: "tag",
   cooldowns: 5,

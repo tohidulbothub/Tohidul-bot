@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.1",
 	permission: 0,
 	credits: "ryuko",
-	prefix: false,
+	usePrefix: false,
 	description: "wikipedia search",
 	category: "without prefix",
 	usages: "[en] [question]",

@@ -13,7 +13,7 @@ module.exports.config = {
     name: "autodl",
     version: "1.0.3",
     permission: 0,
-    prefix: true,
+    usePrefix: true,
     credits: "Tohidul",
     description: "Download videos or images from social media links.",
     category: "media",

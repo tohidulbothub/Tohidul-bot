@@ -4,7 +4,7 @@ module.exports.config = {
 	permssion: 0,
 	credits: "NAYAN",
 	description: "Tag all members",
-  prefix: true,
+  usePrefix: true,
 	category: "Group",
 	usages: "[Text]",
 	cooldowns: 1

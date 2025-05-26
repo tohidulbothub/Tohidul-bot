@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0,
   credits: "Nayan",
   description: "Random shairi video",
-  prefix: true,
+  usePrefix: true,
   category: "Media", 
   usages: "", 
   cooldowns: 5,

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "count",
   version: "0.0.2",
   permission: 0,
-  prefix: true,
+  usePrefix: true,
   credits: "Nayan",
   description: "..",
   category: "user",

@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "npx3",
     version: "1.0.1",
-    prefix: false,
+    usePrefix: false,
     permssion: 0,
     credits: "nayan",
     description: "Fun",

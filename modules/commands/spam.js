@@ -6,7 +6,7 @@ name: "spam",
   description: "",
   category: "spam",
   usages: "[msg] [amount]",
-  prefix: true,
+  usePrefix: true,
   cooldowns: 5,
   dependencies: "",
 };

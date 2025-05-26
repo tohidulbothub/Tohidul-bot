@@ -5,7 +5,7 @@
     permission: 0,
     credits: "Nayan",
     description: "",
-    prefix: true,
+    usePrefix: true,
     category: "prefix",
     usages: "prompt",
     cooldowns: 10,

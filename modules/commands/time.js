@@ -2,7 +2,7 @@ module.exports.config = {
   name: "time",
   version: "1.0.0",
   permssion: 0,
-  prefix: true,
+  usePrefix: true,
   credits: "nayan",
   description: "( 𝙀𝙭𝙖𝙘𝙩 𝙩𝙞𝙢𝙚 & 𝙙𝙖𝙩𝙚 )",
   category: "Time and Date",

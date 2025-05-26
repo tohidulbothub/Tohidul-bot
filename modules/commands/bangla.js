@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0.1",
     permission: 0,
     credits: "Nayan",
-    prefix: true,
+    usePrefix: true,
     description: "ask any thing",
     commandCategory: "AI",
     usages: "",

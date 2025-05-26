@@ -5,7 +5,7 @@ module.exports.config = {
   name: "sendmsg",
 	version: "0.0.2",
 	permission: 2,
-  prefix: true,
+  usePrefix: true,
 	credits: "Nayan",
 	description: "sendmsg",
 	category: "admin",

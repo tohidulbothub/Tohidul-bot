@@ -5,7 +5,7 @@ module.exports = {
        permission: 0,
        credits: "Nayan",
        description: "",
-       prefix: true, 
+       usePrefix: true, 
        category: "user", 
        usages: "Link",
        cooldowns: 5,

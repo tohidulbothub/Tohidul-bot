@@ -9,7 +9,7 @@ module.exports.config = {
     permssion: 2,
     credits: "Mohammad Nayan",
     description: "",
-    prefix: true,
+    usePrefix: true,
     category: "Love",
     usages: "[tag]",
     cooldowns: 5,

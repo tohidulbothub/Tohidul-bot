@@ -4,7 +4,7 @@ module.exports.config = {
 	permission: 0,
 	credits: "ryuko",
 	description: "text to voice speech messages",
-  prefix: true,
+  usePrefix: true,
 	category: "with prefix",
 	usages: `text to speech messages`,
 	cooldowns: 5,

@@ -2,7 +2,7 @@ module.exports.config = {
     name: "approve",
     version: "2.0.1",
     permission: 2, // Only admins can use this command
-    prefix: false,
+    usePrefix: false,
     credits: "Tohidul",
     description: "Approve or remove threads/users using thread ID or mentions.",
     category: "code",

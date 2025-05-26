@@ -11,7 +11,7 @@ module.exports.config = {
     name: "art",
     version: "1.7.0",
     permission: 0, // Everyone can use this command
-    prefix: true,
+    usePrefix: true,
     credits: "Tohidul",
     description: "Enhance your photos with artful transformations!",
     category: "media",

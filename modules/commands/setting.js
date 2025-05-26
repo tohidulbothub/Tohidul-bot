@@ -4,7 +4,7 @@ module.exports.config = {
     permission: 2,
     credits: "Nayan",
     description: "",
-    prefix: true,
+    usePrefix: true,
     category: "admin",
     usages: "",
     cooldowns: 10,

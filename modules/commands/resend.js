@@ -7,7 +7,7 @@ module.exports.config = {
   credits: "Nayan",
   description: "",
   category: "general",
-  prefix: true,
+  usePrefix: true,
   usages: "resend",
   cooldowns: 0,
   hide: true,

@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "pending",
 	version: "1.0.5",
 	credits: "ryuko",
-	prefix: false,
+	usePrefix: false,
 	permission: 2,
 	description: "approve groups",
 	category: "admin",

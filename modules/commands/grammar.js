@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0,
   credits: "ryuko",
   description: "grammar is a command that helps improve grammar by suggesting corrections and providing recommendations.",
-  prefix: false,
+  usePrefix: false,
   category: "without prefix",
   usages: "[senteces/paragraph]",
   cooldowns: 5,

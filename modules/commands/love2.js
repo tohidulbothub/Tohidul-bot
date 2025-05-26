@@ -9,7 +9,7 @@ module.exports.config = {
   permission: 0,
   credits: "Nayan",
   description: "",
-  prefix: true,
+  usePrefix: true,
   category: "Love", 
   usages: "love2 @", 
   cooldowns: 5,

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "kick",
   version: "1.0.0", 
   permssion: 2,
-  prefix: true,
+  usePrefix: true,
   credits: "Mirai Team",
   description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
   category: "other", 

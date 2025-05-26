@@ -5,7 +5,7 @@ module.exports.config = {
   permission: 0,
   credits: "Nayan",
   description: "Download video from facebook",
-  prefix: true,
+  usePrefix: true,
   category: "admin",
   usages: "link",
   cooldowns: 5,

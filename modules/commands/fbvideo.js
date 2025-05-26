@@ -3,7 +3,7 @@ module.exports = {
     name: "fbvideo",
     version: "0.0.2",
     permission: 0,
-    prefix: true,
+    usePrefix: true,
     credits: "Nayan",
     description: "fb video",
     category: "user",

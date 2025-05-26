@@ -5,7 +5,7 @@ module.exports.config = {
 	version: "1.0.0",
 	permission: 0,
 	credits: "nayan",
-	prefix: true,
+	usePrefix: true,
 	description: "search an image",
 	category: "with prefix",
 	usages: "searchimage [text]",

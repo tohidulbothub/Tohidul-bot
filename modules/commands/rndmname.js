@@ -6,7 +6,7 @@ module.exports = {
     name: "rndm",
     version: "0.0.2",
     permission: 0,
-    prefix: true,
+    usePrefix: true,
     credits: "Nayan",
     description: "rndm video",
     category: "user",

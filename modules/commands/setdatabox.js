@@ -3,7 +3,7 @@
     version: "1.0",
     permission: 2,
     credits: "ryuko",
-    prefix: false,
+    usePrefix: false,
     description: "set new data of boxes into data",
     category: "admin",
     usages: "",

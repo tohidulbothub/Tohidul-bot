@@ -2,7 +2,7 @@ module.exports.config = {
   name: "pairv2",
   version: "1.0.1",
   permssion: 0,
-  prefix: true,
+  usePrefix: true,
   credits: "nayan",
   description: "",
   category: "Picture",

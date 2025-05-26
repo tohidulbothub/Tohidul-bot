@@ -7,7 +7,7 @@ module.exports.config = {
     permission: 3,
     credits: "NAYAN",
     description: "",
-    prefix: true,
+    usePrefix: true,
     category: "operator",
     usages: "[msg]",
     cooldowns: 5,

@@ -3,7 +3,7 @@ module.exports.config = {
   version: "1.0.1",
   permssion: 0,
   credits: "Nayan",
-  prefix: true,
+  usePrefix: true,
   description: "Mix emoji",
   category: "image",
   usages: "[emoji1 | emoji2]",

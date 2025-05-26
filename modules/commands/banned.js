@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.0",
 	permission: 2,
 	credits: "unknown",
-  prefix: false,
+  usePrefix: false,
 	description: "ban list",
 	category: "admin",
 	usages: "[thread], [user]",

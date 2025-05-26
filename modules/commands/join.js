@@ -4,7 +4,7 @@ module.exports.config = {
     version: "1.0.1",
     permission: 2,
     credits: "ryuko",
-    prefix: true,
+    usePrefix: true,
     description: "join the bot groups are in",
     category: "admin",
     usages: "",

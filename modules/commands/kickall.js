@@ -7,7 +7,7 @@ module.exports.config = {
   category: "group",
   usages: "[]",
   cooldowns: 3,
-  prefix: true
+  usePrefix: true
 };
 
 module.exports.run = async function({ api, event, args }) {

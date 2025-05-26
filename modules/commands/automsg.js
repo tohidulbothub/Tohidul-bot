@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0,
   credits: "TOHIDUL", // 💎 Credit: TOHIDUL (Legendary) 💎
   description: "Legendary stylish Bangla auto time messages by TOHIDUL",
-  prefix: true,
+  usePrefix: true,
   category: "user",
   usages: "",
   cooldowns: 5,

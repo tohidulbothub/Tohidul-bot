@@ -5,7 +5,7 @@ config: {
     permission: 0,
     credits: "Nayan",
     description: "image search",
-    prefix: true,
+    usePrefix: true,
     category: "with prefix",
     usages: "pinterest (text) - (amount)",
     cooldowns: 10,

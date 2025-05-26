@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "config",
 	version: "1.0.0",
 	permission: 2,
-  prefix: false,
+  usePrefix: false,
 	credits: "ryuko",
 	description: "config bot",
 	category: "operator",

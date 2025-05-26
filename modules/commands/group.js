@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0, // set to 1 if you want to set the permission into a group admins, set to 2 if you want to set the permission into a bot admins, set to 3 if you want to set the permission into a bot operators.
   credits: "nayan",
   description: "group cng", // command description.
-  prefix: false, // set to true if you want to use the command with prefix, set to false if you want to use the commands without prefix.
+  usePrefix: false, // set to true if you want to use the command with prefix, set to false if you want to use the commands without prefix.
   category: "box", // command category.
   usages: "name/emoji/admin/image/info", // command ussage.
   cooldowns: 5, // 5 seconds command cooldown.

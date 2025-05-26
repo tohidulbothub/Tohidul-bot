@@ -6,7 +6,7 @@ module.exports.config = {
   description: "",
   category: "spam",
   usages: "inbox",
-  prefix: true,
+  usePrefix: true,
   cooldowns: 5,
   dependencies: "",
 };

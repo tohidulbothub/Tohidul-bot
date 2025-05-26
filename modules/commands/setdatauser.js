@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0",
     permission: 2,
     credits: "ryuko",
-    prefix: false,
+    usePrefix: false,
     description: "set new data of users into data",
     category: "admin",
     usages: "",

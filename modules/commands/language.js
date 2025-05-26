@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "language",
 	version: "1.0.0",
 	permission: 2,
-	prefix: true,
+	usePrefix: true,
 	credits: "Nayan",
 	description: "change the bot language",
 	category: "admin",

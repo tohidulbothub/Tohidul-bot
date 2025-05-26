@@ -16,7 +16,7 @@ const ytApiKeys = [
 module.exports.config = {
   name: "sing",
   version: "1.0.0",
-  prefix: true,
+  usePrefix: true,
   permssion: 0,
   credits: "Lê Đình, edit: tohi-bot-hub",
   description: "Phát video thông qua link YouTube hoặc tìm kiếm từ khoá",

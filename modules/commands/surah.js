@@ -3,7 +3,7 @@ module.exports.config = {
   name: "surah",
   version: "0.0.3",
   permission: 0,
-  prefix: true,
+  usePrefix: true,
   credits: "Nayan",
   description: "Get Quran Surah by number (1-114)",
   category: "user",

@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0.0",
     permission: 0,
     credits: "TBH- TOHIDUL",
-    prefix: true,
+    usePrefix: true,
     description: "",
     category: "user",
     usages: "",
