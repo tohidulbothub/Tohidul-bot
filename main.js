@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
-const path = require('path')
+const path = require('path');
+const { join } = require('path');
 const { execSync, spawn } = require('child_process');
 const config = require("./config.json");
 const listPackage = JSON.parse(fs.readFileSync('./package.json')).dependencies;
@@ -249,8 +250,9 @@ function onBot() {
             }
             const { dependencies, envConfig } = config;
             if (dependencies) {
+              const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
               Object.entries(dependencies).forEach(([reqDependency, _]) => {
-                if (listPackage[reqDependency]) return;
+                if (listPackage[reqDependency] || builtinModules.includes(reqDependency)) return;
 
                   try {
                     execSync(`npm --package-lock false --save install ${reqDependency}`, {
@@ -333,7 +335,8 @@ function onBot() {
               continue;
             }
             if (config.dependencies) {
-              const missingDeps = Object.keys(config.dependencies).filter(dep => !global.nodemodule[dep]);
+              const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
+              const missingDeps = Object.keys(config.dependencies).filter(dep => !global.nodemodule[dep] && !builtinModules.includes(dep));
               if (missingDeps.length) {
                 const depsToInstall = missingDeps.map(dep => `${dep}${config.dependencies[dep] ? '@' + config.dependencies[dep] : ''}`).join(' ');
                 if (depsToInstall) {

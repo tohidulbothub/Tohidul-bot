@@ -5,13 +5,12 @@ module.exports.config = {
   credits: "Nayan",
   description: "Random shairi video",
   usePrefix: true,
-  category: "Media", 
+  commandCategory: "Media", 
   usages: "", 
   cooldowns: 5,
   dependencies: {
     "request":"",
-    "fs-extra":"",
-    "fs":""
+    "fs-extra":""
   }
 };
 

@@ -5,9 +5,9 @@ module.exports = {
        permission: 0,
        credits: "Nayan",
        description: "",
-       usePrefix: true, 
-       category: "user", 
-       usages: "Link",
+       usePrefix: true,
+  commandCategory: "utility",
+       usages: "reply to an image",
        cooldowns: 5,
        dependencies: {
   }

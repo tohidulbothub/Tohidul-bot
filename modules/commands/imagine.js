@@ -1,4 +1,4 @@
- module.exports = {
+module.exports = {
   config: {
     name: "imagine",
     version: "1.0.0",
@@ -6,7 +6,7 @@
     credits: "Nayan",
     description: "",
     usePrefix: true,
-    category: "prefix",
+    commandCategory: "ai",
     usages: "prompt",
     cooldowns: 10,
 },
@@ -28,8 +28,8 @@ start: async function({ nayan, events, args, lang}) {
   const n = apis.data.api
     if(!prompt) return nayan.reply(lang('missing'), events.threadID, events.messageID)
 
-  
-  
+
+
 
 
     const res = await axios.get(`${n}/nayan/img?prompt=${encodeURIComponent(prompt)}`);

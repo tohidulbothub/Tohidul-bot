@@ -5,8 +5,8 @@ module.exports.config = {
   credits: "Nayan",
   description: "",
   usePrefix: true,
-  category: "user",
-  usages: "Link",
+  commandCategory: "utility",
+  usages: "reply to image/video",
   cooldowns: 5,
   dependencies: {
     "axios": ""
@@ -24,12 +24,12 @@ module.exports.run = async ({ api, event, args }) => {
   try {
     linkanh = linkanh.replace(/\s/g, '');
 
-    
+
     if (!/^https?:\/\//.test(linkanh)) {
       return api.sendMessage('[⚜️]➜ Invalid URL: URL must start with http:// or https://', event.threadID, event.messageID);
     }
 
-    
+
     const encodedUrl = encodeURIComponent(linkanh);
 
     const attachments = event.messageReply?.attachments || [{
@@ -45,10 +45,10 @@ module.exports.run = async ({ api, event, args }) => {
 
     const results = await Promise.all(allPromises);
 
-    
+
     const imgurLinks = results.map(result => result.data.success ? result.data.link : 'Upload failed');
 
-    
+
     return api.sendMessage(`Uploaded Imgur Links:\n${imgurLinks.join('\n')}`, event.threadID, event.messageID);
   } catch (e) {
     console.error(e);
