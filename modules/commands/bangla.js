@@ -5,7 +5,7 @@ module.exports.config = {
     credits: "Nayan",
     prefix: true,
     description: "ask any thing",
-    category: "admin",
+    commandCategory: "AI",
     usages: "",
     cooldowns: 5,
     dependencies: {

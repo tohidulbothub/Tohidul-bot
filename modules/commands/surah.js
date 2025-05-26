@@ -1,4 +1,5 @@
 module.exports.config = {
+    commandCategory: "Utility",
   name: "surah",
   version: "0.0.3",
   permission: 0,

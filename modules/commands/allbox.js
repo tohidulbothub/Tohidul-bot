@@ -1,6 +1,7 @@
 const moment = require("moment-timezone");
 
 module.exports.config = {
+    usePrefix: true,
   name: 'allbox',
   version: '2.1.0',
   credits: 'TOHIDUL',

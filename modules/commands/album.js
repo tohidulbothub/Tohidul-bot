@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 module.exports.config = {
+    usePrefix: true,
   name: "album",
   version: "1.0.1",
   hasPermission: 0,

@@ -5,7 +5,7 @@ module.exports.config = {
   credits: "Nayan",
   description: "Download video from tiktok",
   prefix: true,
-  category: "admin",
+  commandCategory: "Media",
   usages: "[key word | key word + #hastag], [video + url | audio + url], [info + username], [trending]",
   cooldowns: 5,
   dependencies: {

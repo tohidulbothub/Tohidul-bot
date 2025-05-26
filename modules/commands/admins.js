@@ -1,4 +1,5 @@
 module.exports.config = {
+    commandCategory: "Admin",
     name: 'admins',
     version: '1.0.1',
     permission: 0,

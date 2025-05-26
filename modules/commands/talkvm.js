@@ -1,4 +1,5 @@
 module.exports.config = {
+    commandCategory: "AI",
      name: "talkvm",
      version: "1.1.0",
      permission: 0,

@@ -2,6 +2,7 @@ const fs = require("fs");
 const axios = require("axios");
 
 module.exports.config = {
+    commandCategory: "Image",
     name: "anicouple",
     version: "1.0.8",
     permission: 0, // Everyone can use this command

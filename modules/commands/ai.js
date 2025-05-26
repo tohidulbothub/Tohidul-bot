@@ -1,5 +1,6 @@
 module.exports = {
   config: {
+    usePrefix: true,
     name: "ai",
     commandCategory: "AI",
     version: "1.0.1",
