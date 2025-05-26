@@ -8,7 +8,7 @@ module.exports.config = {
   permssion: 0,
   credits: "Mohammad Nayan",
   description: "",
-  category: "fbcover",
+  commandCategory: "fbcover",
   usePrefix: true,
     cooldowns: 2,
 };

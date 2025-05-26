@@ -6,7 +6,7 @@ config:{
   usePrefix: true,
   credits: "Nayan",
   description: "Social Media Video Downloader",
-  category: "user",
+  commandCategory: "user",
   usages: [
     "/download [Facebook video link]",
     "/download [TikTok video link]",

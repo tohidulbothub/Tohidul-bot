@@ -5,7 +5,7 @@ module.exports.config = {
     credits: "TBH- TOHIDUL",
     usePrefix: true,
     description: "",
-    category: "user",
+    commandCategory: "user",
     usages: "",
     cooldowns: 0
 };

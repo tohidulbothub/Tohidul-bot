@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: false,
 	credits: "ryuko",
 	description: "config bot",
-	category: "operator",
+	commandCategory: "operator",
 	cooldowns: 5
 };
 

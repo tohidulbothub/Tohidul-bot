@@ -6,6 +6,7 @@ module.exports.config = {
   credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
   description: "goibot",
   commandCategory: "Noprefix",
+  usePrefix: false,
   usages: "noprefix",
   cooldowns: 5,
 };

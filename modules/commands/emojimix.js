@@ -5,7 +5,7 @@ module.exports.config = {
   credits: "Nayan",
   usePrefix: true,
   description: "Mix emoji",
-  category: "image",
+  commandCategory: "image",
   usages: "[emoji1 | emoji2]",
   cooldowns: 0,
   dependencies: {

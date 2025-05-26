@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "unknown",
   usePrefix: false,
 	description: "ban list",
-	category: "admin",
+	commandCategory: "admin",
 	usages: "[thread], [user]",
 	cooldowns: 5,
 };

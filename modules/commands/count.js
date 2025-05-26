@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "Nayan",
   description: "..",
-  category: "user",
+  commandCategory: "user",
   usages: "message/admin/member/male/female/gei/allgroup/alluser",
     cooldowns: 5,
 };
