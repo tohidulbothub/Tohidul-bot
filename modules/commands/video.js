@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "video",
+  name: "video3",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "CatalizCS mod video by Đăng",

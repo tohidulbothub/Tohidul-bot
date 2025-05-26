@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "TOHIDUL-LegendaryBot", // <-- Bot name!
+  name: "automsg", // <-- Bot name!
   version: "1.0.0",
   permission: 0,
   credits: "TOHIDUL", // 💎 Credit: TOHIDUL (Legendary) 💎

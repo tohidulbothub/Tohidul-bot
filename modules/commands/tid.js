@@ -2,7 +2,7 @@ const request = require('request');
 const fs = require('fs');
 
 module.exports.config = {
-	name: "tid",
+	name: "thid",
 	version: "1.0.5",
 	hasPermssion: 0,
 	credits: "NTKhang & Yan Maglinte", // Added a function to get ThreadImage

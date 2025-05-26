@@ -20,11 +20,11 @@
   },
   "commandDisabled": [],
   "eventDisabled": [],
-  "BOTNAME": "Bot",
-  "PREFIX": "?",
+  "BOTNAME": "TOHI-BOT",
+  "PREFIX": "/",
   "ADMINBOT": [
-    "YOUR_FB_UID",
-    "OTHER_FB_UID"
+    "100092006324917",
+    "100092006324917"
   ],
   "DESIGN": {
     "Title": "BotPack",
@@ -83,5 +83,11 @@
   "menu": {
     "autoUnsend": true,
     "delayUnsend": 60
+  },
+  "weather": {
+    "OPEN_WEATHER": "b7f1db5959a1f5b2a079912b03f0cd96"
+  },
+  "video3": {
+    "YOUTUBE_API": "AIzaSyDEE1-zZSRVI8lTaQOVsIAQFgL-_BJKvhk"
   }
 }
