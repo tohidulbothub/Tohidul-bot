@@ -6,7 +6,7 @@ module.exports.config = {
     name: "anicouple",
     version: "1.0.8",
     permission: 0, // Everyone can use this command
-    prefix: true,
+    usePrefix: true,
     credits: "Tohidul",
     description: "Fetches a random anime couple photo with a stylish output.",
     category: "media",

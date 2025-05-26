@@ -4,7 +4,7 @@ module.exports.config = {
     version: '1.0.1',
     permission: 0,
     credits: 'tohidul',
-    prefix: false,
+    usePrefix: false,
     description: '🎖️ গ্রুপ অ্যাডমিনদের স্টাইলিশ তালিকা দেখুন!',
     category: 'command',
     usages: 'admins',

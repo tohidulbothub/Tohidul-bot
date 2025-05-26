@@ -6,6 +6,7 @@ module.exports.config = {
   credits: 'TOHIDUL',
   hasPermssion: 2,
   description: 'বট যুক্ত সব গ্রুপ লিস্ট + Ban/Unban/Del/Out/AddMe!',
+  usePrefix: true,
   commandCategory: 'Admin',
   usages: '[page number/all]',
   cooldowns: 5

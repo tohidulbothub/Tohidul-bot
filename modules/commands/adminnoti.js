@@ -7,11 +7,11 @@ module.exports.config = {
     permission: 2,
     credits: "tohidul",
     description: "✨ এডমিন নোটিফিকেশন: সকল গ্রুপে স্টাইলিশ মেসেজ পাঠান!",
-    prefix: true,
+    usePrefix: true,
     category: "command",
     usages: "[মেসেজ]",
     cooldowns: 5,
-    commandCategory: "admin"
+    commandCategory: "Admin"
 }
 
 let atmDir = [];
