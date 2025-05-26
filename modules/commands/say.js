@@ -1,12 +1,12 @@
 module.exports.config = {
-	name: "say",
+	name: "say2",
 	version: "1.0.0",
-	hasPermssion: 0,
-	credits: "Yan Maglinte",
+	permission: 0,
+	credits: "ryuko",
 	description: "text to voice speech messages",
-  usePrefix: true, //SWITCH TO "false" IF YOU WANT TO DISABLE PREFIX
-	commandCategory: "message",
-	usages: `Text to speech messages`,
+  prefix: true,
+	category: "with prefix",
+	usages: `text to speech messages`,
 	cooldowns: 5,
 	dependencies: {
 		"path": "",

@@ -4,13 +4,20 @@ module.exports.config = {
   hasPermission: 0,
   credits: "Yan Maglinte",
   description: "Share a contact of a certain userID",
-  usePrefix: true, 
+  usePrefix: true,
   commandCategory: "message",
-  cooldowns: 5 
+  cooldowns: 5,
 };
 
-module.exports.run = function ({ api, event }) {
-  api.shareContact("Hello this is your contact!", event.senderID, event.threadID, (err, data) => {
-    if (err) console.log(err);
-  })
+module.exports.run = async function ({ api, args, event }) {
+  try {
+    api.shareContact(
+      args ? args.join(" ") : "• Hello this is your contact!",
+      event.messageReply?.senderID || event.senderID,
+      event.threadID,
+      event.messageID
+    );
+  } catch (error) {
+    api.sendMessage("error", event.threadID, event.messageID);
+  }
 };
