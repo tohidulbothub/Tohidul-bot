@@ -1,1 +1,86 @@
-{}
+{
+    "100092006324917": {
+        "userID": "100092006324917",
+        "money": 0,
+        "exp": 9,
+        "createTime": {
+            "timestamp": 1748273172692
+        },
+        "data": {
+            "timestamp": 1748273172692
+        },
+        "lastUpdate": 1748273172692
+    },
+    "100029743159492": {
+        "userID": "100029743159492",
+        "money": 0,
+        "exp": 0,
+        "createTime": {
+            "timestamp": 1748273172903
+        },
+        "data": {
+            "timestamp": 1748273172903
+        },
+        "lastUpdate": 1748273172903
+    },
+    "61576508582003": {
+        "userID": "61576508582003",
+        "money": 0,
+        "exp": 0,
+        "createTime": {
+            "timestamp": 1748273173037
+        },
+        "data": {
+            "timestamp": 1748273173037
+        },
+        "lastUpdate": 1748273173037
+    },
+    "100065508130616": {
+        "userID": "100065508130616",
+        "money": 0,
+        "exp": 0,
+        "createTime": {
+            "timestamp": 1748273173211
+        },
+        "data": {
+            "timestamp": 1748273173211
+        },
+        "lastUpdate": 1748273173211
+    },
+    "100072394760640": {
+        "userID": "100072394760640",
+        "money": 0,
+        "exp": 2,
+        "createTime": {
+            "timestamp": 1748273173408
+        },
+        "data": {
+            "timestamp": 1748273173408
+        },
+        "lastUpdate": 1748273173408
+    },
+    "61576057708893": {
+        "userID": "61576057708893",
+        "money": 0,
+        "exp": 0,
+        "createTime": {
+            "timestamp": 1748273173683
+        },
+        "data": {
+            "timestamp": 1748273173683
+        },
+        "lastUpdate": 1748273173683
+    },
+    "61575750164964": {
+        "userID": "61575750164964",
+        "money": 0,
+        "exp": 0,
+        "createTime": {
+            "timestamp": 1748273173867
+        },
+        "data": {
+            "timestamp": 1748273173867
+        },
+        "lastUpdate": 1748273173867
+    }
+}
