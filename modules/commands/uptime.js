@@ -19,12 +19,15 @@ function byte2mb(bytes) {
 
 module.exports.run = async ({ api, event, args }) => {
   const { threadID, messageID } = event;
-  const pidusage = await global.nodemodule["pidusage"](process.pid);
+  const pidusage = require("pidusage");
   const axios = require("axios");
   const fs = require("fs-extra");
   const moment = require("moment-timezone");
   const { loadImage, createCanvas, registerFont } = require("canvas");
   const timeStart = Date.now();
+
+  // Get CPU and memory usage
+  const stats = await pidusage(process.pid);
 
   // Uptime calculation
   const time = process.uptime();
@@ -124,8 +127,8 @@ module.exports.run = async ({ api, event, args }) => {
 📂 Commands: ${commands.size}
 👥 Users: ${global.data.allUserID.length}
 💬 Threads: ${global.data.allThreadID.length}
-🧠 CPU: ${pidusage.cpu.toFixed(1)}%
-💾 RAM: ${byte2mb(pidusage.memory)}
+🧠 CPU: ${stats.cpu.toFixed(1)}%
+💾 RAM: ${byte2mb(stats.memory)}
 🌐 Ping: ${Date.now() - timeStart}ms
 🎭 Character ID: ${id}
 ━━━━━━━━━━━━━━━━━━
