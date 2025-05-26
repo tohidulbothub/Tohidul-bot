@@ -1,6 +1,7 @@
 module.exports = {
   config: {
     name: "ai",
+    commandCategory: "AI",
     version: "1.0.1",
     permission: 0,
     credits: "tohidul",

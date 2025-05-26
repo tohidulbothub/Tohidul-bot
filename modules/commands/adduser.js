@@ -1,5 +1,6 @@
 module.exports.config = {
     name: "adduser",
+    commandCategory: "Admin",
     version: "1.0.3",
     hasPermssion: 3, // এখন শুধুমাত্র অ্যাডমিন (bot admin) ব্যবহার করতে পারবে
     credits: "tohidul",

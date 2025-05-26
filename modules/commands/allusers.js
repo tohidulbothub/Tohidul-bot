@@ -6,6 +6,7 @@ module.exports.config = {
     credits: "Tohidul",
     description: "Displays all group members with their IDs and names.",
     category: "admin",
+    commandCategory: "Info",
     cooldowns: 2
 };
 

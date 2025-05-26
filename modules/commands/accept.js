@@ -5,6 +5,7 @@ module.exports.config = {
   credits: "tohidul",
   prefix: true,
   description: "🤝 Accept or delete Facebook friend requests! 🌟",
+  commandCategory: "Admin",
   category: "admin",
   usages: "uid",
   cooldowns: 0
