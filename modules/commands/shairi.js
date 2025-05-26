@@ -17,11 +17,12 @@ module.exports.config = {
 const videoDATA = "https://5025dd35-d3b6-4e53-8f7e-b40e5488f9dc-00-2xr6zjnwy871b.global.replit.dev/video/shairi";
 
 module.exports.onLoad = ({}) => {
-  if (!global.nodemodule["fs"].existsSync(__dirname + '/nayan')) {
-    global.nodemodule["fs"].mkdirSync(__dirname + '/nayan');
+  const fs = require('fs');
+  if (!fs.existsSync(__dirname + '/nayan')) {
+    fs.mkdirSync(__dirname + '/nayan');
   }
-  global.nodemodule["fs"].readdirSync(__dirname + '/nayan').forEach(file => {
-    global.nodemodule["fs"].unlinkSync(__dirname + `/nayan/${file}`);
+  fs.readdirSync(__dirname + '/nayan').forEach(file => {
+    fs.unlinkSync(__dirname + `/nayan/${file}`);
   })
 }
 
