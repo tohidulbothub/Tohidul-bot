@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "nayan",
 	usePrefix: true,
 	description: "check the amount of yourself or the person tagged",
-	category: "without prefix",
+	commandCategory: "utility",
 	usages: "[tag]",
 	cooldowns: 5
 };

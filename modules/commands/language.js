@@ -5,7 +5,7 @@ module.exports.config = {
 	usePrefix: true,
 	credits: "Nayan",
 	description: "change the bot language",
-	category: "admin",
+	commandCategory: "admin",
 	usages: "[vi] [en]",
 	cooldowns: 5
 };

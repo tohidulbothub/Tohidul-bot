@@ -5,7 +5,7 @@ module.exports.config = {
     credits: "ryuko",
     usePrefix: false,
     description: "set new data of users into data",
-    category: "admin",
+    commandCategory: "admin",
     usages: "",
     cooldowns: 5,
 };

@@ -4,7 +4,7 @@ module.exports.config = {
   permssion: 2,
   credits: "Nayan",
   description: "",
-  category: "spam",
+  commandCategory: "admin",
   usages: "inbox",
   usePrefix: true,
   cooldowns: 5,

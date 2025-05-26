@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 2,
   credits: "Khánh Milo",
   description: "Kick out all the member inside of the group.",
-  category: "group",
+  commandCategory: "admin",
   usages: "[]",
   cooldowns: 3,
   usePrefix: true

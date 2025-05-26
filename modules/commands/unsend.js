@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "Nayan",
 	usePrefix: true,
 	description: "ban or unblock users",
-	category: "admin",
+	commandCategory: "admin",
 	usages: " ",
 	cooldowns: 5
 };

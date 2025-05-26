@@ -5,7 +5,7 @@ module.exports.config = {
 	usePrefix: false,
 	permission: 2,
 	description: "approve groups",
-	category: "admin",
+	commandCategory: "admin",
 	cooldowns: 5
 };
 

@@ -6,7 +6,7 @@ module.exports.config = {
     credits: "ryuko",
     usePrefix: true,
     description: "join the bot groups are in",
-    category: "admin",
+    commandCategory: "admin",
     usages: "",
     cooldowns: 5
 };

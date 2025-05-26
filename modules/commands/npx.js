@@ -7,7 +7,7 @@ module.exports = {
     permssion: 0,
     credits: "nayan",
     description: "Fun",
-    category: "no prefix",
+    commandCategory: "fun",
     usages: "😒",
     cooldowns: 5,
   },

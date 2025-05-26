@@ -9,7 +9,7 @@ module.exports = {
     usePrefix: true,
     credits: "Nayan",
     description: "rndm video",
-    category: "user",
+    commandCategory: "media",
     usages: "name",
     cooldowns: 5,
   },

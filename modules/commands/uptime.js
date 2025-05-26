@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "TOHIDUL",
   description: "Show beautiful uptime/status for TOHI-BOT",
-  category: "admin",
+  commandCategory: "admin",
   usages: "",
   cooldowns: 5,
 };

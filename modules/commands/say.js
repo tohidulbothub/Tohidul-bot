@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "ryuko",
 	description: "text to voice speech messages",
   usePrefix: true,
-	category: "with prefix",
+	commandCategory: "utility",
 	usages: `text to speech messages`,
 	cooldowns: 5,
 	dependencies: {

@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "nayan",
   description: "( 𝙀𝙭𝙖𝙘𝙩 𝙩𝙞𝙢𝙚 & 𝙙𝙖𝙩𝙚 )",
-  category: "Time and Date",
+  commandCategory: "utility",
   usages: "( Exact time )",
   cooldowns: 0,
   dependencies: []

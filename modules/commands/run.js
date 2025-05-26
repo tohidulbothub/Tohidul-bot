@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: false,
 	credits: "Mirai Team",
 	description: "running shell",
-	category: "system",
+	commandCategory: "admin",
 	usages: "[Script]",
 	cooldowns: 5,
 	dependencies: {

@@ -6,7 +6,7 @@ config: {
   usePrefix: true,
   credits: "Nayan",
   description: "",
-  category: "admin",
+  commandCategory: "media",
   usages: "",
     cooldowns: 5,
 },

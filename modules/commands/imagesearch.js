@@ -6,7 +6,7 @@ module.exports.config = {
 	credits: "nayan",
 	usePrefix: true,
 	description: "search an image",
-	category: "with prefix",
+	commandCategory: "media",
 	usages: "searchimage [text]",
 	cooldowns: 60,
 	dependencies: {

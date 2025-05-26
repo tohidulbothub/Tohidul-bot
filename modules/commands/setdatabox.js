@@ -5,7 +5,7 @@
     credits: "ryuko",
     usePrefix: false,
     description: "set new data of boxes into data",
-    category: "admin",
+    commandCategory: "admin",
     usages: "",
     cooldowns: 5,
     

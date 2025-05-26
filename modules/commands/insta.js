@@ -6,7 +6,7 @@ module.exports = {
     usePrefix: true,
     credits: "Nayan",
     description: "fb video",
-    category: "user",
+    commandCategory: "media",
     usages: "",
     cooldowns: 5,
 },

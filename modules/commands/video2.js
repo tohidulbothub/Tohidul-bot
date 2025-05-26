@@ -5,7 +5,7 @@ module.exports.config = {
   prefix: 'awto',
   credits: "Nayan",
   description: "Random video",
-  category: "user",
+  commandCategory: "media",
   usages: "",
   cooldowns: 5,
 };

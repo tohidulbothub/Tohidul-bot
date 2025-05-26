@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "Mirai Team",
   description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
-  category: "other", 
+  commandCategory: "admin", 
   usages: "[tag]", 
   cooldowns: 0,
 };

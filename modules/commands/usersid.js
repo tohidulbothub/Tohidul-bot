@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "ryuko",
 	usePrefix: false,
 	description: "get user id.",
-	category: "without prefix",
+	commandCategory: "utility",
 	cooldowns: 5
 };
 

@@ -8,7 +8,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "Nayan",
   description: "sad video",
-  category: "admin",
+  commandCategory: "media",
   usages: "",
   cooldowns: 5,
 };

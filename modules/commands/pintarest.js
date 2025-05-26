@@ -6,7 +6,7 @@ config: {
     credits: "Nayan",
     description: "image search",
     usePrefix: true,
-    category: "with prefix",
+    commandCategory: "media",
     usages: "pinterest (text) - (amount)",
     cooldowns: 10,
 },

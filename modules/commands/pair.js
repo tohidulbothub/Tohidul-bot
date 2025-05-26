@@ -6,7 +6,7 @@ module.exports.config = {
   usePrefix: true,
   credits: "Nayan",
   description: "It's a compound :>",
-  category: "fun",
+  commandCategory: "fun",
   usages: "",
   dependencies: {
         "axios": "",

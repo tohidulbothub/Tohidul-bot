@@ -6,7 +6,7 @@ module.exports = {
   usePrefix: false,
   permission: 2,
   description: "out bot",
-  category: "admin",
+  commandCategory: "admin",
   cooldowns: 5
 },
 

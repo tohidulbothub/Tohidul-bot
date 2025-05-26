@@ -7,7 +7,7 @@ module.exports.config = {
   credits: "ryuko",
   description: "randomly receive quotes",
   usePrefix: false,
-  category: "without prefix",
+  commandCategory: "fun",
   usages: "quotes",
   cooldowns: 10,
 };

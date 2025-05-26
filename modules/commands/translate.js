@@ -5,7 +5,7 @@ module.exports.config = {
   credits: "ryuko",
   description: "text translation",
   usePrefix: false,
-  category: "without prefix",
+  commandCategory: "utility",
   usages: `translate fr hello, how are you?`,
   cooldowns: 5,
   dependencies: {

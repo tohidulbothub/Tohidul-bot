@@ -5,7 +5,7 @@ module.exports.config = {
   usePrefix: true,
 	credits: "Nayan",
 	description: "sendmsg",
-	category: "admin",
+	commandCategory: "admin",
 	usages: "sendmsg [user]/[thread] id msg",
     cooldowns: 5,
 };

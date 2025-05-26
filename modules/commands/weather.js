@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "ryuko",
   usePrefix: false,
 	description: "see weather information in the area",
-	category: "without prefix",
+	commandCategory: "utility",
 	usages: "[location]",
 	cooldowns: 5,
 	dependencies: {

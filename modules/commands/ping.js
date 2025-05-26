@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "NAYAN",
 	description: "Tag all members",
   usePrefix: true,
-	category: "Group",
+	commandCategory: "group",
 	usages: "[Text]",
 	cooldowns: 1
 };

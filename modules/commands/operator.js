@@ -5,7 +5,7 @@ module.exports.config = {
   credits: "ryuko (edit: tohi-bot-hub)",
   description: "Control operator lists (add/remove/list operator UIDs)",
   usePrefix: false,
-  category: "operator",
+  commandCategory: "admin",
   usages: "operator [add/remove/list] [@tag|uid]",
   cooldowns: 5,
 };

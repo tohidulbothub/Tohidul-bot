@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "Nayan",
 	usePrefix: true,
 	description: "get user id.",
-	category: "without prefix",
+	commandCategory: "utility",
 	cooldowns: 5
 };
 

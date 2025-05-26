@@ -6,7 +6,7 @@ module.exports.config = {
   permssion: 1,
   credits: "Nayan",
   description: "",
-  category: "general",
+  commandCategory: "admin",
   usePrefix: true,
   usages: "resend",
   cooldowns: 0,

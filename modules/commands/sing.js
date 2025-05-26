@@ -20,7 +20,7 @@ module.exports.config = {
   permssion: 0,
   credits: "Lê Đình, edit: tohi-bot-hub",
   description: "Phát video thông qua link YouTube hoặc tìm kiếm từ khoá",
-  category: "sing",
+  commandCategory: "media",
   usages: "[search/song/link]",
   cooldowns: 10,
   dependencies: {

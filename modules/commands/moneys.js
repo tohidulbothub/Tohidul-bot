@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "ryuko",
 	usePrefix: false,
 	description: "check the amount of yourself or the person tagged",
-	category: "without prefix",
+	commandCategory: "economy",
 	usages: "[tag]",
 	cooldowns: 5
 };

@@ -35,7 +35,7 @@ module.exports.config = {
     credits: "ryuko",
     usePrefix: true,
     description: "play music through youtube link or search keyword",
-    category: "with prefix",
+    commandCategory: "media",
     usages: "play [link/args]",
     cooldowns: 10
 };
