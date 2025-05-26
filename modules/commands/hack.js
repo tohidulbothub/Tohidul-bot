@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "fun",
   name: "hack", 
   version: "1.0.0", 
   permission: 0,

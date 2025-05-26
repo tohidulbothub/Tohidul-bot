@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "utility",
   name: "grammar",
   version: "2.0.0",
   permission: 0,

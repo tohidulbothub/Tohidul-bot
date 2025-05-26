@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "group",
   name: "group", // command name.
   version: "1.0.0", // command version.
   permission: 0, // set to 1 if you want to set the permission into a group admins, set to 2 if you want to set the permission into a bot admins, set to 3 if you want to set the permission into a bot operators.

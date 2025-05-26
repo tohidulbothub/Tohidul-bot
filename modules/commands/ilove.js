@@ -1,5 +1,6 @@
 const fs = require("fs");
 module.exports.config = {
+  commandCategory: "fun",
   name: "iloveu",
   version: "2.0.0",
   permission: 0,

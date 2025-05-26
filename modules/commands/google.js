@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "utility",
     name: "google",
     version: "1.0.0",
     permission: 0,

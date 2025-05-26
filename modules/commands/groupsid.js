@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "group",
   name: "tid",	
   version: "1.0.0", 
 	permission: 0,

@@ -6,6 +6,7 @@ module.exports.config = {
   hasPermssion: 0,
   credits: "TOHIDUL BOT",
   description: "Show bot & owner info with uptime",
+  usePrefix: true,
   commandCategory: "For users",
   hide: true,
   usages: "",

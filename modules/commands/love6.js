@@ -10,7 +10,7 @@ module.exports.config = {
     credits: "Mohammad Nayan",
     description: "",
     usePrefix: true,
-    category: "Love",
+    commandCategory: "Love",
     usages: "[tag]",
     cooldowns: 5,
     dependencies: {

@@ -1,4 +1,5 @@
 module.exports.config = {
+  commandCategory: "admin",
   name: "goiadmin",
   version: "1.0.0",
   permission: 0,
