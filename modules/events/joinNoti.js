@@ -26,7 +26,7 @@ module.exports.circle = async (image) => {
 
 let suffix;
 
-module.exports.run = async function({ api, event, Users }) {
+module.exports.run = async function({ api, event, Users, Threads }) {
   const logger = require("../../utils/log.js");
   var fullYear = global.client.getTime("fullYear");
   var getHours = await global.client.getTime("hours");
@@ -51,7 +51,7 @@ module.exports.run = async function({ api, event, Users }) {
   }
   if (event.logMessageData.addedParticipants && Array.isArray(event.logMessageData.addedParticipants) && event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
     //api.changeNickname(`𝗕𝗢𝗧 ${(!global.config.BOTNAME) ? "Buddy" : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
-    
+
     let gifUrl = 'https://i.imgur.com/4HMupHz.gif';
 let gifPath = __dirname + '/cache/join/join.gif';
 
