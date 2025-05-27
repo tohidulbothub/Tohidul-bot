@@ -1,4 +1,4 @@
-const logger = require("../../utils/log.js");
+const { log } = require("../../utils/log.js");
 
 module.exports.config = {
  name: "antiout",
