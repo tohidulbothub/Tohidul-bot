@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const logger = require("../../utils/log.js").default;
+const logger = require("../../utils/log.js");
 
 module.exports = {
   config: {

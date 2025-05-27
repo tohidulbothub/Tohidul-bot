@@ -162,41 +162,37 @@ function logger(text, type) {
   }
 }
 
-module.exports = {
-  getThemeColors,
-  log: logger,
-  error: (text, type) => {
-    process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
-  },
-  err: (text, type) => {
-    process.stderr.write(
-      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
-    );
-  },
-  warn: (text, type) => {
-    process.stderr.write(
-      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
-    );
-  },
-  loader: (data, option) => {
-    switch (option) {
-      case "warn":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`),
-          data + "\n",
-        );
-        break;
-      case "error":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data + "\n",
-        );
-        break;
-      default:
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
-        break;
-    }
-  },
+module.exports = logger;
+module.exports.getThemeColors = getThemeColors;
+module.exports.log = logger;
+module.exports.error = (text, type) => {
+  process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
 };
-
-// Export logger as default function for direct usage
-module.exports.default = logger;
+module.exports.err = (text, type) => {
+  process.stderr.write(
+    getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+  );
+};
+module.exports.warn = (text, type) => {
+  process.stderr.write(
+    getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+  );
+};
+module.exports.loader = (data, option) => {
+  switch (option) {
+    case "warn":
+      process.stderr.write(
+        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`),
+        data + "\n",
+      );
+      break;
+    case "error":
+      process.stderr.write(
+        getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data + "\n",
+      );
+      break;
+    default:
+      console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
+      break;
+  }
+};
