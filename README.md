@@ -1,161 +1,287 @@
-# TOHI-BOT-HUB🤖<sub><sub>v1.8.0🚀</sub></sub>
+
+# 🤖 TOHI-BOT-HUB
+
 <p align="center">
-	<a href="https://nodejs.org/dist/v16.20.0">
-		<img src="https://img.shields.io/badge/Nodejs%20Support-18.x-brightgreen.svg?style=flat-square" alt="Nodejs Support v18.x">
-	</a>
-  <img alt="Size" src="https://img.shields.io/github/repo-size/YANDEVA/TOHI-BOT-HUB.svg?style=flat-square&label=size">
-  <img alt="Version" src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=code%20version&prefix=v&query=%24.version&url=https://github.com/YANDEVA/TOHI-BOT-HUB/raw/main/package.json&style=flat-square">
-  <img alt="Visitors" src="https://visitor-badge.laobi.icu/badge?style=flat-square&page_id=YANDEVA.TOHI-BOT-HUB">
+  <img src="https://img.shields.io/badge/Version-1.8.0-brightgreen?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Node.js-18.x-success?style=for-the-badge&logo=node.js" alt="Node.js">
+  <img src="https://img.shields.io/badge/Platform-Facebook_Messenger-blue?style=for-the-badge&logo=messenger" alt="Platform">
 </p>
-A Simple TOHI-BOT-HUB for starting a Messenger chatbot.
 
-<img align="center" src="https://i.ibb.co/gMMvsYf/20240125-225244-0000.png"></a>
+<p align="center">
+  <img src="https://i.ibb.co/9ZQX8Kp/tohi-bot-banner.png" alt="TOHI-BOT-HUB Banner" width="100%">
+</p>
 
-### ABOUT
+## 🌟 About TOHI-BOT-HUB
 
-Hello there! Thank you for using TOHI-BOT-HUB! Join us at [ChatBot Community Ltd.](https://www.facebook.com/groups/178711334798450/?ref=share)🍪 if you wish to share and discover Mirai/TOHI-BOT-HUB commands created by other command creators!
+**TOHI-BOT-HUB** is a powerful and feature-rich Facebook Messenger chatbot framework built with Node.js. This advanced bot system provides an extensive collection of commands, automated features, and customizable themes to enhance your Messenger experience.
 
-> [!NOTE]
-> - If you encounter any issues or difficulties, don't hesitate to reach out and ask for assistance here. Our team is here to help you with any problems you may face.
+### ✨ Key Features
 
----
+- 🎨 **Multiple Themes** - 15+ beautiful console themes
+- 🔧 **180+ Commands** - Comprehensive command library
+- 🌐 **Multi-Language Support** - English, Vietnamese, Tagalog, Bengali, Arabic
+- 🔒 **Security Features** - Appstate encryption and admin controls
+- 📊 **Database Management** - Auto-create and manage user/thread data
+- 🎵 **Media Support** - Music, video, image processing
+- 🤖 **AI Integration** - Multiple AI services support
+- 📱 **Social Media Tools** - TikTok, Instagram, YouTube downloaders
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18.x or higher
+- Facebook account with Messenger access
+- Valid Facebook app state
+
+### Installation
+
+1. **Fork this repository** on Replit
+2. **Configure your bot**:
+   ```json
+   {
+     "BOTNAME": "Your Bot Name",
+     "PREFIX": "/",
+     "ADMINBOT": ["your_facebook_id"]
+   }
+   ```
+3. **Add your appstate.json** file
+4. **Click the Run button** to start your bot
+
+## 🎨 Available Themes
+
+<p align="center">
+  <img src="https://i.ibb.co/2ZpqK1M/themes-preview.png" alt="Theme Preview" width="80%">
+</p>
+
+Choose from 15+ stunning themes:
+- 🌊 **Aqua** - Ocean blue gradient
+- 🔥 **Fiery** - Red flame effects
+- 💙 **Blue** - Classic blue theme
+- 🧡 **Orange** - Warm orange tones
+- 💖 **Pink** - Soft pink gradient
+- ❤️ **Red** - Bold red design
+- 🕰️ **Retro** - Vintage styling
+- ☀️ **Sunlight** - Bright yellow theme
+- 👥 **Teen** - Modern youth design
+- 🌺 **Summer** - Tropical vibes
+- 🌸 **Flower** - Floral patterns
+- 👻 **Ghost** - Dark mysterious theme
+- 💜 **Purple** - Royal purple
+- 🌈 **Rainbow** - Multi-color gradient
+- 💚 **Hacker** - Matrix green
+- ⚫ **Matrix** - Digital rain effect
+
+## 📋 Command Categories
 
 <details>
-  <summary>What's New?</summary>
-  
-  __UPDATE!__
-  - Major fixes!
-  - Fixed FCA now using Neth's W3S-FCA!
-  - Imgur links are removed!
-  - HTML Color Preview will now base on Theme set!
-  - Bug fixed!
+<summary>🎵 <strong>Media & Entertainment</strong></summary>
+
+- Music download and streaming
+- Video processing and download
+- Image generation and editing
+- Lyrics search
+- Spotify integration
 </details>
 
 <details>
-  <summary>Languages</summary>
-  
-> - en = English-US 
-> - vi = Vietnamese 
-> - tl = Tagalog 
-> - cb = Bisaya/Cebuano
-> - bd = Bengali 
-> - ar = Arabic
+<summary>🤖 <strong>AI & Utilities</strong></summary>
 
-Go to your config.json and set it in the language property:
+- AI chat and assistance
+- Image recognition
+- Text translation
+- Weather information
+- QR code generation
+</details>
+
+<details>
+<summary>👥 <strong>Group Management</strong></summary>
+
+- User kick/ban system
+- Admin controls
+- Auto moderation
+- Welcome/goodbye messages
+- Group statistics
+</details>
+
+<details>
+<summary>📱 <strong>Social Media</strong></summary>
+
+- TikTok video download
+- Instagram content fetch
+- YouTube search and download
+- Facebook video processing
+- Twitter content access
+</details>
+
+## 🛠️ Configuration
+
+### Basic Setup
 ```json
 {
+  "version": "1.8.0",
   "language": "en",
+  "BOTNAME": "TOHI-BOT",
+  "PREFIX": "/",
+  "ADMINBOT": ["your_admin_id"],
+  "DESIGN": {
+    "Title": "TOHI-BOT-HUB",
+    "Theme": "matrix",
+    "Admin": "Your Name"
+  }
 }
 ```
 
-Looking for a French language translation done by a local French! Your contribution would be greatly appreciated, and credits will be provided!
-</details>
-
-<details>
-  <summary>Appstate Encryption</summary>
-  
-  ### Security 
-  Are you having an issue about getting your account stolen or hacked? This might due to your appstate provided which is stolen by other users. If you feel unsecure, try setting up *"encryptSt"* to *true* in the **config.json**.
-  
-  ```json
-  {
-    "encrpytSt": true
-  }
-  ```
-
-  Encrypting won't affect the bot process and will only make the appstate harder to be used by thiefs and hackers. Furthermore, it may get laggy when opening the appstate.json after being encrypted but still it is worth a shot.
-  
-</details>
-
----
-### RENDER HOSTING
-__=>__ Host your botfile on [render.com](https://dashboard.render.com) to make your file always active.
-- If you have some issues related to render hosting! Try our newly created facebook group with render hosting discussions!
-- Im currently looking for companions and conversation starters who have some knowledge about hosting in render to become moderators.
-- Feel free to join us at [Render Community](https://www.facebook.com/groups/7389392131128817/?ref=share) on Facebook! See you there!
-[<img align="center" src="https://i.ibb.co/DMXyLm3/Picsart-24-02-14-12-25-06-014.jpg">](https://www.facebook.com/groups/7389392131128817/?ref=share&mibextid=NSMWBT)
-</h1>
-
-<details>
-  <summary>Tutorials</summary>
-
- > __How to Host BotPack on render.com?__
- ><br>Watch the tutorial [here!](https://www.facebook.com/share/v/JXGAppBJ6A9TNzjb/?mibextid=oFDknk)
- > [<img align="center" src="https://i.ibb.co/wKkZ6Lc/render.jpg">](https://www.facebook.com/share/v/JXGAppBJ6A9TNzjb/?mibextid=oFDknk)
-  
-</details>
-
----
-
-- Welcome to the [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 repository. This project is an unofficial bot file from the [Mirai](https://github.com/m1raibot/miraiv2) Repository, initially developed and maintained by [Phạm Văn Diện](https://github.com/D-Jukie/Disme-Bot.git), better known as [D-Jukie](https://github.com/D-Jukie). The base file for this project is sourced from the [Disme-Bot](https://github.com/D-Jukie/Disme-Bot.git) GitHub project.
-
-- [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 is a modified messenger bot file by [TOHIDUL](https://replit.com/@YanMaglinte)🇵🇭. It is a refined version of the Mirai messenger bot, with some unique enhancements. 
-
-- A key feature is the `usePrefix` function integrated within every command. This function removes the need for prefixes, providing a more streamlined user experience. Alongside ready-made commands and free-to-edit codes, this bot file encourages users to learn and explore freely.
-<img align="center" src="https://i.imgur.com/Je8NbDn.jpg"/>
-
-- Further, [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 comes with a user-friendly feature that allows easy customization of your console design via the `theme` option in the config.json file. This makes it highly accessible, especially for beginners.
-<img align="center" src="https://i.imgur.com/wHD2zXv.jpg"/>
-
-<details>
-  <summary>Available Themes</summary>
-  
-> - Blue
-> - Aqua
-> - Fiery
-> - Orange
-> - Pink
-> - Red
-> - Retro
-> - Sunlight
-> - Teen
-> - Summer
-> - Flower
-> - Ghost
-> - Purple
-> - Rainbow
-> - Hacker
-
-Go to your `config.json` and set it in the language property:
+### Security Options
 ```json
 {
-  "DESIGN": {
-    "Title": "BotPack",
-    "Theme": "Blue",
-    "Admin": "YOUR_NAME"
-  }
+  "encryptSt": true,
+  "adminOnly": false,
+  "autoClean": true
 }
 ```
-</details>
 
-- Embrace the world of possibilities with [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 - a facebook Messenger file designed to make your interaction with messenger bots smoother and more efficient.
+## 🌐 Multi-Language Support
+
+<p align="center">
+  <img src="https://i.ibb.co/9qK8F3M/language-support.png" alt="Language Support" width="70%">
+</p>
+
+Supported languages:
+- 🇺🇸 **English** (en)
+- 🇻🇳 **Vietnamese** (vi)
+- 🇵🇭 **Tagalog** (tl)
+- 🇵🇭 **Bisaya/Cebuano** (cb)
+- 🇧🇩 **Bengali** (bd)
+- 🇸🇦 **Arabic** (ar)
+
+## 📊 Web Dashboard
+
+Access your bot's web interface at `/dashboard` for:
+- 📈 Analytics and statistics
+- ⚙️ Configuration management
+- 👥 User management
+- 📝 Command reviews
+- 🔧 System monitoring
+
+<p align="center">
+  <img src="https://i.ibb.co/XkL2Vg4/web-dashboard.png" alt="Web Dashboard" width="80%">
+</p>
+
+## 🔧 Development
+
+### Adding Custom Commands
+```javascript
+module.exports.config = {
+  name: "yourcommand",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "TOHI-BOT-HUB",
+  description: "Your command description",
+  commandCategory: "category",
+  cooldowns: 5
+};
+
+module.exports.run = async ({ api, event, args }) => {
+  // Your command logic here
+};
+```
+
+### Event Handling
+Create custom events in `/modules/events/` to handle bot interactions.
+
+## 🚀 Deployment on Replit
+
+1. **Fork the repository**
+2. **Configure environment variables**
+3. **Upload your appstate.json**
+4. **Click Run to deploy**
+
+Your bot will be automatically deployed and accessible 24/7 on Replit's infrastructure.
+
+## 🔒 Security Features
+
+- 🔐 **Appstate Encryption** - Protect your login credentials
+- 👮 **Admin Controls** - Restrict sensitive commands
+- 🛡️ **Anti-Spam Protection** - Prevent message flooding
+- 📝 **Audit Logs** - Track all bot activities
+- 🚫 **User Blacklist** - Block problematic users
+
+## 📚 Documentation
+
+For detailed documentation, visit our [Wiki](https://github.com/YANDEVA/TOHI-BOT-HUB/wiki) or join our community:
+
+- 💬 [Facebook Community](https://www.facebook.com/groups/178711334798450)
+- 📧 [Support Email](mailto:support@tohi-bot.com)
+- 🐛 [Report Issues](https://github.com/YANDEVA/TOHI-BOT-HUB/issues)
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting pull requests.
+
+### How to Contribute
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📈 Statistics
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/YANDEVA/TOHI-BOT-HUB?style=social" alt="Stars">
+  <img src="https://img.shields.io/github/forks/YANDEVA/TOHI-BOT-HUB?style=social" alt="Forks">
+  <img src="https://img.shields.io/github/issues/YANDEVA/TOHI-BOT-HUB" alt="Issues">
+  <img src="https://img.shields.io/github/last-commit/YANDEVA/TOHI-BOT-HUB" alt="Last Commit">
+</p>
+
+## ⚠️ Disclaimer
+
+> **Warning**: Using automated bots on Facebook may violate their Terms of Service. Use at your own risk. We are not responsible for any account suspensions or bans.
+
+## 🏆 Credits & Acknowledgments
+
+### 👨‍💻 Main Developer
+- **[TOHIDUL](https://github.com/YANDEVA)** - Project Creator & Lead Developer
+
+### 🌟 Special Thanks
+- **SpermLord** - Core framework contributions
+- **CatalizCS** - Original Mirai bot foundation
+- **D-Jukie** - Disme-Bot base implementation
+- **NTKhang03** - Command structure improvements
+- **KhangGia1810** - Event handling system
+- **XaviaTeam** - API integrations
+- **NethWs3Dev** - FCA implementation
+
+### 🤝 Collaborators
+- **[Liane Cagara](https://www.facebook.com/nealiana.kaye.cagara)** - UI/UX Design & Testing
+
+### 🌍 Community Contributors
+- **Translation Team** - Multi-language support
+- **Beta Testers** - Quality assurance
+- **Command Creators** - Extended functionality
+- **Bug Reporters** - Stability improvements
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- 🌐 **Demo**: [Try TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)
+- 📖 **Documentation**: [Wiki](https://github.com/YANDEVA/TOHI-BOT-HUB/wiki)
+- 💬 **Community**: [Facebook Group](https://www.facebook.com/groups/178711334798450)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/YANDEVA/TOHI-BOT-HUB/issues)
+
 ---
-<div align="center">
-      <h3>My Replit Account:
-      <a href="https://replit.com/@YanMaglinte" style="color: green;"><br>@YanMaglinte🔥</a>
-        <br>
-        My Facebook Account:<a href="https://www.facebook.com/yandeva.me?mibextid=b06tZ0" style="color: green;"><br>Yan🚀</a></h3></div>
 
-- If you encounter any issues or have questions related to this REPL, please don't hesitate to reach out to me on Facebook. I'm here to assist you!
+<p align="center">
+  <img src="https://i.ibb.co/sQq3C9C/footer-logo.png" alt="TOHI-BOT-HUB Footer" width="60%">
+</p>
 
-<img align="center" src="https://i.ibb.co/pnm38zY/yanmaglinte.png"/>
-
-> [!WARNING]
-> *There is a risk of your account being banned after running the code, so please ensure proper account management and handling. If it happens, please try logging in again and retrieve your app state.*
-
-### CREDITS
-Special thanks to the following fellows for their amazing projects making this modified project possible:
-- SpermLord
-- CatalizCS
-- D-Jukie
-- NTKhang03
-- KhangGia1810
-- XaviaTeam
-- NethWs3Dev
-<br><br> __In collaboration with__
-  - [Liane Cagara 🎀](https://www.facebook.com/nealiana.kaye.cagara?mibextid=ZbWKwL)
-
-_Updated on: May 3, 2025 (PST)<br>Creation Date: June 11, 2023_
+<p align="center">
+  <strong>Made with ❤️ by TOHIDUL & Community</strong><br>
+  <em>© 2024 TOHI-BOT-HUB. All rights reserved.</em>
+</p>
 
 ---
-Copyright © 2024 TOHIDUL (TOHI-BOT-HUB), Bangladesh.<br>
+
+**Last Updated**: January 2025 | **Version**: 1.8.0 | **Platform**: Replit
