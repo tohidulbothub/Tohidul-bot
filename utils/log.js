@@ -145,52 +145,51 @@ module.exports = {
     switch (type) {
       case "warn":
         process.stderr.write(
-          getThemeColors().error(`\r[ ERROR ] `) + text + "\n",
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + text + "\n",
         );
         break;
       case "error":
-        console.log(chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
         break;
       case "load":
-        console.log(getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
         break;
       default:
         process.stderr.write(
-          getThemeColors().subcolor(`\r[ ${String(type).toUpperCase()} ] `) +
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
             text +
             "\n",
         );
-        break;
     }
   },
   error: (text, type) => {
-    process.stderr.write(chalk.hex("#ff0000")(`\r[ ${type} ] `) + text + "\n");
+    process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
   },
   err: (text, type) => {
     process.stderr.write(
-      getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
     );
   },
   warn: (text, type) => {
     process.stderr.write(
-      getThemeColors().subcolor(`\r[ ${type} ] `) + text + "\n",
+      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
     );
   },
   loader: (data, option) => {
     switch (option) {
       case "warn":
         process.stderr.write(
-          getThemeColors().subcolor(`[ SYSTEM ]`),
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`),
           data + "\n",
         );
         break;
       case "error":
         process.stderr.write(
-          chalk.hex("#ff0000")(`\r[ SYSTEM ] `) + data + "\n",
+          getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data + "\n",
         );
         break;
       default:
-        console.log(getThemeColors().subcolor(`[ SYSTEM ]`), data);
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
         break;
     }
   },
