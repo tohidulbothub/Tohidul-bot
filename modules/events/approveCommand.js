@@ -1,4 +1,6 @@
 
+const logger = require("../../utils/log.js").log;
+
 module.exports = {
   config: {
     name: "approveCommand",

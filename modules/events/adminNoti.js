@@ -14,7 +14,8 @@ const { loadImage, createCanvas, registerFont } = require("canvas");
 const request = require('request');
 //const { join } = require('path');
 const axios = require('axios');
-const jimp = require("jimp")
+const jimp = require("jimp");
+const logger = require("../../utils/log.js").log;
 const fontlink = 'https://drive.google.com/u/0/uc?id=1ZwFqYB-x6S9MjPfYm3t3SP1joohGl4iw&export=download'
 let PRFX = `${global.config.PREFIX}`;
 
