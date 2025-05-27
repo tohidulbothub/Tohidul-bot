@@ -4,7 +4,7 @@ module.exports.config = {
   name: "resend",
   version: "2.0.0",
   permssion: 1,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   commandCategory: "admin",
   usePrefix: true,

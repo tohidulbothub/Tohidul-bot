@@ -3,7 +3,7 @@ module.exports.config = {
      name: "talkvm",
      version: "1.1.0",
      permission: 0,
-     credits: "ryuko",
+     credits: "TOHI-BOT-HUB",
      description: "talk voice message reply",
      usePrefix: false,
      category: "without prefix",

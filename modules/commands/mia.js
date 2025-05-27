@@ -2,7 +2,7 @@ module.exports.config = {
   name: "mia", 
   version: "1.0.0", 
   permission: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "example",
   usePrefix: true,
   commandCategory: "Love", 

@@ -5,7 +5,7 @@ module.exports.config = {
   name: "unfont",
   version: "1.0.0",
   hasPermssion: 1,
-  credits: "Yan Maglinte",
+  credits: "TOHI-BOT-HUB",
   description: "Removes the bot's message's font by reacting to the bot's message",
   usePrefix: true,
   commandCategory: "message",

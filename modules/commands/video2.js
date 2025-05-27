@@ -4,7 +4,7 @@ module.exports.config = {
   permission: 0,
   usePrefix:true,
   prefix: 'awto',
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Random video",
   commandCategory: "media",
   usages: "",

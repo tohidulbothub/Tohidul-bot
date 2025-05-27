@@ -2,7 +2,7 @@ module.exports.config = {
   name: "operator",
   version: "2.1.0",
   permission: 0,
-  credits: "ryuko (edit: tohi-bot-hub)",
+  credits: "TOHI-BOT-HUB",
   description: "Control operator lists (add/remove/list operator UIDs)",
   usePrefix: false,
   commandCategory: "admin",

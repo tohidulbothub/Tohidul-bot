@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "banned",
 	version: "1.0.0",
 	permission: 2,
-	credits: "unknown",
+	credits: "TOHI-BOT-HUB",
   usePrefix: false,
 	description: "ban list",
 	commandCategory: "admin",

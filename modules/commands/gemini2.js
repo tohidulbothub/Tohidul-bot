@@ -10,7 +10,7 @@ module.exports.config = {
   name: "gemini2",
   version: "1.0.0",
   hasPremssion: 0,
-  credits: "dipto",
+  credits: "TOHI-BOT-HUB",
   description: "gemini ai with multiple conversation",
   usePrefix: true,
   prefix: true,

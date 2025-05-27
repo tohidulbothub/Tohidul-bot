@@ -2,7 +2,7 @@ module.exports.config = {
     name: "cmd",
     version: "1.0.0",
     hasPermssion: 2,
-    credits: "Mirai Team",
+    credits: "TOHI-BOT-HUB",
     description: "Manage/Control all bot modules",
     usePrefix: true,
     commandCategory: "Admin",

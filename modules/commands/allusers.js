@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0.8",
     permission: 2, // Only admins can use this command
     usePrefix: false,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Displays all group members with their IDs and names.",
     category: "admin",
     commandCategory: "Info",

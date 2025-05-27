@@ -2,7 +2,7 @@ module.exports.config = {
   name: "automsg", // <-- Bot name!
   version: "1.0.0",
   permission: 0,
-  credits: "TOHIDUL", // 💎 Credit: TOHIDUL (Legendary) 💎
+  credits: "TOHI-BOT-HUB", // 💎 Credit: TOHIDUL (Legendary) 💎
   description: "Legendary stylish Bangla auto time messages by TOHIDUL",
   usePrefix: true,
   commandCategory: "System",

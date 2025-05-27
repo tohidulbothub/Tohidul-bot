@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "textart",
 	version: "1.0.0",
 	permission: 0,
-	credits: "nayan",
+	credits: "TOHI-BOT-HUB",
 	description: "Convert text to various art styles",
 	usePrefix: true,
 	commandCategory: "utility",

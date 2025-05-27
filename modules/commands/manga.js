@@ -9,7 +9,7 @@ module.exports.config = {
   name: "manga",
   aliases: [],
   version: "1.7",
-  credits: "Dipto",
+  credits: "TOHI-BOT-HUB",
   hasPermssion: 0,
   category: "media",
   commandCategory: "media",

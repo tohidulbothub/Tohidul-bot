@@ -2,7 +2,7 @@ module.exports.config = {
   name: "join",
   eventType: ['log:subscribe'],
   version: "1.0.0",
-  credits: "Mirai-Team", // FIXED BY YAN MAGLINTE
+  credits: "TOHI-BOT-HUB", // FIXED BY YAN MAGLINTE
   description: "GROUP UPDATE NOTIFICATION"
 };
 

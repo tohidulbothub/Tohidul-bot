@@ -7,7 +7,7 @@ module.exports.config = {
     version: "1.0.8",
     permission: 0, // Everyone can use this command
     usePrefix: true,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Fetches a random anime couple photo with a stylish output.",
     category: "media",
     cooldowns: 2

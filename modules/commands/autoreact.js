@@ -6,7 +6,7 @@ module.exports = {
     name: "autoreact",
     version: "1.0.1",
     permission: 0,
-    credits: "tohidul (modified from nayan)", // Updated credit!
+    credits: "TOHI-BOT-HUB", // Updated credit!
     description: "Automatically reacts to new messages with a random emoji.",
     usePrefix: true,
     commandCategory: "System",

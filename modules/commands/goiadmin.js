@@ -3,7 +3,7 @@ module.exports.config = {
   name: "goiadmin",
   version: "1.0.0",
   permission: 0,
-  credits: "তহিদুল",
+  credits: "TOHI-BOT-HUB",
   description: "mention",
   usePrefix: true,
   category: "user",

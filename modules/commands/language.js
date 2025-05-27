@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.0",
 	permission: 2,
 	usePrefix: true,
-	credits: "Nayan",
+	credits: "TOHI-BOT-HUB",
 	description: "change the bot language",
 	commandCategory: "admin",
 	usages: "[vi] [en]",

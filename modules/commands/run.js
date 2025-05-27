@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.2",
 	permission: 3,
   usePrefix: false,
-	credits: "Mirai Team",
+	credits: "TOHI-BOT-HUB",
 	description: "running shell",
 	commandCategory: "admin",
 	usages: "[Script]",

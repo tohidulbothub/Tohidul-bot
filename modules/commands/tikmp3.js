@@ -3,7 +3,7 @@ module.exports.config = {
   name: "tikmp3",
   version: "2.0.0",
   permission: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Download video from facebook",
   usePrefix: true,
   commandCategory: "media",

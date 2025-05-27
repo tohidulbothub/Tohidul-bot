@@ -2,7 +2,7 @@ module.exports.config = {
   name: "ttt",
   version: "1.0.1",
   hasPermssion: 0,
-  credits: "Mirai Team",
+  credits: "TOHI-BOT-HUB",
   description: "Play caro with AI",
   usePrefix: true,
   commandCategory: "game",

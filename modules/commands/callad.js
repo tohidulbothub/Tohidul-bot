@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "callad",
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "NTKhang, ManhG Fix Get",
+	credits: "TOHI-BOT-HUB",
 	description: "Report bot's error to admin or comment",
   usePrefix: true,
 	commandCategory: "report",

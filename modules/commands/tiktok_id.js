@@ -11,7 +11,7 @@ module.exports.config = {
   name: "tiktokid",
   version: "6.9.0",
   hasPermssion: 0,
-  credits: "dipto",
+  credits: "TOHI-BOT-HUB",
   description: "Displays TikTok video for selection.",
   usePrefix: true,
   prfix: true,

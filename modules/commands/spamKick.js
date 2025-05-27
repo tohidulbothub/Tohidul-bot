@@ -2,7 +2,7 @@ module.exports.config = {
   name: "spamkick",
   version: "1.0.0",
   hasPermssion: 0, 
-  credits: "Dipto",
+  credits: "TOHI-BOT-HUB",
   usePrefix: true,
   prefix: true,
   description: { en:"Automatically kick a user who spams messages in a group chat"},

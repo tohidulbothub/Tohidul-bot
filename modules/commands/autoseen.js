@@ -5,7 +5,7 @@ module.exports.config = {
   name: "autoseen",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "TOHIDUL (modified from Yan Maglinte)", // Credit updated!
+  credits: "TOHI-BOT-HUB", // Credit updated!
   description: "Turn on/off auto seen for new messages",
   usePrefix: true,
   commandCategory: "Admin",

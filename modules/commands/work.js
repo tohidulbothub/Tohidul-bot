@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "work",
 	version: "1.0.1",
 	permission: 0,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: true,
 	description: "earning money",
 	commandCategory: "economy",

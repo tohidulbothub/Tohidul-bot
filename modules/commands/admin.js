@@ -6,7 +6,7 @@ module.exports.config = {
   version: "1.0.0",
   hasPermssion: 0,
   usePrefix:true,
-  credits: "TOHI-BOT",
+  credits: "TOHI-BOT-HUB",
   description: "Show Bot Owner Info",
   commandCategory: "info",
   usages: "",

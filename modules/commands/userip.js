@@ -3,7 +3,7 @@ module.exports.config = {
 	name: "ip",	
 	version: "1.0.0", 
 	hasPermssion: 0,
-	credits: "NTKhang",
+	credits: "TOHI-BOT-HUB",
 	description: "View your IP information or other IP", 
 	commandCategory: "other",
 	usages: "[ip address or domain]",

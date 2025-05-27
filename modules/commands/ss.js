@@ -9,7 +9,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
   name: "ss",
   version: "1.0",
-  credits: "Dipto",
+  credits: "TOHI-BOT-HUB",
   hasPermssion:0,
   usePrefix: true,
   prefix: true,

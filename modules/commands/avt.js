@@ -4,7 +4,7 @@ module.exports.config = {
   name: "avt",
   version: "1.0.0",
   permission: 0,
-  credits: "TOHIDUL (mod from Nayan)",
+  credits: "TOHI-BOT-HUB",
   description: "Get avatar picture of user, group, or by link/uid",
   usePrefix: true,
   commandCategory: "user",

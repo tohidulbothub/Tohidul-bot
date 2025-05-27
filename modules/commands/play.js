@@ -32,7 +32,7 @@ module.exports.config = {
     name: "play",
     version: "1.0.0",
     permission: 0,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: true,
     description: "play music through youtube link or search keyword",
     commandCategory: "media",

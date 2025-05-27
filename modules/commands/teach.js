@@ -20,7 +20,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
   name: "teach",
   version: "6.9.9",
-  credits: "dipto",
+  credits: "TOHI-BOT-HUB",
   cooldowns: 0,
   hasPermssion: 0,
   description: "Teach the bot new messages and replies",

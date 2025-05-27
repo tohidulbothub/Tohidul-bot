@@ -4,7 +4,7 @@ module.exports.config = {
     name: "shell",
     aliases: ["sh"],
     version: "1.0",
-    credits: "Dipto",
+    credits: "TOHI-BOT-HUB",
     hasPermssion: 2,
     description: "Execute shell commands",
     commandCategory: "system",

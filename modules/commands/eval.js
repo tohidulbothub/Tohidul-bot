@@ -59,7 +59,7 @@
 module.exports.config = {
   name: "eval",
   version: "1.0.0",
-  credits: "NTKhang",
+  credits: "TOHI-BOT-HUB",
   hasPermssion: 2,
   usePrefix: true,
   Description: "Test api response",

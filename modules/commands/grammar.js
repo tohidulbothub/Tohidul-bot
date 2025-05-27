@@ -3,7 +3,7 @@ module.exports.config = {
   name: "grammar",
   version: "2.0.0",
   permission: 0,
-  credits: "ryuko",
+  credits: "TOHI-BOT-HUB",
   description: "grammar is a command that helps improve grammar by suggesting corrections and providing recommendations.",
   usePrefix: false,
   category: "without prefix",

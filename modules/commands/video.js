@@ -2,7 +2,7 @@ module.exports.config = {
   name: "video3",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "CatalizCS mod video by Đăng",
+  credits: "TOHI-BOT-HUB",
   description: "Play video from YouTube",
   usePrefix: true,
   commandCategory: "music",

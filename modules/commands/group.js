@@ -3,7 +3,7 @@ module.exports.config = {
   name: "group", // command name.
   version: "1.0.0", // command version.
   permission: 0, // set to 1 if you want to set the permission into a group admins, set to 2 if you want to set the permission into a bot admins, set to 3 if you want to set the permission into a bot operators.
-  credits: "nayan",
+  credits: "TOHI-BOT-HUB",
   description: "group cng", // command description.
   usePrefix: false, // set to true if you want to use the command with prefix, set to false if you want to use the commands without prefix.
   category: "box", // command category.

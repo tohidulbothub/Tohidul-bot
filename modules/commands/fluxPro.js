@@ -10,7 +10,7 @@ module.exports.config = {
   name: "fluxpro",
   version: "2.0",
   hasPermssion: 2,
-  credits: "Dipto",
+  credits: "TOHI-BOT-HUB",
   description: "Generate images with Flux.1 Pro",
   commandCategory: "𝗜𝗠𝗔𝗚𝗘 𝗚𝗘𝗡𝗘𝗥𝗔𝗧𝗢𝗥",
   preimum: true,

@@ -3,7 +3,7 @@ module.exports.config = {
   version: "0.0.2",
   permission: 0,
   usePrefix: true,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "..",
   commandCategory: "user",
   usages: "message/admin/member/male/female/gei/allgroup/alluser",

@@ -4,7 +4,7 @@ module.exports.config = {
   version: "1.0.0",
   permssion: 0,
   usePrefix: true,
-  credits: "nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Get word definitions",
   usage: "[text]",
   commandCategory: "education",

@@ -11,7 +11,7 @@ module.exports = {
   config: {
     name: "getlink",
     version: "1.0",
-    credits: "ASIF",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 2,
     hasPermission: 0,
     description: "𝗚𝗲𝘁 𝗱𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝘂𝗿𝗹 𝗳𝗿𝗼𝗺 𝘃𝗶𝗱𝗲𝗼, 𝗮𝘂𝗱𝗶𝗼 𝘀𝗲𝗻𝘁 𝗳𝗿𝗼𝗺 𝗴𝗿𝗼𝘂𝗽",

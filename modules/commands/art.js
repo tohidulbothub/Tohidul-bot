@@ -12,7 +12,7 @@ module.exports.config = {
     version: "1.7.0",
     permission: 0, // Everyone can use this command
     usePrefix: true,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Enhance your photos with artful transformations!",
     commandCategory: "Media",
     usages: "{pn} reply to an image or provide a URL",

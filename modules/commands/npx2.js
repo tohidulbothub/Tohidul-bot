@@ -6,7 +6,7 @@ module.exports = {
 		version: "1.0.1",
 		usePrefix: false,
 		permssion: 0,
-		credits: "nayan",
+		credits: "TOHI-BOT-HUB",
 		description: "Fun",
 		commandCategory: "fun",
 		usages: "😒",

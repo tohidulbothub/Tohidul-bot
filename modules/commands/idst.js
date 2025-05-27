@@ -2,7 +2,7 @@ module.exports.config = {
   name: "idst",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "Sam & Yan Maglinte", // Fix the issue that causes an error when it replies to a certain message. - Yan
+  credits: "TOHI-BOT-HUB", // Fix the issue that causes an error when it replies to a certain message. - Yan
   description: "Shows the ID information and description of a sticker",
   usePrefix: true,
   commandCategory: "message",

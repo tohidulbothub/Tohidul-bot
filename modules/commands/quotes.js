@@ -4,7 +4,7 @@ module.exports.config = {
   name: "quotes",
   version: "1.0.0",
   permission: 2,
-  credits: "ryuko",
+  credits: "TOHI-BOT-HUB",
   description: "randomly receive quotes",
   usePrefix: false,
   commandCategory: "fun",

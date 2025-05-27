@@ -4,7 +4,7 @@ module.exports.config = {
     commandCategory: "Admin",
     version: "1.0.3",
     hasPermssion: 3, // এখন শুধুমাত্র অ্যাডমিন (bot admin) ব্যবহার করতে পারবে
-    credits: "tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "🌟 fb লিংক বা UID দিয়ে গ্রুপে নতুন ইউজার অ্যাড করুন! 🌟",
     prefix: true,
     category: "admin",

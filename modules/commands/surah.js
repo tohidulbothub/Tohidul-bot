@@ -4,7 +4,7 @@ module.exports.config = {
   version: "0.0.3",
   permission: 0,
   usePrefix: true,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Get Quran Surah by number (1-114)",
   category: "user",
   usages: "surah <number 1-114>",

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "translate",
   version: "1.0.1",
   permission: 0,
-  credits: "ryuko",
+  credits: "TOHI-BOT-HUB",
   description: "text translation",
   usePrefix: false,
   commandCategory: "utility",

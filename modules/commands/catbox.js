@@ -10,7 +10,7 @@ const baseApiUrl = async () => {
 (module.exports.config = {
   name: "catbox",
   version: "1.6.9",
-  credits: "Nazrul",
+  credits: "TOHI-BOT-HUB",
   hasPermission: 0,
   commandCategory: "utility",
   usePrefix: true,

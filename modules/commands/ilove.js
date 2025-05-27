@@ -4,7 +4,7 @@ module.exports.config = {
   name: "iloveu",
   version: "2.0.0",
   permission: 0,
-  credits: "nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   usePrefix: false,
   category: "user",

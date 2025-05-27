@@ -5,7 +5,7 @@ module.exports.config = {
   name: "album",
   version: "1.0.1",
   hasPermission: 0,
-  credits: "TOHIDUL",
+  credits: "TOHI-BOT-HUB",
   description: "Send a random stylish video from various categories",
   commandCategory: "media",
   usages: "",

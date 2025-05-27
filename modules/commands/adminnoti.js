@@ -5,7 +5,7 @@ module.exports.config = {
     name: "adminnoti",
     version: "1.0.2",
     permission: 2,
-    credits: "tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "✨ এডমিন নোটিফিকেশন: সকল গ্রুপে স্টাইলিশ মেসেজ পাঠান!",
     usePrefix: true,
     category: "command",

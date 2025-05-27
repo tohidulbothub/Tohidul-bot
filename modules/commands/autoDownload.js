@@ -14,7 +14,7 @@ module.exports.config = {
     version: "1.0.3",
     permission: 0,
     usePrefix: true,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Download videos or images from social media links.",
     commandCategory: "Media",
     usages: "Reply with a valid video/image URL (Facebook, TikTok, Instagram, YouTube, Pinterest, Imgur)",

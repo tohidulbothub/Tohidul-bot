@@ -10,7 +10,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
     name: "flag",
     version: "3.0",
-    credits: "Dipto",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 1,
     hasPermission: 0,
     description: "Guess the flag name",

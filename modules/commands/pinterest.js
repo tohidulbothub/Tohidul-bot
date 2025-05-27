@@ -2,7 +2,7 @@ module.exports.config = {
     name: "pinterest",
     version: "1.0.0",
     hasPermssion: 0,
-    credits: "Joshua Sy",
+    credits: "TOHI-BOT-HUB",
     description: "Image search",
     usePrefix: true,
     commandCategory: "Search",

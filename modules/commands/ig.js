@@ -2,7 +2,7 @@ module.exports.config = {
   name: "prefixgreet",
   version: "1.0.5",
   hasPermssion: 0,
-  credits: "TOHIDUL BOT HUB",
+  credits: "TOHI-BOT-HUB",
   description: "🔥 বটের প্রিফিক্স দেখাও এবং এপিক গ্রিটিং পাও! 🚀",
   usePrefix: true,
   commandCategory: "system",

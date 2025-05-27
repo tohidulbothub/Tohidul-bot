@@ -8,7 +8,7 @@ module.exports = {
   config: {
     name: "dalle",
     version: "1.1",
-    credits: "tohidul",
+    credits: "TOHI-BOT-HUB",
     hasPermssion: 0,
     usePrefix: true,
     prefix: true,

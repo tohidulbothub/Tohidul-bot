@@ -2,7 +2,7 @@ module.exports.config = {
    name: "settings",
     version: "1.0.0",
     permission: 2,
-    credits: "Nayan",
+    credits: "TOHI-BOT-HUB",
     description: "",
     usePrefix: true,
     commandCategory: "admin",

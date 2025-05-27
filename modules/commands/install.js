@@ -6,7 +6,7 @@ module.exports.config = {
   name: "install",
   version: "1.0.0",
   hasPermssion: 2,
-  credits: "dipto",
+  credits: "TOHI-BOT-HUB",
   usePrefix: true,
   description: "Create a new file with code from a link or provided code, with syntax error checking",
   commandCategory: "utility",

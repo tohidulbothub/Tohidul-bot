@@ -12,7 +12,7 @@ module.exports = {
     version: "1.0",
     hasPermission: 0,
     usePrefix: true,
-    credits: "xnil",
+    credits: "TOHI-BOT-HUB",
     description: "Get tiktok user information",
     commandCategory: "information",
     cooldowns: 10,

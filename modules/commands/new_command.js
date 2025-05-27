@@ -2,7 +2,7 @@ module.exports.config = {
   name: "<command_name>",
   version: "1.0.0",
   hasPermission: 0,
-  credits: "<Author>",
+  credits: "TOHI-BOT-HUB",
   description: "<Command Description>",
   usePrefix: true, // Set to true to enable the use of prefix while false if not.
   allowPrefix: true, // Set to true to allow prefix even if usePrefix is false, this doesn't do anything if the usePrefix is true.

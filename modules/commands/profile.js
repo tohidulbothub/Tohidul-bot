@@ -3,7 +3,7 @@ module.exports = {
     name: "profile",
     aliases: ["pfp", "pp"],
     version: "1.1",
-    credits: "dipto",
+    credits: "TOHI-BOT-HUB",
     countDown: 5,
     hasPermssion: 0,
     description: "PROFILE image",

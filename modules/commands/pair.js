@@ -4,7 +4,7 @@ module.exports.config = {
   version: "1.0.0",
   hermssion: 0,
   usePrefix: true,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "It's a compound :>",
   commandCategory: "fun",
   usages: "",

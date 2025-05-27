@@ -2,7 +2,7 @@ module.exports.config = {
     name: "sendnoti",
     version: "1.0.0",
     hasPermssion: 2,
-    credits: "Yan Maglinte",
+    credits: "TOHI-BOT-HUB",
     description: "Sends a message to all groups and can only be done by the admin.",
     usePrefix: true,
     commandCategory: "message",

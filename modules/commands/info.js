@@ -4,7 +4,7 @@ module.exports.config = {
   name: "info",
   version: "1.2.7",
   hasPermssion: 0,
-  credits: "TOHIDUL BOT",
+  credits: "TOHI-BOT-HUB",
   description: "Show bot & owner info with uptime",
   usePrefix: true,
   commandCategory: "For users",

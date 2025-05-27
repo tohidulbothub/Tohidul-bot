@@ -5,7 +5,7 @@ module.exports = {
     name: "v2a",
     description: "Convert Video to audio ",
     version: "1.2",
-    credits: "dipto",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 20,
     commandCategory: "media",
     category: " media",

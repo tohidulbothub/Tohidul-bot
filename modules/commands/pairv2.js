@@ -3,7 +3,7 @@ module.exports.config = {
   version: "1.0.1",
   permssion: 0,
   usePrefix: true,
-  credits: "nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   commandCategory: "fun",
   cooldowns: 5,

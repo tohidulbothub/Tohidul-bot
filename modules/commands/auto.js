@@ -7,7 +7,7 @@ module.exports.config = {
     version: "0.0.3",
     permission: 0, // Everyone can use this command
     usePrefix: true,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Automatically download and send videos from provided links.",
     commandCategory: "Media",
     usages: "Reply with a video URL",

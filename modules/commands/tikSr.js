@@ -12,7 +12,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
     name: "tiksr",
     version: "1.0",
-    credits: "Mesbah Bb'e",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 5,
     hasPermssion: 0,
     description: "Search for TikTok videos",

@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "0.0.2",
 	permission: 2,
 	usePrefix: true,
-	credits: "nayan",
+	credits: "TOHI-BOT-HUB",
 	description: "Change prefix",
 	commandCategory: "admin",
 	usages: "prefix",

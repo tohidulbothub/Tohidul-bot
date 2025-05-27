@@ -2,7 +2,7 @@ module.exports.config = {
   name: "kickall",
   version: "1.0.0",
   permission: 2,
-  credits: "Khánh Milo",
+  credits: "TOHI-BOT-HUB",
   description: "Kick out all the member inside of the group.",
   commandCategory: "admin",
   usages: "[]",

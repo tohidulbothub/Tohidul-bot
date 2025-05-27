@@ -2,7 +2,7 @@
     name: "setdatagroup",
     version: "1.0",
     permission: 2,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: false,
     description: "set new data of boxes into data",
     commandCategory: "admin",

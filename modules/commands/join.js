@@ -3,7 +3,7 @@ module.exports.config = {
     name: "join",
     version: "1.0.1",
     permission: 2,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: true,
     description: "join the bot groups are in",
     commandCategory: "admin",

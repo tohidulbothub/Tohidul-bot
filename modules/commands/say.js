@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "say2",
 	version: "1.0.0",
 	permission: 0,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	description: "text to voice speech messages",
   usePrefix: true,
 	commandCategory: "utility",

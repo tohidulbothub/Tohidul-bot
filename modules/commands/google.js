@@ -3,7 +3,7 @@ module.exports.config = {
     name: "google",
     version: "1.0.0",
     permission: 0,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: false,
     description: "search results on google",
     category: "without prefix",

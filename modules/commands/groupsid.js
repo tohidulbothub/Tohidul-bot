@@ -3,7 +3,7 @@ module.exports.config = {
   name: "tid",	
   version: "1.0.0", 
 	permission: 0,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	description: "get box id", 
 	usePrefix: false,
 	category: "without prefix",

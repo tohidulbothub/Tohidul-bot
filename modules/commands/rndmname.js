@@ -7,7 +7,7 @@ module.exports = {
     version: "0.0.2",
     permission: 0,
     usePrefix: true,
-    credits: "Nayan",
+    credits: "TOHI-BOT-HUB",
     description: "rndm video",
     commandCategory: "media",
     usages: "name",

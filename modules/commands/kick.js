@@ -3,7 +3,7 @@ module.exports.config = {
   version: "1.0.0", 
   permssion: 2,
   usePrefix: true,
-  credits: "Mirai Team",
+  credits: "TOHI-BOT-HUB",
   description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
   commandCategory: "admin", 
   usages: "[tag]", 

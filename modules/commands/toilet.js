@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "toilet",
   version: "1.0.0",
   permission: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: " ",
   usePrefix: true, 
   commandCategory: "fun", 

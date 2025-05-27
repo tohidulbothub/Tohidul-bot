@@ -6,7 +6,7 @@ module.exports.config = {
     version: "1.0.2",
     permission: 2, // Only admins can use this command
     usePrefix: true,
-    credits: "Tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "Automatically bans users who spam 10 times within a time window.",
     commandCategory: "Admin",
     usages: "none",

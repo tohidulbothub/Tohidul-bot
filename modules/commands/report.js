@@ -2,7 +2,7 @@ module.exports.config = {
   name: "report", // command name.
   version: "1.0.0", // command version.
   permission: 0, 
-  credits: "nayan",
+  credits: "TOHI-BOT-HUB",
   description: "example",
   usePrefix: false,
   commandCategory: "Utility", 

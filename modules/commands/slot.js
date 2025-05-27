@@ -2,7 +2,7 @@ module.exports.config = {
     name: "slot",
     version: "1.0.1",
     permission: 0,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: false,
     description: "slot game",
     commandCategory: "game",

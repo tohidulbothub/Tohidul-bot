@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "user",
 	version: "1.0.5",
 	hasPermssion: 2,
-	credits: "Mirai Team",
+	credits: "TOHI-BOT-HUB",
 	description: "Ban or unblock users",
   usePrefix: true,
 	commandCategory: "Admin",

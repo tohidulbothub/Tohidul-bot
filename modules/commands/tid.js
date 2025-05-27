@@ -5,7 +5,7 @@ module.exports.config = {
 	name: "thid",
 	version: "1.0.5",
 	hasPermssion: 0,
-	credits: "NTKhang & Yan Maglinte", // Added a function to get ThreadImage
+	credits: "TOHI-BOT-HUB", // Added a function to get ThreadImage
 	description: "Get box id and group image",
 	usePrefix: true,
 	commandCategory: "group",

@@ -9,7 +9,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
     name: "quiz",
     version: "1.0",
-    credits: "Mesbah Bb'e",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 5,
     hasPermission: 0,
     description: "quiz",

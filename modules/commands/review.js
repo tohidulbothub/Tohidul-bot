@@ -4,7 +4,7 @@ module.exports.config = {
   version: "1.0.0",
   hasPermssion: 0,
   usePrefix: true,
-  credits: "TOHI-BOT",
+  credits: "TOHI-BOT-HUB",
   description: "Rate and review bot features or commands",
   commandCategory: "utility",
   usages: "[add/view/stats] [command_name] [rating 1-5] [review_text]",

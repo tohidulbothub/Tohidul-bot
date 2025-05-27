@@ -12,7 +12,7 @@ module.exports = {
   config: {
     name: "ytb",
     version: "1.1.4",
-    credits: "dipto",
+    credits: "TOHI-BOT-HUB",
     countDown: 5,
     hasPermssion: 0,
     description: "Download video, audio, and info from YouTube",

@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "restart",
 	version: "7.0.0",
 	permission: 2,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: false,
 	description: "restart bot system",
 	commandCategory: "admin",

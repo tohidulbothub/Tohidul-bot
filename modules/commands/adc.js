@@ -2,7 +2,7 @@ module.exports.config = {
   name: "adc",
   version: "1.0.3",
   hasPermssion: 3,
-  credits: "tohidul",
+  credits: "TOHI-BOT-HUB",
   description: "✏️ নতুন কোড যুক্ত করুন: /adc [নাম] + কোড",
   usePrefix: true,
   commandCategory: "admin",

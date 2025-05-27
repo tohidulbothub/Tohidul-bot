@@ -4,7 +4,7 @@ config:{
   version: "1.0.0",
   permission: 0,
   usePrefix: true,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Social Media Video Downloader",
   commandCategory: "user",
   usages: [

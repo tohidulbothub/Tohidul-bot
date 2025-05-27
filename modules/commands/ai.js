@@ -5,7 +5,7 @@ module.exports = {
     commandCategory: "AI",
     version: "1.0.1",
     permission: 0,
-    credits: "tohidul",
+    credits: "TOHI-BOT-HUB",
     description: "🤖 𝑨𝑰 𝑪𝒉𝒂𝒕: প্রশ্ন করুন, AI উত্তর দেবে!",
     prefix: true,
     category: "command",

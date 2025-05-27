@@ -9,7 +9,7 @@ module.exports={
 config:{
     name: "meta",
     version: "6.9.0",
-    credits: "dipto",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 15,
     hasPremssion: 0,
     usePrefix: true,

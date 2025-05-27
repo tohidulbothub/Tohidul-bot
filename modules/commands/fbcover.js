@@ -6,7 +6,7 @@ module.exports.config = {
   name: "fbcover",
   version: "1.0.0",
   permssion: 0,
-  credits: "Mohammad Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   commandCategory: "fbcover",
   usePrefix: true,

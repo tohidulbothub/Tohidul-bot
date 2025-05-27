@@ -12,7 +12,7 @@ module.exports = {
         aliases: ["rbg"], 
         version: "1.0", 
         hasPermssion: 0,
-        credits: "Mesbah Saxx", // khing Aryan and Aiyan mahi fan
+        credits: "TOHI-BOT-HUB", // khing Aryan and Aiyan mahi fan
         usePrefix: false,
         prefix: true,
         commandCategory: "utility",

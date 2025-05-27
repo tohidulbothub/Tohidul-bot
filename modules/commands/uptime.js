@@ -3,7 +3,7 @@ module.exports.config = {
   version: "1.0.0",
   permission: 0,
   usePrefix: true,
-  credits: "TOHIDUL",
+  credits: "TOHI-BOT-HUB",
   description: "Show beautiful uptime/status for TOHI-BOT",
   commandCategory: "admin",
   usages: "",

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "poli",
   version: "1.0.",
   hasPermssion: 0,
-  credits: "jameslim",
+  credits: "TOHI-BOT-HUB",
   description: "generate image from polination",
   usePrefix: true,
   commandCategory: "image",

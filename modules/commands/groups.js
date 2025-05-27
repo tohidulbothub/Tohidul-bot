@@ -3,7 +3,7 @@ module.exports.config = {
 	name: "groups",
 	version: "0.0.3",
 	permission: 2,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: true,
 	description: "ban or unblock a group",
 	category: "admin",

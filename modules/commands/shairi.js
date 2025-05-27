@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "shairi", 
   version: "1.0.0", 
   permission: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Random shairi video",
   usePrefix: true,
   commandCategory: "Media", 

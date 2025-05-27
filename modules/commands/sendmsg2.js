@@ -6,7 +6,7 @@ module.exports.config = {
 	version: "0.0.2",
 	permission: 2,
   usePrefix: true,
-	credits: "Nayan",
+	credits: "TOHI-BOT-HUB",
 	description: "sendmsg",
 	commandCategory: "admin",
 	usages: "sendmsg [user]/[thread] id msg",

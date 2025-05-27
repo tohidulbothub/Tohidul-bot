@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "post",
 	version: "1.0.0",
 	permission: 3,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: true,
 	description: "create a new post in acc bot",
 	commandCategory: "admin",

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "ban",
   version: "2.1.0",
   hasPermssion: 3,
-  credits: "NTKhang & edited by DuyVuong & TOHIDUL",
+  credits: "TOHI-BOT-HUB",
   description: "Permanently ban members from the group (Bot must be admin)\nBangla improved by TOHIDUL",
   usePrefix: true,
   commandCategory: "group",

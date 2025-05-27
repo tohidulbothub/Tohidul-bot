@@ -12,7 +12,7 @@ module.exports = {
     version: "1.2.0",
     hasPermission: 0,
     usePrefix: true,
-    credits: "TOHIDUL",
+    credits: "TOHI-BOT-HUB",
     description: "🔍 Get detailed user information with style 🌟",
     commandCategory: "information",
     cooldowns: 10,

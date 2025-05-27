@@ -18,7 +18,7 @@ module.exports.config = {
   version: "1.0.0",
   usePrefix: true,
   permssion: 0,
-  credits: "Lê Đình, edit: tohi-bot-hub",
+  credits: "TOHI-BOT-HUB",
   description: "Phát video thông qua link YouTube hoặc tìm kiếm từ khoá",
   commandCategory: "media",
   usages: "[search/song/link]",

@@ -2,7 +2,7 @@ module.exports.config = {
     name: "setdatauser",
     version: "1.0",
     permission: 2,
-    credits: "ryuko",
+    credits: "TOHI-BOT-HUB",
     usePrefix: false,
     description: "set new data of users into data",
     commandCategory: "admin",

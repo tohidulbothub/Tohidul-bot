@@ -68,7 +68,7 @@ function transformText(text) {
 module.exports.config = {
   name: "cricket",
   version: "1.0",
-  credits: "Samir Œ",
+  credits: "TOHI-BOT-HUB",
   aliases: ["livecricket", "cricketscore"],
   cooldowns: 5,
   hasPermssion: 0,

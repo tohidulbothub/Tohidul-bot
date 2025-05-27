@@ -2,7 +2,7 @@ module.exports.config = {
   name: "emojimix",
   version: "1.0.1",
   permssion: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   usePrefix: true,
   description: "Mix emoji",
   commandCategory: "image",

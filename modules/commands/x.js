@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "say",
 	version: "1.0.2",
 	permission: 0,
-	credits: "nayan",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: true,
 	description: "check the amount of yourself or the person tagged",
 	commandCategory: "utility",

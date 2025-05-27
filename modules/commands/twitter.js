@@ -2,7 +2,7 @@ module.exports.config = {
   name: "twitter",
   version: "2.0.0",
   permission: 0,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "Download video from Twitter",
   usePrefix: true,
   commandCategory: "media",

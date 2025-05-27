@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "react",
 	version: "1.0.0",
 	permission: 2,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	description: "react posts by id",
   usePrefix: true,
 	commandCategory: "admin",

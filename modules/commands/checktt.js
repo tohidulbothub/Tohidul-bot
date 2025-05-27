@@ -2,7 +2,7 @@ module.exports.config = {
   name: "checktt",
   version: "1.0.1",
   hasPermssion: 0,
-  credits: "D-Jukie",
+  credits: "TOHI-BOT-HUB",
   description: "Count messages",
   usePrefix: true,
   commandCategory: "message",

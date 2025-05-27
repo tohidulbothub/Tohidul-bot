@@ -12,7 +12,7 @@ module.exports = {
   config: {
     name: "alldl",
     version: "1.0.1",
-    credits: "Dipto",
+    credits: "TOHI-BOT-HUB",
     cooldowns: 6,
     hasPermssion: 0,
     description:

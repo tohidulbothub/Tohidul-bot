@@ -2,7 +2,7 @@ module.exports.config = {
     name: "help",
     version: "1.0.6",
     hasPermssion: 0,
-    credits: "TOHI-BOT",
+    credits: "TOHI-BOT-HUB",
     usePrefix: true,
     description: "Get all command list or module info in a stylish way",
     commandCategory: "system",

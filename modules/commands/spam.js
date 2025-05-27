@@ -2,7 +2,7 @@ module.exports.config = {
 name: "spam",
   version: "",
   permssion: 2,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   commandCategory: "admin",
   usages: "[msg] [amount]",

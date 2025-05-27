@@ -12,7 +12,7 @@ module.exports = {
     name: "upscaleai",
     aliases: ["4k", "upscale"],
     version: "1.0",
-    credits: "tohidul",
+    credits: "TOHI-BOT-HUB",
     permission: 0,
     description: "🖼️ 𝙄𝙢𝙖𝙜𝙚 𝙐𝙥𝙨𝙘𝙖𝙡𝙚: আপনার ছবি এ.আই দিয়ে ৪কে-তে রূপান্তর করুন!",
     commandCategory: "command",

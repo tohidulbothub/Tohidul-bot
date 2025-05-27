@@ -16,7 +16,7 @@ module.exports.config = {
   name: "rankup",
   version: "1.0.0",
   hasPermssion: 1,
-  credits: "Yan Maglinte",
+  credits: "TOHI-BOT-HUB",
   description: "Announce rankup for each group, user",
   usePrefix: true,
   commandCategory: "Edit-IMG",

@@ -2,7 +2,7 @@ module.exports.config = {
   name: "sharecontact",
   version: "1.0.0",
   hasPermission: 0,
-  credits: "Yan Maglinte",
+  credits: "TOHI-BOT-HUB",
   description: "Share a contact of a certain userID",
   usePrefix: true,
   commandCategory: "message",

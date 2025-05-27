@@ -11,7 +11,7 @@ module.exports.config = {
   name: "code",
   version: "6.9.0",
   hasPermission: 2,
-  credits: "dipto",
+  credits: "TOHI-BOT-HUB",
   usePrefix: true,
   prefix: true,
   description: "Convert code into link",

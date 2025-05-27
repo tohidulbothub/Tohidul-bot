@@ -4,7 +4,7 @@ module.exports.config = {
   name: "sim",
   version: "1.1.0",
   hasPermssion: 0,
-  credits: "Yan Maglinte",
+  credits: "TOHI-BOT-HUB",
   description: "Engage in conversation with Sim!",
   usePrefix: false,
   commandCategory: "chatbots",

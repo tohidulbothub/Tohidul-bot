@@ -4,7 +4,7 @@ config: {
   version: "0.0.2",
   permission: 0,
   usePrefix: true,
-  credits: "Nayan",
+  credits: "TOHI-BOT-HUB",
   description: "",
   commandCategory: "media",
   usages: "",

@@ -10,7 +10,7 @@ const baseApiUrl = async () => {
  module.exports.config = {
    name: "imagedata",
    version: "1.6.9",
-   credits: "Nazrul",
+   credits: "TOHI-BOT-HUB",
    cooldowns: 5,
    hasPermission: 0,
    usePrefix: true,

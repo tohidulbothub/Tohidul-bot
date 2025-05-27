@@ -3,7 +3,7 @@ module.exports.config = {
   name: "accept",
   version: "2.0.0",
   permission: 3,
-  credits: "tohidul",
+  credits: "TOHI-BOT-HUB",
   prefix: true,
   description: "🤝 Accept or delete Facebook friend requests! 🌟",
   commandCategory: "Admin",

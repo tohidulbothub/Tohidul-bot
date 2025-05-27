@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "users",
 	version: "1.0.5",
 	permission: 2,
-	credits: "ryuko",
+	credits: "TOHI-BOT-HUB",
 	usePrefix: true,
 	description: "ban or unblock users",
 	commandCategory: "admin",

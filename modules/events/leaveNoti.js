@@ -2,7 +2,7 @@ module.exports.config = {
   name: "leave",
   eventType: ["log:unsubscribe"],
   version: "1.0.0",
-  credits: "Mirai Team & Mod by Yan Maglinte", // Added canvas
+  credits: "TOHI-BOT-HUB", // Added canvas
   description: "Notifies bots or people leaving the group",
   dependencies: {
     "fs-extra": "",
