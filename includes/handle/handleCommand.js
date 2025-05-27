@@ -85,6 +85,11 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     }
 
     if (commandName.startsWith(PREFIX)) {
+      // Skip if only prefix is sent
+      if (commandName === PREFIX) {
+        return;
+      }
+
       if (!command) {
         const allCommandName = Array.from(commands.keys());
         const checker = stringSimilarity.findBestMatch(
@@ -94,14 +99,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         if (checker.bestMatch.rating >= 0.5) {
           command = commands.get(checker.bestMatch.target);
         } else {
-          return api.sendMessage(
-            global.getText(
-              "handleCommand",
-              "commandNotExist",
-              checker.bestMatch.target,
-            ),
-            threadID,
-          );
+          return; // Simply ignore invalid commands
         }
       }
     }
