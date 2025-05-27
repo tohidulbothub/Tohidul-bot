@@ -368,7 +368,8 @@ function onBot() {
               await onLoad(eventData);
             }
             global.client.events.set(config.name, event);
-            global.loading.log(`⫸ TBH ➤ ${main(`LOADED`)} ${secondary(config.name)} success`, "EVENT");
+            global.client.eventRegistered.push(config.name);
+            logger(`LOADED ${config.name} success`, "EVENT");
           }
           catch (err) {
             global.loading.err(`${chalk.hex("#ff0000")('ERROR!')} ${secondary(ev)} failed with error: ${err.message}` + `\n`, "EVENT");
