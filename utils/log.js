@@ -1,4 +1,3 @@
-
 const chalk = require("chalk");
 const gradient = require("gradient-string");
 const con = require("./../config.json");
