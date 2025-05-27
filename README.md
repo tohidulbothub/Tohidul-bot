@@ -1,19 +1,19 @@
-# BotPack🤖<sub><sub>v1.8.0🚀</sub></sub>
+# TOHI-BOT-HUB🤖<sub><sub>v1.8.0🚀</sub></sub>
 <p align="center">
 	<a href="https://nodejs.org/dist/v16.20.0">
 		<img src="https://img.shields.io/badge/Nodejs%20Support-18.x-brightgreen.svg?style=flat-square" alt="Nodejs Support v18.x">
 	</a>
-  <img alt="Size" src="https://img.shields.io/github/repo-size/YANDEVA/BotPack.svg?style=flat-square&label=size">
-  <img alt="Version" src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=code%20version&prefix=v&query=%24.version&url=https://github.com/YANDEVA/BotPack/raw/main/package.json&style=flat-square">
-  <img alt="Visitors" src="https://visitor-badge.laobi.icu/badge?style=flat-square&page_id=YANDEVA.BotPack">
+  <img alt="Size" src="https://img.shields.io/github/repo-size/YANDEVA/TOHI-BOT-HUB.svg?style=flat-square&label=size">
+  <img alt="Version" src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=code%20version&prefix=v&query=%24.version&url=https://github.com/YANDEVA/TOHI-BOT-HUB/raw/main/package.json&style=flat-square">
+  <img alt="Visitors" src="https://visitor-badge.laobi.icu/badge?style=flat-square&page_id=YANDEVA.TOHI-BOT-HUB">
 </p>
-A Simple BotPack for starting a Messenger chatbot.
+A Simple TOHI-BOT-HUB for starting a Messenger chatbot.
 
 <img align="center" src="https://i.ibb.co/gMMvsYf/20240125-225244-0000.png"></a>
 
 ### ABOUT
 
-Hello there! Thank you for using BotPack! Join us at [ChatBot Community Ltd.](https://www.facebook.com/groups/178711334798450/?ref=share)🍪 if you wish to share and discover Mirai/BotPack commands created by other command creators!
+Hello there! Thank you for using TOHI-BOT-HUB! Join us at [ChatBot Community Ltd.](https://www.facebook.com/groups/178711334798450/?ref=share)🍪 if you wish to share and discover Mirai/TOHI-BOT-HUB commands created by other command creators!
 
 > [!NOTE]
 > - If you encounter any issues or difficulties, don't hesitate to reach out and ask for assistance here. Our team is here to help you with any problems you may face.
@@ -87,14 +87,14 @@ __=>__ Host your botfile on [render.com](https://dashboard.render.com) to make y
 
 ---
 
-- Welcome to the [BotPack](https://replit.com/@YanMaglinte/BotPack)🌀 repository. This project is an unofficial bot file from the [Mirai](https://github.com/m1raibot/miraiv2) Repository, initially developed and maintained by [Phạm Văn Diện](https://github.com/D-Jukie/Disme-Bot.git), better known as [D-Jukie](https://github.com/D-Jukie). The base file for this project is sourced from the [Disme-Bot](https://github.com/D-Jukie/Disme-Bot.git) GitHub project.
+- Welcome to the [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 repository. This project is an unofficial bot file from the [Mirai](https://github.com/m1raibot/miraiv2) Repository, initially developed and maintained by [Phạm Văn Diện](https://github.com/D-Jukie/Disme-Bot.git), better known as [D-Jukie](https://github.com/D-Jukie). The base file for this project is sourced from the [Disme-Bot](https://github.com/D-Jukie/Disme-Bot.git) GitHub project.
 
-- [BotPack](https://replit.com/@YanMaglinte/BotPack)🌀 is a modified messenger bot file by [Yan Maglinte](https://replit.com/@YanMaglinte)🇵🇭. It is a refined version of the Mirai messenger bot, with some unique enhancements. 
+- [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 is a modified messenger bot file by [TOHIDUL](https://replit.com/@YanMaglinte)🇵🇭. It is a refined version of the Mirai messenger bot, with some unique enhancements. 
 
 - A key feature is the `usePrefix` function integrated within every command. This function removes the need for prefixes, providing a more streamlined user experience. Alongside ready-made commands and free-to-edit codes, this bot file encourages users to learn and explore freely.
 <img align="center" src="https://i.imgur.com/Je8NbDn.jpg"/>
 
-- Further, [BotPack](https://replit.com/@YanMaglinte/BotPack)🌀 comes with a user-friendly feature that allows easy customization of your console design via the `theme` option in the config.json file. This makes it highly accessible, especially for beginners.
+- Further, [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 comes with a user-friendly feature that allows easy customization of your console design via the `theme` option in the config.json file. This makes it highly accessible, especially for beginners.
 <img align="center" src="https://i.imgur.com/wHD2zXv.jpg"/>
 
 <details>
@@ -128,7 +128,7 @@ Go to your `config.json` and set it in the language property:
 ```
 </details>
 
-- Embrace the world of possibilities with [BotPack](https://replit.com/@YanMaglinte/BotPack)🌀 - a facebook Messenger file designed to make your interaction with messenger bots smoother and more efficient.
+- Embrace the world of possibilities with [TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)🌀 - a facebook Messenger file designed to make your interaction with messenger bots smoother and more efficient.
 ---
 <div align="center">
       <h3>My Replit Account:
@@ -158,4 +158,4 @@ Special thanks to the following fellows for their amazing projects making this m
 _Updated on: May 3, 2025 (PST)<br>Creation Date: June 11, 2023_
 
 ---
-Copyright © 2024 Yan Maglinte (YANDEVA), Philippines.<br>
+Copyright © 2024 TOHIDUL (TOHI-BOT-HUB), Bangladesh.<br>

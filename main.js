@@ -10,7 +10,7 @@ const logger = require("./utils/log.js");
 const chalk = require("chalk");
 const pkg = require('./package.json');
 
-console.log(chalk.bold.dim(` ${pkg.name}`.toUpperCase() + `(v${pkg.version})`));
+console.log(chalk.bold.dim(` TOHI-BOT-HUB`.toUpperCase() + `(v${pkg.version})`));
 logger.log(`Getting Started!`, "STARTER");
 
 global.utils = require("./utils");
@@ -411,6 +411,6 @@ function onBot() {
 })();
 
 /* *
-This bot was created by me (CATALIZCS) and my brother SPERMLORD. Do not steal my code. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
-This file was modified by me (@YanMaglinte). Do not steal my credits. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
+This bot was created by TOHIDUL (TOHI-BOT-HUB). Do not steal my code. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
+This file was modified by TOHIDUL (@TOHI-BOT-HUB). Do not steal my credits. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
 * */
