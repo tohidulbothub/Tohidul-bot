@@ -118,23 +118,23 @@ module.exports.run = async function({ api, event, args, Users }) {
       const commandReviews = reviews[viewCommand];
       const avgRating = (commandReviews.reduce((sum, r) => sum + r.rating, 0) / commandReviews.length).toFixed(1);
       
-      let reviewText = `🌟 REVIEWS FOR: ${viewCommand.toUpperCase()} 🌟\n\n`;
-      reviewText += `📊 Average Rating: ${avgRating}/5 ⭐\n`;
-      reviewText += `📝 Total Reviews: ${commandReviews.length}\n\n`;
+      let viewText = `🌟 REVIEWS FOR: ${viewCommand.toUpperCase()} 🌟\n\n`;
+      viewText += `📊 Average Rating: ${avgRating}/5 ⭐\n`;
+      viewText += `📝 Total Reviews: ${commandReviews.length}\n\n`;
       
       commandReviews.slice(0, 5).forEach((review, index) => {
         const stars = "⭐".repeat(review.rating);
-        reviewText += `${index + 1}. ${stars} ${review.rating}/5\n`;
-        reviewText += `👤 ${review.userName}\n`;
-        reviewText += `💬 "${review.review}"\n`;
-        reviewText += `📅 ${new Date(review.date).toLocaleDateString()}\n\n`;
+        viewText += `${index + 1}. ${stars} ${review.rating}/5\n`;
+        viewText += `👤 ${review.userName}\n`;
+        viewText += `💬 "${review.review}"\n`;
+        viewText += `📅 ${new Date(review.date).toLocaleDateString()}\n\n`;
       });
       
       if (commandReviews.length > 5) {
-        reviewText += `... and ${commandReviews.length - 5} more reviews`;
+        viewText += `... and ${commandReviews.length - 5} more reviews`;
       }
       
-      return api.sendMessage(reviewText, event.threadID, event.messageID);
+      return api.sendMessage(viewText, event.threadID, event.messageID);
       
     case "stats":
       if (Object.keys(reviews).length === 0) {
