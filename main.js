@@ -298,7 +298,7 @@ function onBot() {
             if (module.handleEvent) global.client.eventRegistered.push(config.name);
             global.client.commands.set(config.name, module);
             try {
-              global.loading.log(`${main(`LOADED`)} ${secondary(config.name)} success`, "COMMAND");
+              global.loading.log(`⫸ TBH ➤ ${main(`LOADED`)} ${secondary(config.name)} success`, "COMMAND");
             } catch (err) {
               console.error("An error occurred while loading the command:", err);
             }
@@ -368,7 +368,7 @@ function onBot() {
               await onLoad(eventData);
             }
             global.client.events.set(config.name, event);
-            global.loading.log(`${main(`LOADED`)} ${secondary(config.name)} success`, "EVENT");
+            global.loading.log(`⫸ TBH ➤ ${main(`LOADED`)} ${secondary(config.name)} success`, "EVENT");
           }
           catch (err) {
             global.loading.err(`${chalk.hex("#ff0000")('ERROR!')} ${secondary(ev)} failed with error: ${err.message}` + `\n`, "EVENT");
@@ -376,7 +376,7 @@ function onBot() {
         }
       })();
     console.log(tertiary(`\n` + `──BOT START─● `));
-    global.loading.log(`${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
+    global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
     global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
     global.utils.complete({ raw });
     const listener = require('./includes/listen')({ api });
