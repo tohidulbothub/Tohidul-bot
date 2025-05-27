@@ -92,5 +92,9 @@
     },
     "logs": {
         "enable": true
-    }
+    },
+  "APPROVAL": {
+    "approvedGroups": [],
+    "pendingGroups": []
+  }
 }

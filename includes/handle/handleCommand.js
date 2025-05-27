@@ -322,5 +322,28 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       );
     }
     activeCmd = false;
+
+		const fs = require('fs');
+		const path = require('path');
+		const configPath = path.join(__dirname, '../../config.json');
+		const config = require(configPath);
+
+		if (event.isGroup && config.APPROVAL) {
+			const threadID = event.threadID;
+			const isAdmin = ADMINBOT.includes(event.senderID);
+
+			// Allow only /approve command for admins in non-approved groups
+			if (!config.APPROVAL.approvedGroups.includes(threadID) && !isAdmin) {
+				return; // Ignore all commands from non-approved groups for non-admins
+			}
+
+			// For admins, only allow /approve command in non-approved groups
+			if (!config.APPROVAL.approvedGroups.includes(threadID) && isAdmin) {
+				const commandName = event.body.trim().split(' ')[0];
+				if (commandName !== '/approve') {
+					return; // Only allow /approve command in non-approved groups
+				}
+			}
+		}
   };
 };
