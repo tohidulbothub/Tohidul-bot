@@ -104,6 +104,14 @@ function getThemeColors() {
       error = chalk.hex("#ff0000").bold;
       html = ["#00ff00", "#39ff14", "#00ff41"];
       break;
+    case "matrix":
+      main = gradient("#00ff41", "#39ff14", "#00ff00", "#10ff10", "#20ff20");
+      subcolor = gradient("#003300", "#006600", "#009900", "#00cc00", "#00ff00", "#39ff14");
+      secondary = chalk.hex("#00ff41").bold;
+      tertiary = chalk.bold.hex("#10ff10");
+      error = chalk.hex("#ff0040").bold;
+      html = ["#00ff00", "#39ff14", "#00ff41"];
+      break;
     case "purple":
       main = chalk.hex("#7a039e");
       subcolor = gradient("#243aff", "#4687f0", "#5800d4");
@@ -143,7 +151,16 @@ function getThemeColors() {
 function logger(text, type) {
   const theme = con.DESIGN.Theme.toLowerCase();
   const isHacker = theme === "hacker";
-  const prefix = isHacker ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  const isMatrix = theme === "matrix";
+  
+  let prefix;
+  if (isMatrix) {
+    prefix = getThemeColors().main(`⟨ M4TR1X ⟩ `);
+  } else if (isHacker) {
+    prefix = getThemeColors().main(`⟨ H4CK3R ⟩ `);
+  } else {
+    prefix = getThemeColors().main(`⫸ TBH ➤ `);
+  }
   
   switch (type) {
     case "warn":
@@ -158,10 +175,14 @@ function logger(text, type) {
       console.log(prefix + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
       break;
     default:
-      const typeLabel = isHacker && type === "STARTER" ? "INIT" : 
-                       isHacker && type === "COMMAND" ? "CMD" :
-                       isHacker && type === "EVENT" ? "EVT" :
-                       String(type).toUpperCase();
+      let typeLabel = String(type).toUpperCase();
+      if (isMatrix || isHacker) {
+        typeLabel = type === "STARTER" ? "INIT" : 
+                   type === "COMMAND" ? "CMD" :
+                   type === "EVENT" ? "EVT" :
+                   type === "SYSTEM" ? "SYS" :
+                   typeLabel;
+      }
       process.stderr.write(
         prefix + getThemeColors().subcolor(`[ ${typeLabel} ] `) +
           text +
@@ -175,27 +196,58 @@ module.exports.getThemeColors = getThemeColors;
 module.exports.log = logger;
 module.exports.error = (text, type) => {
   const theme = con.DESIGN.Theme.toLowerCase();
-  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  let prefix;
+  if (theme === "matrix") {
+    prefix = getThemeColors().main(`⟨ M4TR1X ⟩ `);
+  } else if (theme === "hacker") {
+    prefix = getThemeColors().main(`⟨ H4CK3R ⟩ `);
+  } else {
+    prefix = getThemeColors().main(`⫸ TBH ➤ `);
+  }
   process.stderr.write(prefix + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
 };
 module.exports.err = (text, type) => {
   const theme = con.DESIGN.Theme.toLowerCase();
-  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  let prefix;
+  if (theme === "matrix") {
+    prefix = getThemeColors().main(`⟨ M4TR1X ⟩ `);
+  } else if (theme === "hacker") {
+    prefix = getThemeColors().main(`⟨ H4CK3R ⟩ `);
+  } else {
+    prefix = getThemeColors().main(`⫸ TBH ➤ `);
+  }
   process.stderr.write(
     prefix + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
   );
 };
 module.exports.warn = (text, type) => {
   const theme = con.DESIGN.Theme.toLowerCase();
-  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  let prefix;
+  if (theme === "matrix") {
+    prefix = getThemeColors().main(`⟨ M4TR1X ⟩ `);
+  } else if (theme === "hacker") {
+    prefix = getThemeColors().main(`⟨ H4CK3R ⟩ `);
+  } else {
+    prefix = getThemeColors().main(`⫸ TBH ➤ `);
+  }
   process.stderr.write(
     prefix + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
   );
 };
 module.exports.loader = (data, option) => {
   const theme = con.DESIGN.Theme.toLowerCase();
-  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
-  const systemLabel = theme === "hacker" ? "SYS" : "SYSTEM";
+  let prefix, systemLabel;
+  
+  if (theme === "matrix") {
+    prefix = getThemeColors().main(`⟨ M4TR1X ⟩ `);
+    systemLabel = "SYS";
+  } else if (theme === "hacker") {
+    prefix = getThemeColors().main(`⟨ H4CK3R ⟩ `);
+    systemLabel = "SYS";
+  } else {
+    prefix = getThemeColors().main(`⫸ TBH ➤ `);
+    systemLabel = "SYSTEM";
+  }
   
   switch (option) {
     case "warn":
