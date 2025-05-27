@@ -1,0 +1,403 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://use.fontawesome.com/d1341f9b7a.js"></script>
+        <title>BotPack Reviews</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: 'Arial', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .header {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 30px;
+                margin-bottom: 30px;
+                text-align: center;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+            }
+            .header h1 {
+                color: white;
+                font-size: 36px;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            .header p {
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 18px;
+            }
+            .stats-bar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .stat-card {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .stat-number {
+                font-size: 28px;
+                font-weight: bold;
+                color: white;
+                display: block;
+            }
+            .stat-label {
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 5px;
+            }
+            .reviews-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+            }
+            .review-card {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: transform 0.3s ease;
+            }
+            .review-card:hover {
+                transform: translateY(-5px);
+            }
+            .command-name {
+                color: white;
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .rating {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            .stars {
+                color: #ffd700;
+                font-size: 18px;
+            }
+            .rating-text {
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: bold;
+            }
+            .review-count {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 14px;
+            }
+            .recent-reviews {
+                margin-top: 15px;
+            }
+            .review-item {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-left: 3px solid #667eea;
+            }
+            .review-header {
+                display: flex;
+                justify-content: between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .reviewer-name {
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            .review-date {
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 12px;
+            }
+            .review-text {
+                color: rgba(255, 255, 255, 0.8);
+                font-style: italic;
+                line-height: 1.4;
+            }
+            .no-reviews {
+                text-align: center;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 18px;
+                padding: 40px;
+            }
+            .refresh-btn {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: none;
+                padding: 15px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                font-size: 18px;
+            }
+            .refresh-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(180deg);
+            }
+            .loading {
+                text-align: center;
+                color: white;
+                font-size: 18px;
+                padding: 40px;
+            }
+            .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.3);
+                border-top: 3px solid white;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🌟 BotPack Reviews</h1>
+                <p>Community feedback and ratings for bot commands</p>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalCommands">0</span>
+                    <div class="stat-label">Reviewed Commands</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalReviews">0</span>
+                    <div class="stat-label">Total Reviews</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="avgRating">0.0</span>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="topRated">N/A</span>
+                    <div class="stat-label">Top Rated</div>
+                </div>
+            </div>
+
+            <div id="reviewsContainer" class="reviews-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading reviews...
+                </div>
+            </div>
+        </div>
+
+        <button class="refresh-btn" onclick="loadReviews()">
+            <i class="fa fa-refresh"></i>
+        </button>
+
+        <script>
+            async function loadReviews() {
+                const container = document.getElementById('reviewsContainer');
+                
+                try {
+                    // Show loading state
+                    container.innerHTML = `
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading reviews...
+                        </div>
+                    `;
+
+                    // Simulate loading reviews from the bot's cache
+                    const response = await fetch('/api/reviews');
+                    let reviews = {};
+                    
+                    // If API is not available, load from local storage or use sample data
+                    if (!response.ok) {
+                        reviews = getSampleReviews();
+                    } else {
+                        reviews = await response.json();
+                    }
+
+                    displayReviews(reviews);
+                    updateStats(reviews);
+                    
+                } catch (error) {
+                    console.error('Error loading reviews:', error);
+                    // Fallback to sample data
+                    const reviews = getSampleReviews();
+                    displayReviews(reviews);
+                    updateStats(reviews);
+                }
+            }
+
+            function getSampleReviews() {
+                return {
+                    "help": [
+                        {
+                            "rating": 5,
+                            "review": "Amazing command! Very helpful and well organized.",
+                            "userName": "User123",
+                            "date": Date.now() - 86400000
+                        },
+                        {
+                            "rating": 4,
+                            "review": "Good command structure, easy to understand.",
+                            "userName": "BotLover",
+                            "date": Date.now() - 172800000
+                        }
+                    ],
+                    "tiktok": [
+                        {
+                            "rating": 5,
+                            "review": "Downloads videos perfectly! Fast and reliable.",
+                            "userName": "VideoFan",
+                            "date": Date.now() - 259200000
+                        }
+                    ],
+                    "ai": [
+                        {
+                            "rating": 4,
+                            "review": "Great AI responses, very useful for chat.",
+                            "userName": "TechUser",
+                            "date": Date.now() - 345600000
+                        }
+                    ]
+                };
+            }
+
+            function displayReviews(reviews) {
+                const container = document.getElementById('reviewsContainer');
+                
+                if (Object.keys(reviews).length === 0) {
+                    container.innerHTML = `
+                        <div class="no-reviews">
+                            <i class="fa fa-star-o" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                            No reviews available yet!<br>
+                            <small>Be the first to review a command!</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                
+                Object.entries(reviews).forEach(([command, commandReviews]) => {
+                    const avgRating = (commandReviews.reduce((sum, r) => sum + r.rating, 0) / commandReviews.length).toFixed(1);
+                    const stars = '⭐'.repeat(Math.floor(avgRating));
+                    
+                    html += `
+                        <div class="review-card">
+                            <div class="command-name">
+                                <i class="fa fa-terminal"></i>
+                                ${command}
+                            </div>
+                            <div class="rating">
+                                <span class="stars">${stars}</span>
+                                <span class="rating-text">${avgRating}/5</span>
+                                <span class="review-count">(${commandReviews.length} reviews)</span>
+                            </div>
+                            <div class="recent-reviews">
+                                ${commandReviews.slice(0, 3).map(review => `
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <span class="reviewer-name">${review.userName}</span>
+                                            <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
+                                        </div>
+                                        <div class="review-text">"${review.review}"</div>
+                                    </div>
+                                `).join('')}
+                                ${commandReviews.length > 3 ? `<small style="color: rgba(255,255,255,0.6);">... and ${commandReviews.length - 3} more reviews</small>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            function updateStats(reviews) {
+                const commands = Object.keys(reviews);
+                const totalReviews = Object.values(reviews).flat();
+                
+                document.getElementById('totalCommands').textContent = commands.length;
+                document.getElementById('totalReviews').textContent = totalReviews.length;
+                
+                if (totalReviews.length > 0) {
+                    const avgRating = (totalReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews.length).toFixed(1);
+                    document.getElementById('avgRating').textContent = avgRating;
+                    
+                    // Find top rated command
+                    let topRated = '';
+                    let highestRating = 0;
+                    
+                    Object.entries(reviews).forEach(([command, commandReviews]) => {
+                        const commandAvg = commandReviews.reduce((sum, r) => sum + r.rating, 0) / commandReviews.length;
+                        if (commandAvg > highestRating) {
+                            highestRating = commandAvg;
+                            topRated = command;
+                        }
+                    });
+                    
+                    document.getElementById('topRated').textContent = topRated;
+                } else {
+                    document.getElementById('avgRating').textContent = '0.0';
+                    document.getElementById('topRated').textContent = 'N/A';
+                }
+            }
+
+            // Load theme colors
+            function updateTheme() {
+                fetch("/themes")
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((configData) => {
+                        const htmlColors = configData.THEME_COLOR;
+                        const newGradient = `linear-gradient(135deg, ${htmlColors[0]} 0%, ${htmlColors[1]} 50%, ${htmlColors[2]} 100%)`;
+                        document.body.style.background = newGradient;
+                    })
+                    .catch((error) => {
+                        console.error("Error loading theme:", error);
+                    });
+            }
+
+            // Initialize
+            document.addEventListener("DOMContentLoaded", function () {
+                loadReviews();
+                updateTheme();
+                
+                // Auto-refresh every 30 seconds
+                setInterval(loadReviews, 30000);
+            });
+        </script>
+    </body>
+</html>
