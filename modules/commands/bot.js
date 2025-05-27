@@ -277,7 +277,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
  if ((event.body.toLowerCase() == "ki") || (event.body.toLowerCase() == "Ki")) {
      return api.sendMessage("chul 😶‍🌫️", threadID);
    };
- if ((event.body.toLowerCase() == "kar") || (event_body.toLowerCase() == "Kar")) {
+ if ((event.body.toLowerCase() == "kar") || (event.body.toLowerCase() == "Kar")) {
      return api.sendMessage("tmr 😊", threadID);
    };
  if ((event.body.toLowerCase() == "amar ken hobe") || (event.body.toLowerCase() == "Amar ken hobe")) {

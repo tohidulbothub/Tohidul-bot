@@ -12,7 +12,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
             const cmd = commands.get(eventReg);
             var getText2;
 
-            if (cmd.languages && typeof cmd.languages == 'object') 
+            if (cmd && cmd.languages && typeof cmd.languages == 'object') 
                 getText2 = (...values) => {
                 const commandModule = cmd.languages || {};
                 if (!commandModule.hasOwnProperty(global.config.language)) 
@@ -38,7 +38,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
                 Obj.Currencies = Currencies 
                 Obj.getText = getText2;
                 
-                if (cmd) cmd.handleEvent(Obj);
+                if (cmd && cmd.handleEvent) cmd.handleEvent(Obj);
             } catch (error) {
                 logger.log(global.getText('handleCommandEvent', 'moduleError', cmd.config.name), 'error');
             }
