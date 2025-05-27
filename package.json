@@ -1,7 +1,7 @@
 {
-  "name": "botpack",
+  "name": "TOHI-BOT-HUB",
   "version": "1.8.0",
-  "description": "A Simple BotPack for starting a Messenger chatbot.",
+  "description": "A Simple Messenger chatbot By Tohidul.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,15 +12,15 @@
   "keywords": [
     "Facebook",
     "Messenger",
-    "SpermLord",
-    "CatalizCS",
-    "Disme-Bot",
+    "NODE.js",
+    "JVS",
+    "TOHI-BOT",
     "usePrefix",
-    "D-Jukie",
-    "Yan Maglinte"
+    "TBH",
+    "TOHIDUL"
   ],
   "license": "GPL-3.0",
-  "author": "Yan Maglinte",
+  "author": "TOHIDUL",
   "dependencies": {
     "@distube/ytdl-core": "^4.16.10",
     "aes-js": "^3.1.2",
