@@ -1,5 +1,5 @@
 
-const logger = require("../../utils/log.js").log;
+const logger = require("../../utils/log.js").default;
 
 module.exports = {
   config: {

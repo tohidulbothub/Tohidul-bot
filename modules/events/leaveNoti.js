@@ -15,7 +15,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs-extra');
 const path = require('path');
 const jimp = require("jimp");
-const logger = require("../../utils/log.js").log;
+const logger = require("../../utils/log.js").default;
 
 let backgrounds = [
   "https://i.imgur.com/MnAwD8U.jpg",

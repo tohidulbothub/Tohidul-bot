@@ -1,3 +1,4 @@
+
 const chalk = require("chalk");
 const gradient = require("gradient-string");
 const con = require("./../config.json");
@@ -139,29 +140,31 @@ function getThemeColors() {
   return { main, subcolor, error, secondary, tertiary, html };
 }
 
+function logger(text, type) {
+  switch (type) {
+    case "warn":
+      process.stderr.write(
+        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + text + "\n",
+      );
+      break;
+    case "error":
+      console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
+      break;
+    case "load":
+      console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
+      break;
+    default:
+      process.stderr.write(
+        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
+          text +
+          "\n",
+      );
+  }
+}
+
 module.exports = {
   getThemeColors,
-  log: (text, type) => {
-    switch (type) {
-      case "warn":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + text + "\n",
-        );
-        break;
-      case "error":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
-        break;
-      case "load":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
-        break;
-      default:
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-            text +
-            "\n",
-        );
-    }
-  },
+  log: logger,
   error: (text, type) => {
     process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
   },
@@ -194,3 +197,6 @@ module.exports = {
     }
   },
 };
+
+// Export logger as default function for direct usage
+module.exports.default = logger;
