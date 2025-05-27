@@ -97,12 +97,12 @@ function getThemeColors() {
       html = ["#076889", "#0798C7", "#95d0de"];
       break;
     case "hacker":
-      main = chalk.hex("#4be813");
-      subcolor = gradient("#47a127", "#0eed19", "#27f231");
-      secondary = chalk.hex("#22f013");
-      tertiary = chalk.bold.hex("#0eed19");
-      error = chalk.hex("#4be813");
-      html = ["#049504", "#0eed19", "#01D101"];
+      main = gradient("#00ff00", "#39ff14", "#00ff41");
+      subcolor = gradient("#008f11", "#00ff00", "#39ff14", "#00ff41");
+      secondary = chalk.hex("#00ff00").bold;
+      tertiary = chalk.bold.hex("#39ff14");
+      error = chalk.hex("#ff0000").bold;
+      html = ["#00ff00", "#39ff14", "#00ff41"];
       break;
     case "purple":
       main = chalk.hex("#7a039e");
@@ -141,21 +141,29 @@ function getThemeColors() {
 }
 
 function logger(text, type) {
+  const theme = con.DESIGN.Theme.toLowerCase();
+  const isHacker = theme === "hacker";
+  const prefix = isHacker ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  
   switch (type) {
     case "warn":
       process.stderr.write(
-        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + text + "\n",
+        prefix + getThemeColors().error(`[ ERROR ] `) + text + "\n",
       );
       break;
     case "error":
-      console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
+      console.log(prefix + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
       break;
     case "load":
-      console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
+      console.log(prefix + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
       break;
     default:
+      const typeLabel = isHacker && type === "STARTER" ? "INIT" : 
+                       isHacker && type === "COMMAND" ? "CMD" :
+                       isHacker && type === "EVENT" ? "EVT" :
+                       String(type).toUpperCase();
       process.stderr.write(
-        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
+        prefix + getThemeColors().subcolor(`[ ${typeLabel} ] `) +
           text +
           "\n",
       );
@@ -166,33 +174,43 @@ module.exports = logger;
 module.exports.getThemeColors = getThemeColors;
 module.exports.log = logger;
 module.exports.error = (text, type) => {
-  process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
+  const theme = con.DESIGN.Theme.toLowerCase();
+  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  process.stderr.write(prefix + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
 };
 module.exports.err = (text, type) => {
+  const theme = con.DESIGN.Theme.toLowerCase();
+  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
   process.stderr.write(
-    getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+    prefix + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
   );
 };
 module.exports.warn = (text, type) => {
+  const theme = con.DESIGN.Theme.toLowerCase();
+  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
   process.stderr.write(
-    getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+    prefix + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
   );
 };
 module.exports.loader = (data, option) => {
+  const theme = con.DESIGN.Theme.toLowerCase();
+  const prefix = theme === "hacker" ? getThemeColors().main(`⟨ H4CK3R ⟩ `) : getThemeColors().main(`⫸ TBH ➤ `);
+  const systemLabel = theme === "hacker" ? "SYS" : "SYSTEM";
+  
   switch (option) {
     case "warn":
       process.stderr.write(
-        getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`),
+        prefix + getThemeColors().subcolor(`[ ${systemLabel} ]`),
         data + "\n",
       );
       break;
     case "error":
       process.stderr.write(
-        getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data + "\n",
+        prefix + chalk.hex("#ff0000")(`[ ${systemLabel} ] `) + data + "\n",
       );
       break;
     default:
-      console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
+      console.log(prefix + getThemeColors().subcolor(`[ ${systemLabel} ]`), data);
       break;
   }
 };

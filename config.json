@@ -28,7 +28,7 @@
     ],
     "DESIGN": {
         "Title": "TOHI-BOT-HUB",
-        "Theme": "Blue",
+        "Theme": "hacker",
         "Admin": "TOHI-BOT",
         "Setup": {
             "Info": "Design your own custom terminal Titlebar for the title and must contain no numbers",
