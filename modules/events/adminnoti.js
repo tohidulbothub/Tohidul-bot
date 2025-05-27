@@ -123,6 +123,6 @@ module.exports.run = async function({ event, api, Threads, Users }) {
 
     await setData(threadID, { threadInfo: dataThread });
   } catch (error) {
-    console.log(error);
-  }
+        log(error, "ERROR");
+    }
 };
