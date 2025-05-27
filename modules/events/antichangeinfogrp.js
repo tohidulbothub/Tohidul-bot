@@ -1,3 +1,5 @@
+const logger = require("../../utils/log.js");
+
 module.exports.config = {
   name: "antichange",
   eventType: ["log:subscribe", "log:thread-name", "log:thread-image"],

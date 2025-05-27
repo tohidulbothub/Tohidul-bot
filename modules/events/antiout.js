@@ -1,3 +1,5 @@
+const logger = require("../../utils/log.js");
+
 module.exports.config = {
  name: "antiout",
  eventType: ["log:unsubscribe"],
