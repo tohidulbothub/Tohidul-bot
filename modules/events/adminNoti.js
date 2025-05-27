@@ -23,6 +23,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ event, api, Threads, Users }) {
+  const logger = require("../../utils/log.js");
   const { author, threadID, logMessageType, logMessageData, logMessageBody } = event;
   const { setData, getData } = Threads;
   const fs = require("fs");

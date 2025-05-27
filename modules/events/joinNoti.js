@@ -27,6 +27,7 @@ module.exports.circle = async (image) => {
 let suffix;
 
 module.exports.run = async function({ api, event, Users }) {
+  const logger = require("../../utils/log.js");
   var fullYear = global.client.getTime("fullYear");
   var getHours = await global.client.getTime("hours");
   var session = `${getHours < 3 ? "midnight" : getHours < 8 ? "Early morning" : getHours < 12 ? "noon" : getHours < 17 ? "afternoon" : getHours < 23 ? "evening" : "midnight"}`

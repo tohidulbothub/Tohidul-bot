@@ -23,6 +23,7 @@ let backgrounds = [
 let fontlink = 'https://drive.google.com/u/0/uc?id=1ZwFqYB-x6S9MjPfYm3t3SP1joohGl4iw&export=download';
 
 module.exports.run = async function({ api, event, Users, Threads }) {
+  const logger = require("../../utils/log.js");
   const leftParticipantFbId = event.logMessageData.leftParticipantFbId;
   const name = global.data.userName.get(leftParticipantFbId) || await Users.getNameUser(leftParticipantFbId);
   const type = (event.author == leftParticipantFbId) ? "left by itself" : "been kicked by the administrator";
