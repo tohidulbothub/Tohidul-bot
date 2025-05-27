@@ -1,10 +1,14 @@
 "use strict";
 
 const utils = require("./utils");
+const cheerio = require("cheerio");
+const { randomBytes, createHash } = require("crypto");
+const logger = require("../../utils/log.js");
+const { getThemeColors } = require("../../utils/log.js");
+const { main, subcolor, error } = getThemeColors();
 const fs = require("fs");
 const cron = require("node-cron");
-const { getThemeColors, loader } = require('../../utils/log');
-const { main, subcolor, error } = getThemeColors();
+const { loader } = require('../../utils/log');
 
 let globalOptions = {};
 let ctx = null;
@@ -442,7 +446,7 @@ async function loginHelper(appState, custom = {}, callback) {
         noRef: true,
       })
       .then(utils.saveCookies(jar));
-    console.log(subcolor("[ DATABASE ]"), (main("[ CONNECT ]")), 'Done logging in.');
+    logger.log(`${main(`[ CONNECT ]`)} Done logging in.`, "DATABASE");
   } else {
     return console.log(subcolor("[ DATABASE ]"), (error("[ CONNECT ]")), 'Please provide an appstate.');
   }
@@ -488,7 +492,7 @@ async function loginHelper(appState, custom = {}, callback) {
       api.listen = api.listenMqtt;
       api.reconnect = { ...custom };
 
-      console.log(subcolor("[ DATABASE ]"), (main("[ CONNECT ]")), `Account's message region: ${region}`);
+      logger.log(`${main(`[ CONNECT ]`)} Account's message region: ` + (region || "Not found"), "DATABASE");
       return res;
     });
   if (globalOptions.pageID) {
@@ -528,7 +532,7 @@ async function loginHelper(appState, custom = {}, callback) {
       if (detectLocked) throw detectLocked;
       const detectSuspension = await checkIfSuspended(res, appState);
       if (detectSuspension) throw detectSuspension;
-      console.log(subcolor("[ DATABASE ]"), (main("[ CONNECT ]")), 'Done logging in.');
+      logger.log(`${main(`[ CONNECT ]`)} Done logging in.`, "DATABASE");
       return callback(null, api);
     })
     .catch((e) => {

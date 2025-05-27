@@ -74,7 +74,7 @@ module.exports = function ({ api }) {
   })();
 
   global.loading.log(
-    `${main(`[ BOT_INFO ]`)} success!\n${subcolor(`[ LOADED ] `)}${main(`[ NAME ]:`)} ${!global.config.BOTNAME ? "Bot Messenger" : global.config.BOTNAME} \n${subcolor(`[ LOADED ] `)}${main(`[ BotID ]: `)}${api.getCurrentUserID()}\n${subcolor(`[ LOADED ] `)}${main(`[ PREFIX ]:`)} ${global.config.PREFIX}`,
+    `${main(`[ BOT_INFO ]`)} success!\n${main(`[ NAME ]:`)} ${!global.config.BOTNAME ? "Bot Messenger" : global.config.BOTNAME} \n${main(`[ BotID ]: `)}${api.getCurrentUserID()}\n${main(`[ PREFIX ]:`)} ${global.config.PREFIX}`,
     "LOADED",
   );
 
