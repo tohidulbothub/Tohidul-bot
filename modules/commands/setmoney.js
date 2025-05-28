@@ -69,7 +69,4 @@ module.exports.run = async function ({ api, event, args, Currencies, getText }) 
 		// Invalid usage
 		return api.sendMessage(getText("setUsage"), threadID, messageID);
 	}
-};argetID
-		}]
-	}, threadID, messageID);
 };
