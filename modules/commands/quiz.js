@@ -123,14 +123,16 @@ module.exports = {
             exp: userData.exp + rewardExp,
             data: userData.data,
           });
+          const threadData = await global.data.threadData.get(event.threadID) || {};
+          const prefix = threadData.PREFIX || global.config.PREFIX;
           let correctMsg =
 `🎉 অভিনন্দন, ${nameUser}! 🌟
 ✅ একদম ঠিক উত্তর! তুমি কুইজ চ্যাম্পিয়ন! 🏆
 
-💰 পুরস্কার: ${rewardCoins} কয়েন
+💰 পুরস্কার: ${rewardCoins} কয়েন
 ⚡ অভিজ্ঞতা: ${rewardExp} XP
 
-নতুন কুইজের জন্য: {prefix}quiz
+নতুন কুইজের জন্য: ${prefix}quiz
 `;
           api.sendMessage(correctMsg, event.threadID, event.messageID);
         } else {
