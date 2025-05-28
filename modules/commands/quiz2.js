@@ -1,10 +1,15 @@
 const axios = require("axios");
 
 const baseApiUrl = async () => {
-  const base = await axios.get(
-    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
-  );
-  return base.data.api;
+  try {
+    const base = await axios.get(
+      `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
+    );
+    return base.data.api;
+  } catch (error) {
+    // Fallback API URL
+    return "https://smfahim.onrender.com";
+  }
 };
 
 module.exports = {
@@ -32,7 +37,7 @@ module.exports = {
 
     try {
       const response = await axios.get(
-        `${await baseApiUrl()}/quiz?category=${category}&q=random`,
+        `${await baseApiUrl()}/quiz2?category=${category}&q=random`,
       );
 
       const quizData = response.data.question;
