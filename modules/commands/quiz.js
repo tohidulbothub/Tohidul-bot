@@ -18,7 +18,7 @@ module.exports = {
     usePrefix: true,
     prefix: true,
     commandCategory: "game",
-    usages: "{p}quiz2 \n{pn}quiz2 bn \n{p}quiz2 en",
+    usages: "{p}quiz \n{pn}quiz bn \n{p}quiz en",
   },
 
   run: async function ({ api, event, args }) {
@@ -32,7 +32,7 @@ module.exports = {
     } 
     try {
       const response = await axios.get(
-        `${await baseApiUrl()}/quiz2?category=${category}&q=random`,
+        `${await baseApiUrl()}/quiz?category=${category}&q=random`,
       );
 
       const quizData = response.data.question;
@@ -91,32 +91,19 @@ const { correctAnswer, nameUser, author } = handleReply;
         if (userReply === correctAnswer.toLowerCase()) {
           api.unsendMessage(handleReply.messageID)
           .catch(console.error);
-          
-          // Variable reward based on attempts and category
-          let baseReward = 200;
-          let bonusMultiplier = handleReply.attempts === 0 ? 1.5 : 1.2; // Bonus for first try
-          let categoryBonus = category === "english" ? 50 : 0; // Bonus for English questions
-          
-          let rewardCoins = Math.floor(baseReward * bonusMultiplier) + categoryBonus;
-          let rewardExp = Math.floor(100 * bonusMultiplier);
-          
-          let userData = await Users.getData(author);
-          await Users.setData(author, {
-            money: userData.money + rewardCoins,
+          let rewardCoins = 300;
+          let rewardExp = 100;
+          let userData = await Users.get(author);
+          await Users.set(author, {
+          money: userData.money + rewardCoins,
             exp: userData.exp + rewardExp,
             data: userData.data,
           });
-          
-          let attemptBonus = handleReply.attempts === 0 ? " (First Try Bonus!)" : "";
-          let correctMsg = `🎉 Congratulations, ${nameUser}! 🌟\n\n🏆 Quiz Champion!\n💰 Money Earned: ${rewardCoins}$${attemptBonus}\n⭐ Experience: +${rewardExp} EXP\n\n🚀 Keep up the great work!`;
+          let correctMsg = `Congratulations, ${nameUser}! 🌟🎉\n\nYou're a Quiz Champion! 🏆\n\nKeep up the great work! 🚀`;
           api.sendMessage(correctMsg, event.threadID, event.messageID);
         } else {
           handleReply.attempts += 1;
-          // Update the existing handleReply object in the array
-          const index = global.client.handleReply.findIndex(item => item.messageID === handleReply.messageID);
-          if (index !== -1) {
-            global.client.handleReply[index] = handleReply;
-          }
+global.client.handleReply.push(handleReply.messageID, handleReply);
           api.sendMessage(
             `❌ | Wrong Answer. You have ${maxAttempts - handleReply.attempts} attempts left.\n✅ | Try Again!`,
             event.threadID,
