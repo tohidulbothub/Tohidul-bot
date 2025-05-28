@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
     <head>
@@ -143,12 +142,12 @@
         <div class="dashboard-container">
             <div class="logo">🤖 TOHI-BOT-HUB</div>
             <div class="subtitle">Advanced Messenger Bot Dashboard</div>
-            
+
             <div class="status-indicator">
                 <div class="status-dot"></div>
                 Bot Online & Running
             </div>
-            
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <span class="stat-number" id="commands">181</span>
@@ -167,7 +166,7 @@
                     <div class="stat-label">Active Users</div>
                 </div>
             </div>
-            
+
             <div class="action-buttons">
                 <button class="btn" onclick="refreshStats()">
                     <i class="fa fa-refresh"></i> Refresh
@@ -179,7 +178,7 @@
                     <i class="fa fa-palette"></i> Theme
                 </button>
             </div>
-            
+
             <div class="footer">
                 © 2024 TOHI-BOT-HUB v1.8.0 - Created by TOHIDUL
             </div>
@@ -190,7 +189,7 @@
             function createParticles() {
                 const particlesContainer = document.getElementById('particles');
                 const particleCount = 20;
-                
+
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'particle';
@@ -202,23 +201,40 @@
                 }
             }
 
-            // Fetch and update theme colors
+            // Load theme from external file
             function updateTheme() {
-                fetch("/themes")
-                    .then((response) => {
+                fetch('/static/html.json')
+                    .then(response => {
                         if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
+                            throw new Error(`HTTP error! status: ${response.status}`);
                         }
                         return response.json();
                     })
-                    .then((configData) => {
-                        const htmlColors = configData.THEME_COLOR;
-                        const newGradient = `linear-gradient(135deg, ${htmlColors[0]} 0%, ${htmlColors[1]} 50%, ${htmlColors[2]} 100%)`;
-                        document.body.style.background = newGradient;
+                    .then(theme => {
+                        if (theme && theme.THEME_COLOR) {
+                            const color = Array.isArray(theme.THEME_COLOR) ? theme.THEME_COLOR[0] : theme.THEME_COLOR;
+                            const root = document.documentElement;
+                            root.style.setProperty('--primary-color', color);
+                            root.style.setProperty('--secondary-color', theme.secondary || '#008f11');
+                            root.style.setProperty('--accent-color', theme.accent || color);
+                            console.log('Theme loaded successfully:', color);
+                        } else {
+                            // Use default theme if no valid theme data
+                            setDefaultTheme();
+                        }
                     })
                     .catch((error) => {
-                        console.error("Error loading theme:", error);
+                        console.warn("Could not load theme, using default:", error.message);
+                        setDefaultTheme();
                     });
+            }
+
+            // Set default theme colors
+            function setDefaultTheme() {
+                const root = document.documentElement;
+                root.style.setProperty('--primary-color', '#00ff41');
+                root.style.setProperty('--secondary-color', '#008f11');
+                root.style.setProperty('--accent-color', '#00ff41');
             }
 
             // Refresh statistics
@@ -250,10 +266,10 @@
             document.addEventListener("DOMContentLoaded", function () {
                 createParticles();
                 updateTheme();
-                
+
                 // Add smooth transitions
                 document.body.style.transition = 'background 0.5s ease';
-                
+
                 // Update uptime every minute
                 setInterval(() => {
                     // You can implement actual uptime tracking here
