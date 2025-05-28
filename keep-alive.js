@@ -8,13 +8,13 @@ app.get('/', (req, res) => {
   res.send('Bot is alive!');
 });
 
-const server = app.listen(3001, () => {
-  console.log('Keep-alive server running on port 3001');
+const server = app.listen(2007, '0.0.0.0', () => {
+  console.log('Keep-alive server running on port 2007');
 });
 
 // Self-ping every 5 minutes to prevent sleeping
 setInterval(() => {
-  http.get('http://localhost:3001', (res) => {
+  http.get('http://localhost:2007', (res) => {
     console.log('Keep-alive ping successful');
   }).on('error', (err) => {
     console.log('Keep-alive ping failed:', err.message);
