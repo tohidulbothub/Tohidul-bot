@@ -212,6 +212,7 @@
                     })
                     .then(theme => {
                         if (theme && theme.THEME_COLOR) {
+                            // Handle both array and single color formats
                             const color = Array.isArray(theme.THEME_COLOR) ? theme.THEME_COLOR[0] : theme.THEME_COLOR;
                             const root = document.documentElement;
                             root.style.setProperty('--primary-color', color);
@@ -219,7 +220,7 @@
                             root.style.setProperty('--accent-color', theme.accent || color);
                             console.log('Theme loaded successfully:', color);
                         } else {
-                            // Use default theme if no valid theme data
+                            console.warn('No valid theme data found, using default');
                             setDefaultTheme();
                         }
                     })
