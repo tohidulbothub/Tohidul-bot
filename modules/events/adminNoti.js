@@ -48,24 +48,34 @@ module.exports.run = async function({ api, event, Users }) {
 
     // If bot is added to group
     if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-      let gifUrl = 'https://i.imgur.com/4HMupHz.gif';
+      let msg = `✨ হ্যালো সবাই! আমি 🤖 ${global.config.BOTNAME || "BOT"}\n\n✅ ${threadName} গ্রুপে কানেক্টেড!\n\n🔸 মোট কমান্ড: ${commands.size}\n🔸 Prefix: ${global.config.PREFIX}\n🔸 ভার্সন: ${global.config.version}\n🔸 এডমিন: ${ADMIN}\n🔸 ফেসবুক: ${FB_LINK}\n🔸 ${PRFX}help লিখে কমান্ড দেখুন\n🕓 যুক্ত হইল: ${time} (${thu})\n\n🚩 Made by TOHIDUL`;
+      
+      // Try to download GIF with better error handling
       let gifPath = __dirname + '/cache/join/join.gif';
+      let attachment = null;
       
       try {
-        const response = await apiCallWithRetry(gifUrl, { responseType: 'arraybuffer' });
-        fs.writeFileSync(gifPath, response.data);
+        // Check if GIF already exists to avoid repeated downloads
+        if (!fs.existsSync(gifPath)) {
+          let gifUrl = 'https://i.imgur.com/4HMupHz.gif';
+          console.log('Downloading welcome GIF...');
+          const response = await apiCallWithRetry(gifUrl, { responseType: 'arraybuffer' }, 3);
+          fs.writeFileSync(gifPath, response.data);
+          console.log('Welcome GIF downloaded successfully');
+        }
         
-        let msg = `✨ হ্যালো সবাই! আমি 🤖 ${global.config.BOTNAME || "BOT"}\n\n✅ ${threadName} গ্রুপে কানেক্টেড!\n\n🔸 মোট কমান্ড: ${commands.size}\n🔸 Prefix: ${global.config.PREFIX}\n🔸 ভার্সন: ${global.config.version}\n🔸 এডমিন: ${ADMIN}\n🔸 ফেসবুক: ${FB_LINK}\n🔸 ${PRFX}help লিখে কমান্ড দেখুন\n🕓 যুক্ত হইল: ${time} (${thu})\n\n🚩 Made by TOHIDUL`;
-        
-        return api.sendMessage({ 
-          body: msg, 
-          attachment: fs.existsSync(gifPath) ? fs.createReadStream(gifPath) : null 
-        }, threadID);
+        if (fs.existsSync(gifPath)) {
+          attachment = fs.createReadStream(gifPath);
+        }
       } catch (error) {
-        console.error('AdminNoti GIF Error:', error);
-        let msg = `✨ হ্যালো সবাই! আমি 🤖 ${global.config.BOTNAME || "BOT"}\n\n✅ ${threadName} গ্রুপে কানেক্টেড!\n\n🔸 মোট কমান্ড: ${commands.size}\n🔸 Prefix: ${global.config.PREFIX}\n🔸 ভার্সন: ${global.config.version}\n🔸 এডমিন: ${ADMIN}\n🔸 ফেসবুক: ${FB_LINK}\n🔸 ${PRFX}help লিখে কমান্ড দেখুন\n🕓 যুক্ত হইল: ${time} (${thu})\n\n🚩 Made by TOHIDUL`;
-        return api.sendMessage(msg, threadID);
+        console.log('Could not download welcome GIF, proceeding without it:', error.message);
+        // Continue without attachment
       }
+      
+      return api.sendMessage({ 
+        body: msg, 
+        attachment: attachment 
+      }, threadID);
     }
 
     // New user(s) added to group
@@ -73,10 +83,10 @@ module.exports.run = async function({ api, event, Users }) {
       // Font check/download
       if (!fs.existsSync(__dirname + `/cache/font/Semi.ttf`)) {
         try {
-          let getfont = await apiCallWithRetry(fontlink, { responseType: "arraybuffer" });
+          let getfont = await apiCallWithRetry(fontlink, { responseType: "arraybuffer" }, 3);
           fs.writeFileSync(__dirname + `/cache/font/Semi.ttf`, Buffer.from(getfont.data, "utf-8"));
         } catch (fontError) {
-          console.error('Font download error:', fontError);
+          console.error('Font download error:', fontError.message);
         }
       }
 
@@ -101,7 +111,8 @@ module.exports.run = async function({ api, event, Users }) {
           
           let avtAnime = await apiCallWithRetry(
             `https://graph.facebook.com/${event.logMessageData.addedParticipants[o].userFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
-            { responseType: "arraybuffer" }
+            { responseType: "arraybuffer" },
+            3
           );
           
           let backgrounds = [
@@ -114,7 +125,8 @@ module.exports.run = async function({ api, event, Users }) {
           
           let background = await apiCallWithRetry(
             backgrounds[Math.floor(Math.random() * backgrounds.length)], 
-            { responseType: "arraybuffer" }
+            { responseType: "arraybuffer" },
+            3
           );
           
           fs.writeFileSync(pathAva, Buffer.from(avtAnime.data, "utf-8"));
