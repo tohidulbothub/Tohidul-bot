@@ -1,93 +1,123 @@
 const axios = require("axios");
+
 const baseApiUrl = async () => {
-    const base = await axios.get(
-        "https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json"
-    );
-    return base.data.api;
+  const base = await axios.get(
+    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
+  );
+  return base.data.api;
 };
 
-module.exports.config = {
+module.exports = {
+  config: {
     name: "quiz",
     version: "1.0",
-    credits: "Mesbah Bb'e",
-    cooldowns: 5,
-    hasPermission: 0,
-    description: "quiz",
-    commandCategory: "MEDIA",
-    category: "MEDIA",
+    credits: "Dipto",
+    cooldowns: 0,
+    hasPermssion: 0,
+    commandCategory: "game",
     usePrefix: true,
     prefix: true,
-    usages: "/quiz",
-};
+    commandCategory: "game",
+    usages: "{p}quiz2 \n{pn}quiz2 bn \n{p}quiz2 en",
+  },
 
-module.exports.run = async function ({ api, event }) {
-    const { threadID: t, messageID: m } = event;
+  run: async function ({ api, event, args }) {
+    const input = args.join('').toLowerCase() || "bn";
+    let timeout = 300;
+    let category = "bangla";
+    if (input === "bn" || input === "bangla") {
+      category = "bangla";
+    } else if (input === "en" || input === "english") {
+      category = "english";
+    } 
     try {
-        const response = await axios.get(`${await baseApiUrl()}/quiz?category=general&q=random`);
-        const imageStream = await axios({
-            method: "GET",
-            url: response.data.link,
-            responseType: 'stream'
-        });
+      const response = await axios.get(
+        `${await baseApiUrl()}/quiz?category=${category}&q=random`,
+      );
 
-        api.sendMessage({
-            body: "Please reply to this photo with your answer:",
-            attachment: imageStream.data
-        }, t, (error, info) => {
-            global.client.handleReply.push(info.messageID, {
-                commandName: this.config.name,
-                author: event.senderID,
-                messageID: info.messageID,
-                correctAnswer: response.data.quiz,
-                rewardAmount: 200
-            });
-            setTimeout(async () => {
-                await api.unsendMessage(info.messageID);
-            }, 30000);
-        },m);
+      const quizData = response.data.question;
+      const { question, correctAnswer, options } = quizData;
+      const { a, b, c, d } = options;
+      let uid = event.senderID;
+      const namePlayerReact = (await api.getUserInfo(uid))[uid].name;
+      const quizMsg = {
+        body: `\n╭──✦ ${question}\n├‣ 𝗔) ${a}\n├‣ 𝗕) ${b}\n├‣ 𝗖) ${c}\n├‣ 𝗗) ${d}\n╰──────────────────‣\n𝚁𝚎𝚙𝚕𝚢 𝚝𝚘 𝚝𝚑𝚒𝚜 𝚖𝚎𝚜𝚜𝚊𝚐𝚎 𝚠𝚒𝚝𝚑 𝚢𝚘𝚞𝚛 𝚊𝚗𝚜𝚠𝚎𝚛.`,
+      };
 
+      api.sendMessage(
+        quizMsg,
+        event.threadID,
+        (error, info) => {
+          global.client.handleReply.push({
+            type: "reply",
+            name: this.config.name,
+            author: event.senderID,
+            messageID: info.messageID,
+            dataGame: quizData,
+            correctAnswer,
+            nameUser: namePlayerReact,
+            attempts: 0
+          });
+          setTimeout(() => {
+            api.unsendMessage(info.messageID);
+          }, timeout * 1000);
+        },
+        event.messageID,
+      );
     } catch (error) {
-        console.error(error);
-        api.sendMessage(`Error: ${error.message}`, t);
+      console.log("❌ | Error occurred:", error);
+      api.sendMessage(error.message, event.threadID, event.messageID);
     }
-};
+  },
 
-module.exports.handleReply = async function ({ api, Users, handleReply, args, event }) {
-    const { threadID: t, senderID: s, messageID: m } = event;
-    const { author, correctAnswer, messageID, rewardAmount } = handleReply;
-    if (s !== author) return;
+  handleReply: async ({ event, api, handleReply, Users }) => {
+const { correctAnswer, nameUser, author } = handleReply;
+    if (event.senderID !== author)
+      return api.sendMessage(
+        "Who are you bby🐸🦎",
+        event.threadID,
+        event.messageID
+      );
+    const maxAttempts = 2;
 
-    try {
-        const userAnswer = args.join(" ").trim();
-        const isCorrect = (userAnswer.toLowerCase() === correctAnswer.toLowerCase());
-        const userData = await Users.getData(s);
-        const name = (await api.getUserInfo(s))[s].name;
-
-        if (isCorrect) {
-           await api.unsendMessage(messageID);
-            await Users.setData(s, {
-                money: userData.money + 200,
-                exp: userData.exp + 100,
-                data: userData.data,
-            });
-            await api.sendMessage({
-                body: `Correct answer, ${name}! You earned 200$.`,
-                mentions: [{ tag: name, id: s }]
-            }, t, m);
-        } else {
-            await api.unsendMessage(messageID);
-           global.client.handleReply.pop(messageID);
-            await Users.setData(s, {
-                money: userData.money - 5,
-                exp: userData.exp,
-                data: userData.data,
-            });
-            await api.sendMessage({
-                body: "Incorrect answer, try again.",
-            }, t, m);
+    switch (handleReply.type) {
+      case "reply": {
+        let userReply = event.body.toLowerCase();
+        if (handleReply.attempts >= maxAttempts) {
+          await api.unsendMessage(handleReply.messageID);
+          const incorrectMsg = `🚫 | ${nameUser}, you have reached the maximum number of attempts (2).\nThe correct answer is: ${correctAnswer}`;
+          return api.sendMessage(incorrectMsg, event.threadID, event.messageID);
         }
-    } catch (error) {
-        console.error(error);
-        api.sendMessage(`Error: ${error.message}`, t);
+        if (userReply === correctAnswer.toLowerCase()) {
+          api.unsendMessage(handleReply.messageID)
+          .catch(console.error);
+          let rewardCoins = 200;
+          let rewardExp = 100;
+          let userData = await Users.getData(author);
+          await Users.setData(author, {
+            money: userData.money + rewardCoins,
+            exp: userData.exp + rewardExp,
+            data: userData.data,
+          });
+          let correctMsg = `Congratulations, ${nameUser}! 🌟🎉\n\nYou're a Quiz Champion! 🏆\n\nKeep up the great work! 🚀`;
+          api.sendMessage(correctMsg, event.threadID, event.messageID);
+        } else {
+          handleReply.attempts += 1;
+          // Update the existing handleReply object in the array
+          const index = global.client.handleReply.findIndex(item => item.messageID === handleReply.messageID);
+          if (index !== -1) {
+            global.client.handleReply[index] = handleReply;
+          }
+          api.sendMessage(
+            `❌ | Wrong Answer. You have ${maxAttempts - handleReply.attempts} attempts left.\n✅ | Try Again!`,
+            event.threadID,
+            event.messageID,
+          );
+        }
+        break;
+      }
+      default:
+        break;
     }
+  },
 };
