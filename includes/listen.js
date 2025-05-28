@@ -159,6 +159,62 @@ module.exports = function ({ api }) {
     const listenObj = {
       event,
     };
+
+    // Check approval system before processing any events
+    const configPath = require('path').join(__dirname, '../config.json');
+    let config;
+    try {
+      delete require.cache[require.resolve(configPath)];
+      config = require(configPath);
+    } catch (error) {
+      console.error('Error loading config:', error);
+      config = {};
+    }
+
+    // Initialize APPROVAL system if not exists
+    if (!config.APPROVAL) {
+      config.APPROVAL = {
+        approvedGroups: [],
+        pendingGroups: [],
+        rejectedGroups: []
+      };
+      require('fs').writeFileSync(configPath, JSON.stringify(config, null, 2));
+    }
+
+    const isAdmin = global.config.ADMINBOT && global.config.ADMINBOT.includes(event.senderID);
+    const threadID = String(event.threadID);
+
+    // Check if group is approved for commands (except for admins and approval commands)
+    if (event.isGroup && config.APPROVAL) {
+      const isApproved = config.APPROVAL.approvedGroups.includes(threadID);
+      const isPending = config.APPROVAL.pendingGroups.includes(threadID);
+      const isRejected = config.APPROVAL.rejectedGroups && config.APPROVAL.rejectedGroups.includes(threadID);
+
+      // If group is rejected, no commands work at all
+      if (isRejected) {
+        return;
+      }
+
+      // If group is not approved and not pending, check if it should be added to pending
+      if (!isApproved && !isPending) {
+        // This will be handled by pendingApproval.js event
+      }
+
+      // If group is pending (not approved), block all commands except admin approval commands
+      if (!isApproved) {
+        if (event.type === "message" || event.type === "message_reply") {
+          const commandName = (event.body || '').trim().split(' ')[0].toLowerCase();
+          
+          // Allow only admin approval commands in pending groups
+          if (!isAdmin || (commandName !== '/approve' && commandName !== '/reject' && commandName !== '/pending' && commandName !== '/approved')) {
+            return; // Block all other commands in non-approved groups
+          }
+        } else {
+          // Allow events like join/leave to be processed for admin notifications
+        }
+      }
+    }
+
     switch (event.type) {
       case "message":
       case "message_reply":
