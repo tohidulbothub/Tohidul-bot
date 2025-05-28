@@ -10,6 +10,42 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       return;
     }
 
+    // Check approval system before executing any command
+    const fs = require('fs');
+    const path = require('path');
+    const configPath = path.join(__dirname, '../../config.json');
+    
+    try {
+      delete require.cache[require.resolve(configPath)];
+      const config = require(configPath);
+
+      if (event.isGroup && config.APPROVAL) {
+        const threadID = event.threadID;
+        const isAdmin = global.config.ADMINBOT.includes(event.senderID);
+
+        // Initialize APPROVAL object if it doesn't exist
+        if (!config.APPROVAL.approvedGroups) {
+          config.APPROVAL.approvedGroups = [];
+          fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+        }
+
+        // If group is not approved, block all commands except /approve for admins
+        if (!config.APPROVAL.approvedGroups.includes(threadID)) {
+          if (!isAdmin) {
+            return; // Non-admins can't use any commands in non-approved groups
+          }
+          
+          // For admins, only allow /approve command in non-approved groups
+          const commandName = (event.body || '').trim().split(' ')[0];
+          if (commandName !== '/approve') {
+            return; // Only allow /approve command for admins in non-approved groups
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Error checking approval system:", error);
+    }
+
     const dateNow = Date.now();
     const time = moment.tz("Asia/Manila").format("HH:MM:ss DD/MM/YYYY");
     const { allowInbox, PREFIX, ADMINBOT, DeveloperMode, adminOnly } = global.config;
@@ -320,41 +356,5 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       );
     }
     activeCmd = false;
-
-		// Check approval system before executing any command
-		const fs = require('fs');
-		const path = require('path');
-		const configPath = path.join(__dirname, '../../config.json');
-		
-		try {
-			delete require.cache[require.resolve(configPath)];
-			const config = require(configPath);
-
-			if (event.isGroup && config.APPROVAL) {
-				const threadID = event.threadID;
-				const isAdmin = ADMINBOT.includes(event.senderID);
-
-				// Initialize APPROVAL object if it doesn't exist
-				if (!config.APPROVAL.approvedGroups) {
-					config.APPROVAL.approvedGroups = [];
-					fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-				}
-
-				// If group is not approved, block all commands except /approve for admins
-				if (!config.APPROVAL.approvedGroups.includes(threadID)) {
-					if (!isAdmin) {
-						return; // Non-admins can't use any commands in non-approved groups
-					}
-					
-					// For admins, only allow /approve command in non-approved groups
-					const commandName = (event.body || '').trim().split(' ')[0];
-					if (commandName !== '/approve') {
-						return; // Only allow /approve command for admins in non-approved groups
-					}
-				}
-			}
-		} catch (error) {
-			console.log("Error checking approval system:", error);
-		}
   };
 };
