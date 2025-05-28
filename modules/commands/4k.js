@@ -9,7 +9,7 @@ const baseApiUrl = async () => {
 
 module.exports = {
   config: {
-    name: "upscaleai",
+    name: "4K",
     aliases: ["4k", "upscale"],
     version: "1.0",
     credits: "TOHI-BOT-HUB",
