@@ -27,9 +27,14 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Reason:', reason);
 });
 
+// Initialize web server for performance monitoring
+const WebServer = require('./web-server');
+const webServer = new WebServer();
+webServer.start(5000);
+
 function startProject() {
     try {
-        const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "index.js"], {
+        const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "--max-old-space-size=1024", "index.js"], {
             cwd: __dirname,
             stdio: "inherit",
             shell: true

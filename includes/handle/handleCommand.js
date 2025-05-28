@@ -5,8 +5,17 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
   const moment = require("moment-timezone");
   const logger = require("../../utils/log");
 
+  // Cache for frequently accessed data
+  const commandCache = new Map();
+  const cooldownCache = new Map();
+
   return async function ({ event, ...rest2 }) {
     if (activeCmd) {
+      return;
+    }
+
+    // Quick return for non-command messages
+    if (!event.body || typeof event.body !== 'string') {
       return;
     }
 

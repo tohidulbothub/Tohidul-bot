@@ -155,20 +155,31 @@ module.exports = function ({ api }) {
   //========= Send event to handle need =========//
   /////////////////////////////////////////////////
 
+  // Cache config to avoid repeated file reads
+  let configCache = null;
+  let configLastModified = 0;
+  
   return (event) => {
     const listenObj = {
       event,
     };
 
-    // Check approval system before processing any events
+    // Optimized config loading with caching
     const configPath = require('path').join(__dirname, '../config.json');
     let config;
     try {
-      delete require.cache[require.resolve(configPath)];
-      config = require(configPath);
+      const stats = require('fs').statSync(configPath);
+      if (!configCache || stats.mtimeMs > configLastModified) {
+        delete require.cache[require.resolve(configPath)];
+        config = require(configPath);
+        configCache = config;
+        configLastModified = stats.mtimeMs;
+      } else {
+        config = configCache;
+      }
     } catch (error) {
       console.error('Error loading config:', error);
-      config = {};
+      config = configCache || {};
     }
 
     // Initialize APPROVAL system if not exists

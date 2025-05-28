@@ -41,13 +41,15 @@
     "FCAOption": {
         "forceLogin": false,
         "listenEvents": true,
-        "autoMarkDelivery": false,
-        "autoMarkRead": false,
-        "logLevel": "error",
+        "autoMarkDelivery": true,
+        "autoMarkRead": true,
+        "logLevel": "silent",
         "selfListen": false,
         "online": true,
-        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18",
-        "byPassRegion": "PNB"
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "byPassRegion": "PNB",
+        "updatePresence": true,
+        "emitReady": true
     },
     "daily": {
         "cooldownTime": 43200000,
