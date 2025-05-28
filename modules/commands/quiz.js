@@ -91,7 +91,7 @@ const { correctAnswer, nameUser, author } = handleReply;
         if (userReply === correctAnswer.toLowerCase()) {
           api.unsendMessage(handleReply.messageID)
           .catch(console.error);
-          let rewardCoins = 300;
+          let rewardCoins = 200;
           let rewardExp = 100;
           let userData = await Users.getData(author);
           await Users.setData(author, {
@@ -99,7 +99,7 @@ const { correctAnswer, nameUser, author } = handleReply;
             exp: userData.exp + rewardExp,
             data: userData.data,
           });
-          let correctMsg = `Congratulations, ${nameUser}! 🌟🎉\n\nYou're a Quiz Champion! 🏆\n\nKeep up the great work! 🚀`;
+          let correctMsg = `🎉 অভিনন্দন, ${nameUser}! 🌟\n\n✅ সঠিক উত্তর! আপনি একজন কুইজ চ্যাম্পিয়ন! 🏆\n\n💰 পুরস্কার: ${rewardCoins} টাকা এবং ${rewardExp} অভিজ্ঞতা পয়েন্ট!\n\n🚀 এভাবেই এগিয়ে চলুন!`;
           api.sendMessage(correctMsg, event.threadID, event.messageID);
         } else {
           handleReply.attempts += 1;
