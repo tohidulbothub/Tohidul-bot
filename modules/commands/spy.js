@@ -69,7 +69,7 @@ module.exports = {
       : (userData.isBirthday !== false ? `🎂 𝘽𝙞𝙧𝙩𝙝𝙙𝙖𝙮: ${userData.isBirthday}` : "🎂 𝘽𝙞𝙧𝙩𝙝𝙙𝙖𝙮: 𝙋𝙧𝙞𝙫𝙖𝙩𝙚");
 
     // Money and rank
-    const userDb = await Users.get(uid);
+    const userDb = await Users.getData(uid);
     const allUser = await Users.getAll();
     const rank = allUser.slice().sort((a, b) => b.exp - a.exp).findIndex(user => user.userID === uid) + 1;
     const moneyRank = allUser.slice().sort((a, b) => b.money - a.money).findIndex(user => user.userID === uid) + 1;
