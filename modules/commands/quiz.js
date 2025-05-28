@@ -60,22 +60,28 @@ module.exports.handleReply = async function ({ api, Users, handleReply, args, ev
     try {
         const userAnswer = args.join(" ").trim();
         const isCorrect = (userAnswer.toLowerCase() === correctAnswer.toLowerCase());
-        const userData = await Users.get(s);
-        const name = userData.name;
+        const userData = await Users.getData(s);
+        const name = (await api.getUserInfo(s))[s].name;
 
         if (isCorrect) {
            await api.unsendMessage(messageID);
-            userData.money += rewardAmount;
-            await usersData.set(s, userData);
+            await Users.setData(s, {
+                money: userData.money + 200,
+                exp: userData.exp + 100,
+                data: userData.data,
+            });
             await api.sendMessage({
-                body: `Correct answer, ${name}! You earned ${rewardAmount}$.`,
+                body: `Correct answer, ${name}! You earned 200$.`,
                 mentions: [{ tag: name, id: s }]
             }, t, m);
         } else {
             await api.unsendMessage(messageID);
            global.client.handleReply.pop(messageID);
-            userData.money -= 5;
-            await usersData.set(s, userData);
+            await Users.setData(s, {
+                money: userData.money - 5,
+                exp: userData.exp,
+                data: userData.data,
+            });
             await api.sendMessage({
                 body: "Incorrect answer, try again.",
             }, t, m);
