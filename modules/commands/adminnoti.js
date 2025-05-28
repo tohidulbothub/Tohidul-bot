@@ -8,7 +8,7 @@ module.exports.config = {
     credits: "TOHI-BOT-HUB",
     description: "✨ এডমিন নোটিফিকেশন: সকল গ্রুপে স্টাইলিশ মেসেজ পাঠান!",
     usePrefix: true,
-    category: "command",
+    category: "sent msg",
     usages: "[মেসেজ]",
     cooldowns: 5,
     commandCategory: "Admin"
