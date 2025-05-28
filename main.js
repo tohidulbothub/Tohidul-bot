@@ -467,8 +467,16 @@ const listener = require('./includes/listen')({ api });
           logger.log("Your account has been checkpointed, please confirm your account and log in again!", 'CHECKPOINT');
           return process.exit(0);
         }
+        // Filter out ready state messages
+        if (error.type === 'ready' && error.error === null) {
+          return; // Silently handle ready state
+        }
         console.log(error);
         return process.exit(0);
+      }
+      // Filter out ready state events
+      if (event && event.type === 'ready' && event.error === null) {
+        return; // Silently handle ready state
       }
       return listener(event);
     });

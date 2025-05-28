@@ -78,6 +78,13 @@ module.exports = function ({ api }) {
     "LOADED",
   );
 
+  // Handle ready state silently
+  api.setOptions({
+    listenEvents: true,
+    logLevel: "silent",
+    selfListen: false
+  });
+
   const pkg = JSON.parse(fs.readFileSync("package.json", "utf-8"));
   const v = pkg.version;
   axios
