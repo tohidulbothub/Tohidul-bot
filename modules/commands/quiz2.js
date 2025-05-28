@@ -16,7 +16,7 @@ module.exports = {
     usePrefix: true,
     countDown: 0,
     role: 0,
-    category: "game",
+    commandCategory: "game",
     guide: "{p}quiz2 \n{pn}quiz2 bn \n{p}quiz2 en",
   },
 
