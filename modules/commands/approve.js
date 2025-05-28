@@ -1,8 +1,8 @@
 module.exports.config = {
     name: "approve",
     version: "2.0.1",
-    permission: 2, // Only admins can use this command
-    usePrefix: false,
+    permission: 1, // Only admins can use this command
+    usePrefix: true,
     credits: "TOHI-BOT-HUB",
     description: "Approve or remove threads/users using thread ID or mentions.",
     commandCategory: "Admin",
