@@ -23,7 +23,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     const fs = require('fs');
     const path = require('path');
     const configPath = path.join(__dirname, '../../config.json');
-    
+
     try {
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
@@ -43,7 +43,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
           if (!isAdmin) {
             return; // Non-admins can't use any commands in non-approved groups
           }
-          
+
           // For admins, only allow /approve command in non-approved groups
           const commandName = (event.body || '').trim().split(' ')[0];
           if (commandName !== '/approve') {

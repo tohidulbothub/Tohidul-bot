@@ -27,11 +27,6 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Reason:', reason);
 });
 
-// Initialize web server for performance monitoring
-const WebServer = require('./web-server');
-const webServer = new WebServer();
-webServer.start(5000);
-
 function startProject() {
     try {
         const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "--max-old-space-size=1024", "index.js"], {
@@ -385,18 +380,7 @@ function onBot() {
     global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
     global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
     global.utils.complete({ raw });
-    // Add global error handlers
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  // Don't exit the process
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit the process
-});
-
-const listener = require('./includes/listen')({ api });
+    const listener = require('./includes/listen')({ api });
     global.handleListen = api.listenMqtt(async (error, event) => {
       if (error) {
         if (error.error === 'Not logged in.') {
