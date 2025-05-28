@@ -113,10 +113,10 @@ module.exports.run = async function({ api, event, Users, Threads }) {
       let fontPath = path.join(__dirname, "cache", "font.ttf");
       if (!fs.existsSync(fontPath)) {
         try {
-          let fontResponse = await apiCallWithRetry(fontlink, { responseType: 'arraybuffer' });
+          let fontResponse = await apiCallWithRetry(fontlink, { responseType: 'arraybuffer' }, 2);
           fs.writeFileSync(fontPath, fontResponse.data);
         } catch (fontError) {
-          console.error('Font download error:', fontError);
+          console.error('Font download error:', fontError.message);
         }
       }
       
@@ -125,21 +125,45 @@ module.exports.run = async function({ api, event, Users, Threads }) {
       }
 
       // Pick random background with retry logic
-      let randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-      let background = await apiCallWithRetry(randomBackground, { responseType: 'arraybuffer' });
-      let backgroundImage = await loadImage(background.data);
+      let backgroundImage;
+      try {
+        let randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        let background = await apiCallWithRetry(randomBackground, { responseType: 'arraybuffer' }, 2);
+        backgroundImage = await loadImage(background.data);
+      } catch (bgError) {
+        console.error('Background download error:', bgError.message);
+        // Create a simple colored background as fallback
+        const canvas = createCanvas(1280, 720);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#2C3E50';
+        ctx.fillRect(0, 0, 1280, 720);
+        backgroundImage = await loadImage(canvas.toBuffer());
+      }
 
       // Get avatar & make circle with retry logic
-      let avatarUrl = `https://graph.facebook.com/${leftParticipantFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-      let avatarPath = path.join(__dirname, "cache/leave/leave_avatar.png");
-      
-      let avatarResponse = await apiCallWithRetry(avatarUrl, { responseType: 'arraybuffer' });
-      fs.writeFileSync(avatarPath, avatarResponse.data);
-      
-      let avatar = await jimp.read(avatarPath);
-      avatar.circle();
-      let roundAvatar = await avatar.getBufferAsync('image/png');
-      let roundAvatarImg = await loadImage(roundAvatar);
+      let roundAvatarImg;
+      try {
+        let avatarUrl = `https://graph.facebook.com/${leftParticipantFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+        let avatarPath = path.join(__dirname, "cache/leave/leave_avatar.png");
+        
+        let avatarResponse = await apiCallWithRetry(avatarUrl, { responseType: 'arraybuffer' }, 2);
+        fs.writeFileSync(avatarPath, avatarResponse.data);
+        
+        let avatar = await jimp.read(avatarPath);
+        avatar.circle();
+        let roundAvatar = await avatar.getBufferAsync('image/png');
+        roundAvatarImg = await loadImage(roundAvatar);
+      } catch (avatarError) {
+        console.error('Avatar processing error:', avatarError.message);
+        // Create a simple circle as fallback
+        const avatarCanvas = createCanvas(420, 420);
+        const avatarCtx = avatarCanvas.getContext('2d');
+        avatarCtx.fillStyle = '#34495E';
+        avatarCtx.beginPath();
+        avatarCtx.arc(210, 210, 210, 0, Math.PI * 2);
+        avatarCtx.fill();
+        roundAvatarImg = await loadImage(avatarCanvas.toBuffer());
+      }
 
       // Canvas setup
       const canvas = createCanvas(1280, 720);
@@ -173,33 +197,53 @@ module.exports.run = async function({ api, event, Users, Threads }) {
       fs.writeFileSync(finalImagePath, finalImage);
 
       // Send enhanced stylish Bangla message with image
-      return api.sendMessage({
-        body: isSelfLeave ? leaveSelfMsg : leaveKickMsg,
-        attachment: fs.createReadStream(finalImagePath)
-      }, event.threadID);
+      try {
+        return api.sendMessage({
+          body: isSelfLeave ? leaveSelfMsg : leaveKickMsg,
+          attachment: fs.createReadStream(finalImagePath)
+        }, event.threadID);
+      } catch (sendError) {
+        console.error('Failed to send message with image:', sendError.message);
+        // Try sending without image
+        return api.sendMessage({
+          body: isSelfLeave ? leaveSelfMsg : leaveKickMsg
+        }, event.threadID);
+      }
 
     } catch (imageError) {
-      console.error('Leave image generation error:', imageError);
+      console.error('Leave image generation error:', imageError.message);
       
       // Send message without image if image processing fails
-      return api.sendMessage({
-        body: isSelfLeave ? leaveSelfMsg : leaveKickMsg
-      }, event.threadID);
+      try {
+        return api.sendMessage({
+          body: isSelfLeave ? leaveSelfMsg : leaveKickMsg
+        }, event.threadID);
+      } catch (fallbackError) {
+        console.error('Failed to send fallback message:', fallbackError.message);
+        // If even the fallback fails, just return silently
+        return;
+      }
     }
 
   } catch (error) {
-    console.error('LeaveNoti main error:', error);
+    console.error('LeaveNoti main error:', error.message);
     
     // Fallback simple leave message
-    const leftParticipantFbId = event.logMessageData.leftParticipantFbId;
-    const name = global.data.userName.get(leftParticipantFbId) || "Unknown User";
-    const isSelfLeave = event.author == leftParticipantFbId;
-    
-    const fallbackMsg = `
+    try {
+      const leftParticipantFbId = event.logMessageData.leftParticipantFbId;
+      const name = global.data.userName.get(leftParticipantFbId) || "Unknown User";
+      const isSelfLeave = event.author == leftParticipantFbId;
+      
+      const fallbackMsg = `
 ${isSelfLeave ? '👋' : '⚡'} ${name} ${isSelfLeave ? 'গ্রুপ ছেড়ে চলে গেছেন' : 'কে গ্রুপ থেকে রিমুভ করা হয়েছে'}।
 
 🚩 Made by TOHIDUL`;
-    
-    return api.sendMessage(fallbackMsg, event.threadID);
+      
+      return api.sendMessage(fallbackMsg, event.threadID);
+    } catch (finalError) {
+      console.error('Final fallback also failed:', finalError.message);
+      // If everything fails, just return silently to prevent crashes
+      return;
+    }
   }
 };

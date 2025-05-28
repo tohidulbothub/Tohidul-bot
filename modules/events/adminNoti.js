@@ -112,7 +112,7 @@ module.exports.run = async function({ api, event, Users }) {
           let avtAnime = await apiCallWithRetry(
             `https://graph.facebook.com/${event.logMessageData.addedParticipants[o].userFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
             { responseType: "arraybuffer" },
-            3
+            2
           );
           
           let backgrounds = [
@@ -126,7 +126,7 @@ module.exports.run = async function({ api, event, Users }) {
           let background = await apiCallWithRetry(
             backgrounds[Math.floor(Math.random() * backgrounds.length)], 
             { responseType: "arraybuffer" },
-            3
+            2
           );
           
           fs.writeFileSync(pathAva, Buffer.from(avtAnime.data, "utf-8"));
@@ -183,7 +183,17 @@ module.exports.run = async function({ api, event, Users }) {
       let msg = `👤 নতুন সদস্য: ${nameArray.join(', ')}\n\n🌟 গ্রুপ: ${threadName}\n🌐 প্রোফাইল: https://facebook.com/profile.php?id=${iduser.join(', ')}\n🎊 এখন আমাদের সদস্য সংখ্যা: ${participantIDs.length}\n👮‍♂️ যিনি এড করেছেন: ${nameAuthor}\n\n${session}\n🕓 ${time} (${thu})\n\n🚩 Made by TOHIDUL`;
       if (typeof threadData.customJoin !== "undefined") msg = threadData.customJoin;
 
-      api.sendMessage({ body: msg, attachment: abx, mentions }, threadID);
+      try {
+        api.sendMessage({ body: msg, attachment: abx, mentions }, threadID);
+      } catch (sendError) {
+        console.error('Failed to send welcome message:', sendError.message);
+        // Try sending without attachments if it fails
+        try {
+          api.sendMessage({ body: msg, mentions }, threadID);
+        } catch (fallbackError) {
+          console.error('Fallback message also failed:', fallbackError.message);
+        }
+      }
 
       // Clean temp images
       for (let ii = 0; ii < event.logMessageData.addedParticipants.length; ii++) {
