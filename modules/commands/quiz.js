@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 const baseApiUrl = async () => {
     const base = await axios.get(
@@ -10,7 +9,7 @@ const baseApiUrl = async () => {
 module.exports.config = {
     name: "quiz",
     version: "1.0",
-    credits: "TOHI-BOT-HUB",
+    credits: "Mesbah Bb'e",
     cooldowns: 5,
     hasPermission: 0,
     description: "quiz",
@@ -35,32 +34,17 @@ module.exports.run = async function ({ api, event }) {
             body: "Please reply to this photo with your answer:",
             attachment: imageStream.data
         }, t, (error, info) => {
-            if (error) {
-                console.error("Error sending quiz:", error);
-                return;
-            }
-            
-            global.client.handleReply.push({
-                name: this.config.name,
-                messageID: info.messageID,
+            global.client.handleReply.push(info.messageID, {
+                commandName: this.config.name,
                 author: event.senderID,
+                messageID: info.messageID,
                 correctAnswer: response.data.quiz,
                 rewardAmount: 200
             });
-            
             setTimeout(async () => {
-                try {
-                    await api.unsendMessage(info.messageID);
-                    // Remove from handleReply array when timeout
-                    const index = global.client.handleReply.findIndex(item => item.messageID === info.messageID);
-                    if (index !== -1) {
-                        global.client.handleReply.splice(index, 1);
-                    }
-                } catch (err) {
-                    console.error("Error unsending message:", err);
-                }
+                await api.unsendMessage(info.messageID);
             }, 30000);
-        }, m);
+        },m);
 
     } catch (error) {
         console.error(error);
@@ -68,40 +52,36 @@ module.exports.run = async function ({ api, event }) {
     }
 };
 
-module.exports.handleReply = async function ({ api, Users, Currencies, handleReply, event }) {
-    const { threadID: t, senderID: s, messageID: m, body } = event;
+module.exports.handleReply = async function ({ api, Users, handleReply, args, event }) {
+    const { threadID: t, senderID: s, messageID: m } = event;
     const { author, correctAnswer, messageID, rewardAmount } = handleReply;
-    
     if (s !== author) return;
 
     try {
-        const userAnswer = body.trim();
+        const userAnswer = args.join(" ").trim();
         const isCorrect = (userAnswer.toLowerCase() === correctAnswer.toLowerCase());
-        const userData = await Users.getData(s);
-        const name = userData.name || "Unknown";
-
-        // Remove from handleReply array
-        const index = global.client.handleReply.findIndex(item => item.messageID === messageID);
-        if (index !== -1) {
-            global.client.handleReply.splice(index, 1);
-        }
+        const userData = await Users.get(s);
+        const name = userData.name;
 
         if (isCorrect) {
-            await api.unsendMessage(messageID);
-            await Currencies.increaseMoney(s, rewardAmount);
+           await api.unsendMessage(messageID);
+            userData.money += rewardAmount;
+            await usersData.set(s, userData);
             await api.sendMessage({
-                body: `🎉 Correct answer, ${name}! You earned ${rewardAmount}$.`,
+                body: `Correct answer, ${name}! You earned ${rewardAmount}$.`,
                 mentions: [{ tag: name, id: s }]
             }, t, m);
         } else {
             await api.unsendMessage(messageID);
-            await Currencies.decreaseMoney(s, 5);
+           global.client.handleReply.pop(messageID);
+            userData.money -= 5;
+            await usersData.set(s, userData);
             await api.sendMessage({
-                body: `❌ Incorrect answer! You lost 5$. The correct answer was: ${correctAnswer}`,
+                body: "Incorrect answer, try again.",
             }, t, m);
         }
     } catch (error) {
-        console.error("Quiz handleReply error:", error);
-        api.sendMessage(`Error processing answer: ${error.message}`, t);
+        console.error(error);
+        api.sendMessage(`Error: ${error.message}`, t);
     }
 };
