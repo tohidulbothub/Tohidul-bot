@@ -93,8 +93,8 @@ const { correctAnswer, nameUser, author } = handleReply;
           .catch(console.error);
           let rewardCoins = 300;
           let rewardExp = 100;
-          let userData = await Users.get(author);
-          await Users.set(author, {
+          let userData = await Users.getData(author);
+          await Users.setData(author, {
           money: userData.money + rewardCoins,
             exp: userData.exp + rewardExp,
             data: userData.data,
@@ -103,7 +103,6 @@ const { correctAnswer, nameUser, author } = handleReply;
           api.sendMessage(correctMsg, event.threadID, event.messageID);
         } else {
           handleReply.attempts += 1;
-global.client.handleReply.push(handleReply.messageID, handleReply);
           api.sendMessage(
             `❌ | Wrong Answer. You have ${maxAttempts - handleReply.attempts} attempts left.\n✅ | Try Again!`,
             event.threadID,
