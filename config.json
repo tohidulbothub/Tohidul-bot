@@ -1,7 +1,7 @@
 {
     "version": "1.8.0",
     "language": "en",
-    "DeveloperMode": true,
+    "DeveloperMode": false,
     "autoCreateDB": true,
     "allowInbox": false,
     "autoClean": true,

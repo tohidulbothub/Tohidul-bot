@@ -158,6 +158,13 @@ module.exports = function ({ api }) {
   // Cache config to avoid repeated file reads
   let configCache = null;
   let configLastModified = 0;
+
+  // Memory cleanup every 30 minutes
+  setInterval(() => {
+    if (global.gc) {
+      global.gc();
+    }
+  }, 30 * 60 * 1000);
   
   return (event) => {
     const listenObj = {
