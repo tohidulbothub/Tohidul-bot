@@ -8,20 +8,40 @@ module.exports = async ({ api }) => {
 
   const config = {
     autoRestart: {
-      status: false, // Completely disabled
+      status: false,
       time: 60,
-      note: 'Auto restart is disabled to prevent auto-off issues',
+      note: 'To avoid problems, enable periodic bot restarts',
     },
     acceptPending: {
-      status: false, // Completely disabled
+      status: false,
       time: 30,
-      note: 'Auto accept is disabled to prevent issues',
+      note: 'Approve waiting messages after a certain time',
     },
   };
 
-  // DO NOT enable any auto functions
-  // autoRestart(config.autoRestart);
-  // acceptPending(config.acceptPending);
+  function autoRestart(config) {
+    if (config.status) {
+      cron.schedule(`*/${config.time} * * * *`, () => {
+        logger.log('Start rebooting the system!', 'Auto Restart');
+        process.exit(1);
+      });
+    }
+  }
 
-  console.log('Custom.js loaded - Auto functions are disabled');
+  function acceptPending(config) {
+    if (config.status) {
+      cron.schedule(`*/${config.time} * * * *`, async () => {
+        const list = [
+          ...(await api.getThreadList(1, null, ['PENDING'])),
+          ...(await api.getThreadList(1, null, ['OTHER'])),
+        ];
+        if (list[0]) {
+          api.sendMessage('You have been approved for the queue. (This is an automated message)', list[0].threadID);
+        }
+      });
+    }
+  }
+
+  autoRestart(config.autoRestart);
+  acceptPending(config.acceptPending);
 };

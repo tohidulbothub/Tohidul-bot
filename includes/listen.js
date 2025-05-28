@@ -161,31 +161,10 @@ module.exports = function ({ api }) {
 
   // Memory cleanup every 30 minutes
   setInterval(() => {
-    try {
-      if (global.gc) {
-        global.gc();
-      }
-      // Clear cache periodically
-      Object.keys(require.cache).forEach(key => {
-        if (key.includes('/cache/') || key.includes('temp')) {
-          delete require.cache[key];
-        }
-      });
-    } catch (error) {
-      console.log('Memory cleanup error:', error.message);
+    if (global.gc) {
+      global.gc();
     }
   }, 30 * 60 * 1000);
-
-  // Prevent process exit on errors
-  process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception (handled):', error.message);
-    // Don't exit, just log
-  });
-
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection (handled):', reason);
-    // Don't exit, just log
-  });
   
   return (event) => {
     const listenObj = {
