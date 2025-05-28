@@ -25,12 +25,30 @@ global.account = new Object();
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise);
   console.error('Reason:', reason);
+  // Don't exit the process - just log and continue
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit the process - just log and continue
+});
+
+// Prevent automatic restarts
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received - staying alive');
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received - staying alive');
 });
 
 // Initialize web server for performance monitoring
 const WebServer = require('./web-server');
 const webServer = new WebServer();
 webServer.start(5000);
+
+// Initialize keep-alive server
+const keepAlive = require('./keep-alive');
 
 function startProject() {
     try {
