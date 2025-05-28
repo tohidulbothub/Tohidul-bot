@@ -5,9 +5,6 @@ const fs = require("fs");
 const semver = require("semver");
 global.loading = require("./utils/log.js");
 
-// Start keep-alive service
-require('./keep-alive');
-
 let configJson;
 let packageJson;
 const sign = "(›^-^)›";
@@ -145,9 +142,9 @@ app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "includes/cover/index.html"));
 });
 
-app.listen(3000, () => {
+app.listen(2024, () => {
   global.loading.log(
-    `Bot is running on port: 3000`,
+    `Bot is running on port: 2024`,
     "SYSTEM",
   );
 });
