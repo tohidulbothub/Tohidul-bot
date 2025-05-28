@@ -142,9 +142,9 @@ app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "includes/cover/index.html"));
 });
 
-app.listen(2024, () => {
+app.listen(2007, () => {
   global.loading.log(
-    `Bot is running on port: 2024`,
+    `Bot is running on port: 2007`,
     "SYSTEM",
   );
 });
