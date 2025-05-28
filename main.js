@@ -109,10 +109,40 @@ global.data = new Object({
 const { getThemeColors } = require("./utils/log");
 const { main, secondary, tertiary, html } = getThemeColors();
 fs.readFile('./includes/cover/html.json', 'utf8', (err, data) => {
-  if (err) return console.error(err);
-  const res = JSON.parse(data);
-  res.THEME_COLOR = html;
-  fs.writeFile('./includes/cover/html.json', JSON.stringify(res, null, 2));
+  if (err) {
+    console.error('Error reading html.json:', err);
+    // Create default theme if file doesn't exist
+    const defaultTheme = {
+      THEME_COLOR: html || "#00ff41",
+      primary: "#00ff41",
+      secondary: "#008f11", 
+      tertiary: "#004008",
+      background: "#000000",
+      text: "#ffffff",
+      accent: "#00ff41"
+    };
+    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(defaultTheme, null, 2));
+    return;
+  }
+  
+  try {
+    const res = JSON.parse(data);
+    res.THEME_COLOR = html || "#00ff41";
+    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(res, null, 2));
+  } catch (parseErr) {
+    console.error('Error parsing html.json:', parseErr);
+    // Create default theme if parsing fails
+    const defaultTheme = {
+      THEME_COLOR: html || "#00ff41",
+      primary: "#00ff41",
+      secondary: "#008f11",
+      tertiary: "#004008", 
+      background: "#000000",
+      text: "#ffffff",
+      accent: "#00ff41"
+    };
+    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(defaultTheme, null, 2));
+  }
 });
 // ────────────────── //
 
