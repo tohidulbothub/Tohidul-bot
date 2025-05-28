@@ -32,16 +32,59 @@ class WebServer {
     // Theme endpoint
     this.app.get('/themes', (req, res) => {
       const themePath = path.join(__dirname, 'includes', 'cover', 'html.json');
-      if (fs.existsSync(themePath)) {
-        try {
-          const themeData = JSON.parse(fs.readFileSync(themePath, 'utf8'));
+      try {
+        if (fs.existsSync(themePath)) {
+          const rawData = fs.readFileSync(themePath, 'utf8');
+          if (rawData.trim() === '' || rawData.trim() === '{}') {
+            // If file is empty or contains empty object, return default theme
+            const defaultTheme = {
+              "THEME_COLOR": "#1702CF",
+              "primary": "#1702CF", 
+              "secondary": "#11019F",
+              "tertiary": "#1401BF",
+              "background": "#000000",
+              "text": "#ffffff",
+              "accent": "#1702CF"
+            };
+            res.json(defaultTheme);
+            return;
+          }
+          
+          const themeData = JSON.parse(rawData);
+          
+          // Validate theme data structure
+          if (!themeData || typeof themeData !== 'object' || !themeData.THEME_COLOR) {
+            throw new Error('Invalid theme structure');
+          }
+          
           res.json(themeData);
-        } catch (error) {
-          console.error('Error reading theme file:', error);
-          res.status(500).json({ error: 'Failed to load theme' });
+        } else {
+          // Create default theme file if it doesn't exist
+          const defaultTheme = {
+            "THEME_COLOR": "#1702CF",
+            "primary": "#1702CF",
+            "secondary": "#11019F", 
+            "tertiary": "#1401BF",
+            "background": "#000000",
+            "text": "#ffffff",
+            "accent": "#1702CF"
+          };
+          fs.writeFileSync(themePath, JSON.stringify(defaultTheme, null, 2));
+          res.json(defaultTheme);
         }
-      } else {
-        res.status(404).json({ error: 'Theme file not found' });
+      } catch (error) {
+        console.error('Error processing theme file:', error);
+        // Return default theme as fallback
+        const defaultTheme = {
+          "THEME_COLOR": "#1702CF",
+          "primary": "#1702CF",
+          "secondary": "#11019F",
+          "tertiary": "#1401BF", 
+          "background": "#000000",
+          "text": "#ffffff",
+          "accent": "#1702CF"
+        };
+        res.json(defaultTheme);
       }
     });
 

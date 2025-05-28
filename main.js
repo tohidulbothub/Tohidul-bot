@@ -108,39 +108,33 @@ global.data = new Object({
 // -- LOAD THEMES -- //
 const { getThemeColors } = require("./utils/log");
 const { main, secondary, tertiary, html } = getThemeColors();
-fs.readFile('./includes/cover/html.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error('Error reading html.json:', err);
-    // Create default theme if file doesn't exist
-    const defaultTheme = {
-      THEME_COLOR: html || "#00ff41",
-      primary: "#00ff41",
-      secondary: "#008f11", 
-      tertiary: "#004008",
-      background: "#000000",
-      text: "#ffffff",
-      accent: "#00ff41"
-    };
-    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(defaultTheme, null, 2));
-    return;
+try {
+  const themePath = './includes/cover/html.json';
+  let themeData;
+  
+  if (fs.existsSync(themePath)) {
+    const rawData = fs.readFileSync(themePath, 'utf8');
+    
+    if (rawData.trim() === '' || rawData.trim() === '{}') {
+      themeData = null; // Will create default theme
+    } else {
+      try {
+        themeData = JSON.parse(rawData);
+        // Validate structure
+        if (!themeData || typeof themeData !== 'object' || !themeData.THEME_COLOR) {
+          themeData = null; // Invalid structure, create default
+        }
+      } catch (parseErr) {
+        console.error('Error parsing html.json:', parseErr);
+        themeData = null; // Parse error, create default
+      }
+    }
+  } else {
+    themeData = null; // File doesn't exist, create default
   }
   
-  try {
-    const res = JSON.parse(data);
-    // Ensure the object has all required properties
-    const validTheme = {
-      THEME_COLOR: html || "#1702CF",
-      primary: res.primary || "#1702CF",
-      secondary: res.secondary || "#11019F",
-      tertiary: res.tertiary || "#1401BF",
-      background: res.background || "#000000",
-      text: res.text || "#ffffff",
-      accent: res.accent || html || "#1702CF"
-    };
-    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(validTheme, null, 2));
-  } catch (parseErr) {
-    console.error('Error parsing html.json:', parseErr);
-    // Create default theme if parsing fails
+  if (!themeData) {
+    // Create default theme
     const defaultTheme = {
       THEME_COLOR: html || "#1702CF",
       primary: "#1702CF",
@@ -150,9 +144,36 @@ fs.readFile('./includes/cover/html.json', 'utf8', (err, data) => {
       text: "#ffffff",
       accent: "#1702CF"
     };
-    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(defaultTheme, null, 2));
+    fs.writeFileSync(themePath, JSON.stringify(defaultTheme, null, 2));
+    console.log('Created default theme file');
+  } else {
+    // Ensure all required properties exist
+    const validTheme = {
+      THEME_COLOR: themeData.THEME_COLOR || html || "#1702CF",
+      primary: themeData.primary || "#1702CF",
+      secondary: themeData.secondary || "#11019F",
+      tertiary: themeData.tertiary || "#1401BF",
+      background: themeData.background || "#000000",
+      text: themeData.text || "#ffffff",
+      accent: themeData.accent || html || "#1702CF"
+    };
+    fs.writeFileSync(themePath, JSON.stringify(validTheme, null, 2));
+    console.log('Updated theme file with valid structure');
   }
-});
+} catch (error) {
+  console.error('Critical error in theme handling:', error);
+  // Final fallback - create basic theme
+  const fallbackTheme = {
+    THEME_COLOR: "#1702CF",
+    primary: "#1702CF",
+    secondary: "#11019F",
+    tertiary: "#1401BF",
+    background: "#000000",
+    text: "#ffffff",
+    accent: "#1702CF"
+  };
+  fs.writeFileSync('./includes/cover/html.json', JSON.stringify(fallbackTheme, null, 2));
+}
 // ────────────────── //
 
 const errorMessages = [];

@@ -206,37 +206,38 @@
                 fetch('/themes')
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error(`Network response was not ok: ${response.status}`);
                         }
                         return response.json();
                     })
-                    .then(data => {
-                        // Validate the data structure
-                        if (!data || typeof data !== 'object') {
+                    .then(theme => {
+                        // Validate the theme structure
+                        if (!theme || typeof theme !== 'object') {
                             throw new Error('Invalid theme data structure');
                         }
-                        return data;
-                    })
-                    .then(theme => {
-                        if (theme && theme.THEME_COLOR) {
-                            // Handle both array and single color formats
-                            const color = Array.isArray(theme.THEME_COLOR) ? theme.THEME_COLOR[0] : theme.THEME_COLOR;
-                            const root = document.documentElement;
-                            root.style.setProperty('--primary-color', color);
-                            root.style.setProperty('--secondary-color', theme.secondary || '#008f11');
-                            root.style.setProperty('--accent-color', theme.accent || color);
-                            console.log('Theme loaded successfully:', color);
-                        } else {
-                            console.warn('No valid theme data found, using default');
-                            setDefaultTheme();
+                        
+                        if (!theme.THEME_COLOR) {
+                            throw new Error('Theme missing THEME_COLOR property');
                         }
+                        
+                        // Handle both array and single color formats
+                        const color = Array.isArray(theme.THEME_COLOR) ? theme.THEME_COLOR[0] : theme.THEME_COLOR;
+                        
+                        if (!color || typeof color !== 'string') {
+                            throw new Error('Invalid color value');
+                        }
+                        
+                        const root = document.documentElement;
+                        root.style.setProperty('--primary-color', color);
+                        root.style.setProperty('--secondary-color', theme.secondary || '#008f11');
+                        root.style.setProperty('--accent-color', theme.accent || color);
+                        
+                        console.log('Theme loaded successfully:', color);
                     })
                     .catch(error => {
                         console.error('Error loading theme:', error);
-                        console.log('Using default theme due to error');
                         setDefaultTheme();
-                    })
-
+                    });
             }
 
             // Set default theme colors
