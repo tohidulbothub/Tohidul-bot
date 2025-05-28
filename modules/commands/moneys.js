@@ -1,5 +1,6 @@
 module.exports.config = {
 	name: "money",
+	aliases: ["bal", "balance"] ,
 	version: "1.0.2",
 	permission: 0,
 	credits: "TOHI-BOT-HUB",
@@ -8,7 +9,6 @@ module.exports.config = {
 	commandCategory: "economy",
 	usages: "[tag] | send [amount] @[user]",
 	cooldowns: 5,
-	aliases: ["bal", "balance"]
 };
 
 module.exports.languages = {
