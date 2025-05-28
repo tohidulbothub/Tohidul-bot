@@ -7,7 +7,8 @@ module.exports.config = {
 	description: "check the amount of yourself or the person tagged, or send money",
 	commandCategory: "economy",
 	usages: "[tag] | send [amount] @[user]",
-	cooldowns: 5
+	cooldowns: 5,
+	aliases: ["bal", "balance"]
 };
 
 module.exports.languages = {
