@@ -32,7 +32,7 @@ module.exports = {
     } 
     try {
       const response = await axios.get(
-        `${await baseApiUrl()}/quiz?category=${category}&q=random`,
+        `${await baseApiUrl()}/quiz2?category=${category}&q=random`,
       );
 
       const quizData = response.data.question;
@@ -91,15 +91,24 @@ const { correctAnswer, nameUser, author } = handleReply;
         if (userReply === correctAnswer.toLowerCase()) {
           api.unsendMessage(handleReply.messageID)
           .catch(console.error);
-          let rewardCoins = 200;
-          let rewardExp = 100;
+          
+          // Variable reward based on attempts and category
+          let baseReward = 200;
+          let bonusMultiplier = handleReply.attempts === 0 ? 1.5 : 1.2; // Bonus for first try
+          let categoryBonus = category === "english" ? 50 : 0; // Bonus for English questions
+          
+          let rewardCoins = Math.floor(baseReward * bonusMultiplier) + categoryBonus;
+          let rewardExp = Math.floor(100 * bonusMultiplier);
+          
           let userData = await Users.getData(author);
           await Users.setData(author, {
             money: userData.money + rewardCoins,
             exp: userData.exp + rewardExp,
             data: userData.data,
           });
-          let correctMsg = `Congratulations, ${nameUser}! 🌟🎉\n\nYou're a Quiz Champion! 🏆\n\nKeep up the great work! 🚀`;
+          
+          let attemptBonus = handleReply.attempts === 0 ? " (First Try Bonus!)" : "";
+          let correctMsg = `🎉 Congratulations, ${nameUser}! 🌟\n\n🏆 Quiz Champion!\n💰 Money Earned: ${rewardCoins}$${attemptBonus}\n⭐ Experience: +${rewardExp} EXP\n\n🚀 Keep up the great work!`;
           api.sendMessage(correctMsg, event.threadID, event.messageID);
         } else {
           handleReply.attempts += 1;
