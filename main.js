@@ -27,6 +27,22 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Reason:', reason);
 });
 
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit on uncaught exceptions, just log them
+});
+
+// Handle process termination gracefully
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM, restarting...');
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  console.log('Received SIGINT, restarting...');
+  process.exit(1);
+});
+
 function startProject() {
     try {
         const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "--max-old-space-size=1024", "index.js"], {

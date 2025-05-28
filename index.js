@@ -5,6 +5,9 @@ const fs = require("fs");
 const semver = require("semver");
 global.loading = require("./utils/log.js");
 
+// Start keep-alive service
+require('./keep-alive');
+
 let configJson;
 let packageJson;
 const sign = "(›^-^)›";
