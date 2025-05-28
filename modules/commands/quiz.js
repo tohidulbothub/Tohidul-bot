@@ -10,7 +10,7 @@ const baseApiUrl = async () => {
 module.exports = {
   config: {
     name: "quiz",
-    version: "1.1",
+    version: "1.2",
     credits: "Dipto, styled by TOHIDUL",
     cooldowns: 0,
     hasPermssion: 0,
@@ -46,7 +46,7 @@ module.exports = {
 🅑) ${b}
 🅒) ${c}
 🅓) ${d}
-╰────────────────────────╯
+╰───────────────────────╯
 
 📩 উত্তর দিতে এই মেসেজে রিপ্লাই দিন! (A/B/C/D)
 ⏳ সময়: ${timeout} সেকেন্ড
@@ -82,8 +82,9 @@ module.exports = {
     }
   },
 
-  handleReply: async ({ event, api, handleReply, Users }) => {
+  handleReply: async function({ event, api, handleReply, Users }) {
     const { correctAnswer, nameUser, author } = handleReply;
+    const prefix = global.config.PREFIX || "/";
     if (event.senderID !== author)
       return api.sendMessage(
         "⛔ শুধু কুইজ শুরু করা ইউজারই উত্তর দিতে পারবে!", event.threadID, event.messageID
@@ -123,13 +124,11 @@ module.exports = {
             exp: userData.exp + rewardExp,
             data: userData.data,
           });
-          const threadData = await global.data.threadData.get(event.threadID) || {};
-          const prefix = threadData.PREFIX || global.config.PREFIX;
           let correctMsg =
 `🎉 অভিনন্দন, ${nameUser}! 🌟
 ✅ একদম ঠিক উত্তর! তুমি কুইজ চ্যাম্পিয়ন! 🏆
 
-💰 পুরস্কার: ${rewardCoins} কয়েন
+💰 পুরস্কার: ${rewardCoins} কয়েন
 ⚡ অভিজ্ঞতা: ${rewardExp} XP
 
 নতুন কুইজের জন্য: ${prefix}quiz
