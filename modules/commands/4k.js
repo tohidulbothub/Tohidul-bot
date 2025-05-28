@@ -43,7 +43,7 @@ module.exports.run = async function ({
       'body': "𝐈𝐦𝐚𝐠𝐞 𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐞𝐝 𝐒𝐮𝐜𝐜𝐞𝐟𝐮𝐥",
       'attachment': fs.createReadStream(_0x979f8)
     }, _0x505ee2, () => fs.unlinkSync(_0x979f8), _0x4c4974);
-    _0x35648a.unsendMessage(_0x2a6e15.messsageID);
+    _0x35648a.unsendMessage(_0x2a6e15.messageID);
   } catch (_0x5def0b) {
     _0x35648a.sendMessage("Error processing image: " + _0x5def0b.message, _0x505ee2, _0x4c4974);
   }
