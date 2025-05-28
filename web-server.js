@@ -29,6 +29,22 @@ class WebServer {
       }
     });
 
+    // Theme endpoint
+    this.app.get('/themes', (req, res) => {
+      const themePath = path.join(__dirname, 'includes', 'cover', 'html.json');
+      if (fs.existsSync(themePath)) {
+        try {
+          const themeData = JSON.parse(fs.readFileSync(themePath, 'utf8'));
+          res.json(themeData);
+        } catch (error) {
+          console.error('Error reading theme file:', error);
+          res.status(500).json({ error: 'Failed to load theme' });
+        }
+      } else {
+        res.status(404).json({ error: 'Theme file not found' });
+      }
+    });
+
     // Bot status endpoint
     this.app.get('/status', (req, res) => {
       res.json({

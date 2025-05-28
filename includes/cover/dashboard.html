@@ -203,12 +203,19 @@
 
             // Load theme from external file
             function updateTheme() {
-                fetch('/static/html.json')
+                fetch('/themes')
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
+                            throw new Error('Network response was not ok');
                         }
                         return response.json();
+                    })
+                    .then(data => {
+                        // Validate the data structure
+                        if (!data || typeof data !== 'object') {
+                            throw new Error('Invalid theme data structure');
+                        }
+                        return data;
                     })
                     .then(theme => {
                         if (theme && theme.THEME_COLOR) {
@@ -224,10 +231,12 @@
                             setDefaultTheme();
                         }
                     })
-                    .catch((error) => {
-                        console.warn("Could not load theme, using default:", error.message);
+                    .catch(error => {
+                        console.error('Error loading theme:', error);
+                        console.log('Using default theme due to error');
                         setDefaultTheme();
-                    });
+                    })
+
             }
 
             // Set default theme colors

@@ -50,11 +50,11 @@ module.exports = function ({ models, Users }) {
 		try {
             if (!userID) throw new Error("User ID cannot be blank");
             if (isNaN(userID)) throw new Error("Invalid user ID");
-            if (!usersData.hasOwnProperty(userID)) throw new Error(`User ID: ${userID} does not exist in Database`);
-            usersData[userID].money = 0;
-            await saveData(usersData);
-            if (callback && typeof callback == "function") callback(null, usersData);
-            return usersData;
+            if (!Currencies.hasOwnProperty(userID)) throw new Error(`User ID: ${userID} does not exist in Database`);
+            Currencies[userID].money = 0;
+            await saveData(Currencies);
+            if (callback && typeof callback == "function") callback(null, Currencies);
+            return Currencies;
         } catch (error) {
             if (callback && typeof callback == "function") callback(error, null);
             return false

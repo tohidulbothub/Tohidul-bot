@@ -127,19 +127,28 @@ fs.readFile('./includes/cover/html.json', 'utf8', (err, data) => {
   
   try {
     const res = JSON.parse(data);
-    res.THEME_COLOR = html || "#00ff41";
-    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(res, null, 2));
+    // Ensure the object has all required properties
+    const validTheme = {
+      THEME_COLOR: html || "#1702CF",
+      primary: res.primary || "#1702CF",
+      secondary: res.secondary || "#11019F",
+      tertiary: res.tertiary || "#1401BF",
+      background: res.background || "#000000",
+      text: res.text || "#ffffff",
+      accent: res.accent || html || "#1702CF"
+    };
+    fs.writeFileSync('./includes/cover/html.json', JSON.stringify(validTheme, null, 2));
   } catch (parseErr) {
     console.error('Error parsing html.json:', parseErr);
     // Create default theme if parsing fails
     const defaultTheme = {
-      THEME_COLOR: html || "#00ff41",
-      primary: "#00ff41",
-      secondary: "#008f11",
-      tertiary: "#004008", 
+      THEME_COLOR: html || "#1702CF",
+      primary: "#1702CF",
+      secondary: "#11019F",
+      tertiary: "#1401BF",
       background: "#000000",
       text: "#ffffff",
-      accent: "#00ff41"
+      accent: "#1702CF"
     };
     fs.writeFileSync('./includes/cover/html.json', JSON.stringify(defaultTheme, null, 2));
   }

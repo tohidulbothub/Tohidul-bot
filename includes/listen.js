@@ -204,7 +204,7 @@ module.exports = function ({ api }) {
       if (!isApproved) {
         if (event.type === "message" || event.type === "message_reply") {
           const commandName = (event.body || '').trim().split(' ')[0].toLowerCase();
-          
+
           // Allow only admin approval commands in pending groups
           if (!isAdmin || (commandName !== '/approve' && commandName !== '/reject' && commandName !== '/pending' && commandName !== '/approved')) {
             return; // Block all other commands in non-approved groups

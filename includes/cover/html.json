@@ -1,10 +1,6 @@
 {
-  "THEME_COLOR": [
-    "#1702CF",
-    "#11019F ",
-    "#1401BF"
-  ],
-  "primary": "#1702CF",
+  "THEME_COLOR": "#1702CF",
+  "primary": "#1702CF", 
   "secondary": "#11019F",
   "tertiary": "#1401BF",
   "background": "#000000",
