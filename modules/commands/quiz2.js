@@ -13,7 +13,7 @@ module.exports = {
     aliases: ["qz2"],
     version: "1.0",
     author: "Dipto",
-    usePrefix: true,
+    usePrefix: true, 
     countDown: 0,
     role: 0,
     commandCategory: "game",
