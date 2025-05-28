@@ -201,8 +201,11 @@
                 }
             }
 
-            // Load theme from external file
-            function updateTheme() {
+            // Load theme from external file with retry logic
+            function updateTheme(retryCount = 0) {
+                const maxRetries = 3;
+                const retryDelay = 1000; // 1 second
+                
                 fetch('/themes')
                     .then(response => {
                         if (!response.ok) {
@@ -235,8 +238,13 @@
                         console.log('Theme loaded successfully:', color);
                     })
                     .catch(error => {
-                        console.error('Error loading theme:', error);
-                        setDefaultTheme();
+                        if (retryCount < maxRetries) {
+                            console.warn(`Theme loading failed, retrying... (${retryCount + 1}/${maxRetries})`);
+                            setTimeout(() => updateTheme(retryCount + 1), retryDelay);
+                        } else {
+                            console.warn('Failed to load theme after retries, using default');
+                            setDefaultTheme();
+                        }
                     });
             }
 
@@ -276,7 +284,14 @@
             // Initialize
             document.addEventListener("DOMContentLoaded", function () {
                 createParticles();
-                updateTheme();
+                
+                // Set default theme immediately
+                setDefaultTheme();
+                
+                // Wait a bit for server to be ready, then load theme
+                setTimeout(() => {
+                    updateTheme();
+                }, 2000);
 
                 // Add smooth transitions
                 document.body.style.transition = 'background 0.5s ease';
