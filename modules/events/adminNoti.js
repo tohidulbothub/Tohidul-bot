@@ -13,16 +13,21 @@ const FB_LINK = 'https://web.facebook.com/mdtohidulislam063';
 const fs = require('fs-extra');
 const { loadImage, createCanvas, registerFont } = require("canvas");
 const { apiCallWithRetry } = require("../../utils/apiHelper");
-const jimp = require("jimp");
+const Jimp = require("jimp");
 const moment = require("moment-timezone");
 
 const fontlink = 'https://drive.google.com/u/0/uc?id=1ZwFqYB-x6S9MjPfYm3t3SP1joohGl4iw&export=download'
 let PRFX = `${global.config.PREFIX}`;
 
 module.exports.circle = async (image) => {
-  image = await jimp.read(image);
-  image.circle();
-  return await image.getBufferAsync("image/png");
+  try {
+    const img = await Jimp.read(image);
+    img.circle();
+    return await img.getBufferAsync("image/png");
+  } catch (error) {
+    console.error('Circle processing error:', error.message);
+    throw error;
+  }
 }
 
 module.exports.run = async function({ api, event, Users }) {
@@ -103,17 +108,38 @@ module.exports.run = async function({ api, event, Users }) {
         memLength.push(participantIDs.length - i++);
       }
 
-      // Image processing with error handling
+      // Image processing with enhanced error handling
       for (let o = 0; o < event.logMessageData.addedParticipants.length; o++) {
         try {
           let pathImg = __dirname + `/cache/join/${o}.png`;
           let pathAva = __dirname + `/cache/join/avt.png`;
           
-          let avtAnime = await apiCallWithRetry(
-            `https://graph.facebook.com/${event.logMessageData.addedParticipants[o].userFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
-            { responseType: "arraybuffer" },
-            2
-          );
+          // Ensure cache directory exists
+          if (!fs.existsSync(__dirname + `/cache/join/`)) {
+            fs.mkdirSync(__dirname + `/cache/join/`, { recursive: true });
+          }
+          
+          let avtAnime, background;
+          
+          try {
+            avtAnime = await apiCallWithRetry(
+              `https://graph.facebook.com/${event.logMessageData.addedParticipants[o].userFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
+              { responseType: "arraybuffer" },
+              3
+            );
+          } catch (avatarError) {
+            console.log(`Avatar download failed for user ${o}, using default`);
+            // Create a simple default avatar
+            const canvas = createCanvas(720, 720);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#4267B2';
+            ctx.fillRect(0, 0, 720, 720);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 200px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('?', 360, 400);
+            avtAnime = { data: canvas.toBuffer() };
+          }
           
           let backgrounds = [
             'https://i.imgur.com/dDSh0wc.jpeg',
@@ -123,11 +149,24 @@ module.exports.run = async function({ api, event, Users }) {
             'https://i.imgur.com/M7HEAMA.jpeg'
           ];
           
-          let background = await apiCallWithRetry(
-            backgrounds[Math.floor(Math.random() * backgrounds.length)], 
-            { responseType: "arraybuffer" },
-            2
-          );
+          try {
+            background = await apiCallWithRetry(
+              backgrounds[Math.floor(Math.random() * backgrounds.length)], 
+              { responseType: "arraybuffer" },
+              3
+            );
+          } catch (bgError) {
+            console.log(`Background download failed, using default`);
+            // Create a simple gradient background
+            const canvas = createCanvas(1902, 1082);
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 1902, 1082);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1902, 1082);
+            background = { data: canvas.toBuffer() };
+          }
           
           fs.writeFileSync(pathAva, Buffer.from(avtAnime.data, "utf-8"));
           fs.writeFileSync(pathImg, Buffer.from(background.data, "utf-8"));
@@ -184,14 +223,24 @@ module.exports.run = async function({ api, event, Users }) {
       if (typeof threadData.customJoin !== "undefined") msg = threadData.customJoin;
 
       try {
+        // Add a small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
         api.sendMessage({ body: msg, attachment: abx, mentions }, threadID);
       } catch (sendError) {
         console.error('Failed to send welcome message:', sendError.message);
         // Try sending without attachments if it fails
         try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
           api.sendMessage({ body: msg, mentions }, threadID);
         } catch (fallbackError) {
           console.error('Fallback message also failed:', fallbackError.message);
+          // Final fallback - simple message without mentions
+          try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            api.sendMessage(`Welcome to the group!`, threadID);
+          } catch (finalError) {
+            console.error('All message attempts failed:', finalError.message);
+          }
         }
       }
 

@@ -18,7 +18,7 @@ const { apiCallWithRetry } = require("../../utils/apiHelper");
 const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs-extra');
 const path = require('path');
-const jimp = require("jimp");
+const Jimp = require("jimp");
 
 let backgrounds = [
   "https://i.imgur.com/MnAwD8U.jpg",
@@ -149,7 +149,7 @@ module.exports.run = async function({ api, event, Users, Threads }) {
         let avatarResponse = await apiCallWithRetry(avatarUrl, { responseType: 'arraybuffer' }, 2);
         fs.writeFileSync(avatarPath, avatarResponse.data);
         
-        let avatar = await jimp.read(avatarPath);
+        let avatar = await Jimp.read(avatarPath);
         avatar.circle();
         let roundAvatar = await avatar.getBufferAsync('image/png');
         roundAvatarImg = await loadImage(roundAvatar);
