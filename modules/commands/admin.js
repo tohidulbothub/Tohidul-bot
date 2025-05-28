@@ -14,6 +14,13 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event }) {
+  const { senderID } = event;
+  
+  // Check if user is admin (optional - remove this check if you want everyone to see admin info)
+  // if (!global.config.ADMINBOT.includes(senderID)) {
+  //   return api.sendMessage("❌ আপনার এই কমান্ড ব্যবহারের অনুমতি নেই!", event.threadID, event.messageID);
+  // }
+
   const now = moment().tz("Asia/Dhaka").format("DD/MM/YYYY hh:mm:ss A");
   const imagePath = __dirname + "/cache/admin.png";  // Use your local image path
 

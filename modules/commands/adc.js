@@ -13,7 +13,12 @@ module.exports.config = {
 module.exports.run = async function({ api, event, args }) {
   const fs = require("fs");
   const path = require("path");
-  const { threadID, messageID, body } = event;
+  const { threadID, messageID, body, senderID } = event;
+
+  // Check if user is admin
+  if (!global.config.ADMINBOT.includes(senderID)) {
+    return api.sendMessage("❌ আপনার এই কমান্ড ব্যবহারের অনুমতি নেই!", threadID, messageID);
+  }
 
   // শুধুমাত্র যদি কোড message-এ paste করা হয়
   // /adc commandName
