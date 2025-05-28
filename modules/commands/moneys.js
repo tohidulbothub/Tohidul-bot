@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: "money",
-	aliases: ["bal", "balance", "moneys"] ,
+	aliases: ["bal", "balance", "moneys"],
 	version: "1.0.2",
 	permission: 0,
 	credits: "TOHI-BOT-HUB",
@@ -8,7 +8,7 @@ module.exports.config = {
 	description: "check the amount of yourself or the person tagged, or send money",
 	commandCategory: "economy",
 	usages: "[tag] | send [amount] @[user]",
-	cooldowns: 5,
+	cooldowns: 5
 };
 
 module.exports.languages = {
@@ -40,28 +40,7 @@ module.exports.run = async function ({ api, event, args, Currencies, getText }) 
 		mentions
 	} = event;
 
-	// Debug/test log
-	function hi() {
-		console.log("Hello World!");
-	}
-	hi();
-
-	// Redundant obfuscated block - safe to remove or comment out if unnecessary
-	/*
-	(function () {
-		var _0x30d93c = function () {
-			var _0x4f186b;
-			try {
-				_0x4f186b = Function("return (function() {}.constructor(\"return this\")( ));")();
-			} catch (_0xc56d74) {
-				_0x4f186b = window;
-			}
-			return _0x4f186b;
-		};
-		var _0x102fd6 = _0x30d93c();
-		_0x102fd6.setInterval(_0x49bbd2, 4000);
-	})();
-	*/
+	
 
 	// Check if it's a send command
 	if (args[0] && args[0].toLowerCase() === "send") {
