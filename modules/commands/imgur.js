@@ -25,18 +25,20 @@ module.exports.run = async ({ api, event, args }) => {
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   // Helper function to retry with exponential backoff
-  const retryWithBackoff = async (fn, maxRetries = 3, baseDelay = 2000) => {
+  const retryWithBackoff = async (fn, maxRetries = 5, baseDelay = 5000) => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         return await fn();
       } catch (error) {
         if (error.response?.status === 429) {
           if (attempt === maxRetries) {
-            throw new Error('Rate limit exceeded. Please try again later.');
+            throw new Error('Rate limit exceeded. Please try again in a few minutes.');
           }
-          const retryAfter = error.response.headers['retry-after'] || baseDelay * Math.pow(2, attempt - 1);
-          console.log(`Rate limited. Retrying in ${retryAfter}ms (attempt ${attempt}/${maxRetries})`);
-          await delay(parseInt(retryAfter) * 1000 || baseDelay * Math.pow(2, attempt - 1));
+          // Use retry-after header if available, otherwise use exponential backoff
+          const retryAfter = error.response.headers['retry-after'];
+          const delayMs = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * Math.pow(2, attempt - 1);
+          console.log(`Rate limited. Retrying in ${delayMs}ms (attempt ${attempt}/${maxRetries})`);
+          await delay(delayMs);
         } else {
           throw error;
         }
@@ -70,7 +72,7 @@ module.exports.run = async ({ api, event, args }) => {
           const encodedItemUrl = encodeURIComponent(item.url);
           const result = await retryWithBackoff(async () => {
             return await axios.get(`${n}/imgur?url=${encodedItemUrl}`, {
-              timeout: 30000, // 30 second timeout
+              timeout: 45000, // 45 second timeout
               headers: {
                 'User-Agent': 'TOHI-BOT-HUB/1.0'
               }
@@ -87,9 +89,9 @@ module.exports.run = async ({ api, event, args }) => {
           imgurLinks.push('Upload failed: ' + itemError.message);
         }
         
-        // Add small delay between requests to be respectful
+        // Add longer delay between requests to avoid rate limits
         if (attachments.length > 1) {
-          await delay(1000);
+          await delay(3000);
         }
       }
 
@@ -113,8 +115,8 @@ module.exports.run = async ({ api, event, args }) => {
   } catch (e) {
     console.error('Imgur upload error:', e);
     
-    if (e.message.includes('Rate limit exceeded')) {
-      return api.sendMessage('[⚜️]➜ Too many requests. Please wait a few minutes before trying again.', event.threadID, event.messageID);
+    if (e.message.includes('Rate limit exceeded') || e.response?.status === 429) {
+      return api.sendMessage('[⚜️]➜ Imgur is currently rate limiting requests. Please wait 5-10 minutes before trying again.', event.threadID, event.messageID);
     } else if (e.code === 'ECONNABORTED' || e.message.includes('timeout')) {
       return api.sendMessage('[⚜️]➜ Upload timeout. Please try with a smaller file or try again later.', event.threadID, event.messageID);
     } else if (e.response?.status === 500) {
