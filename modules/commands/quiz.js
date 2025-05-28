@@ -23,7 +23,7 @@ module.exports.config = {
 module.exports.run = async function ({ api, event }) {
     const { threadID: t, messageID: m } = event;
     try {
-        const response = await axios.get(`${await baseApiUrl()}/quiz3?randomQuiz=random`);
+        const response = await axios.get(`${await baseApiUrl()}/quiz?category=general&q=random`);
         const imageStream = await axios({
             method: "GET",
             url: response.data.link,
