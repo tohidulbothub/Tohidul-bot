@@ -80,6 +80,7 @@ module.exports.run = async function({ api, event, args, Threads }) {
       const tool = require("fb-tools");
       let id = await tool.findUid(link);
       let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_link.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_link.png"), event.messageID);
+      if (!id) return api.sendMessage(`[🖼️] ইউজার পাওয়া যায়নি!`, event.threadID, event.messageID);
       return request(encodeURI(`https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_link.png")).on('close', callback);
     } catch (e) {
       return api.sendMessage(`[🖼️] ইউজার পাওয়া যায়নি!`, event.threadID, event.messageID);

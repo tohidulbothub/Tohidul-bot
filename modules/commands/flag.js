@@ -34,7 +34,7 @@ module.exports.handleReply = async function ({
         const reply = event.body.toLowerCase();
         const getCoin = 2 * 120.5;
         const getExp = 1 * 121;
-        const userData = await Users.get(event.senderID);
+        const userData = await Users.getData(event.senderID);
 
         if (attempts >= maxAttempts) {
             await api.sendMessage(
@@ -49,7 +49,7 @@ module.exports.handleReply = async function ({
             if (reply === country.toLowerCase()) {
                 try {
                     await api.unsendMessage(handleReply.messageID);
-                    await Users.set(event.senderID, {
+                    await Users.setData(event.senderID, {
                         money: userData.money + getCoin,
                         exp: userData.exp + getExp,
                         data: userData.data,
