@@ -11,98 +11,188 @@ class WebServer {
   }
 
   setupRoutes() {
-    // Serve static files from includes/cover directory
-    this.app.use('/static', express.static(path.join(__dirname, 'includes', 'cover')));
-    
-    // Basic health check endpoint
+    // Basic bot status page
+    this.app.get('/', (req, res) => {
+      const botInfo = {
+        name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+        status: 'Online',
+        uptime: this.formatUptime(process.uptime()),
+        commands: global.client?.commands?.size || 0,
+        events: global.client?.events?.size || 0,
+        version: global.config?.version || '1.8.0'
+      };
+
+      const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${botInfo.name} - Bot Status</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .bot-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #4CAF50;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="bot-name">${botInfo.name}</h1>
+        <div class="status">${botInfo.status}</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">${botInfo.commands}</div>
+                <div class="stat-label">Commands</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">${botInfo.events}</div>
+                <div class="stat-label">Events</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">${botInfo.uptime}</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">${botInfo.version}</div>
+                <div class="stat-label">Version</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🤖 Bot is running successfully!</p>
+            <p>Made with ❤️ by TOHIDUL</p>
+        </div>
+    </div>
+</body>
+</html>`;
+      
+      res.send(html);
+    });
+
+    // API endpoint for bot status
+    this.app.get('/api/status', (req, res) => {
+      res.json({
+        name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+        status: 'online',
+        uptime: process.uptime(),
+        commands: global.client?.commands?.size || 0,
+        events: global.client?.events?.size || 0,
+        version: global.config?.version || '1.8.0',
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // Health check
     this.app.get('/health', (req, res) => {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
+  }
 
-    // Dashboard route
-    this.app.get('/', (req, res) => {
-      const dashboardPath = path.join(__dirname, 'includes', 'cover', 'dashboard.html');
-      if (fs.existsSync(dashboardPath)) {
-        res.sendFile(dashboardPath);
-      } else {
-        res.send('<h1>TOHI-BOT-HUB Web Server</h1><p>Bot is running successfully!</p>');
-      }
-    });
-
-    // Theme endpoint
-    this.app.get('/themes', (req, res) => {
-      const themePath = path.join(__dirname, 'includes', 'cover', 'html.json');
-      try {
-        if (fs.existsSync(themePath)) {
-          const rawData = fs.readFileSync(themePath, 'utf8');
-          if (rawData.trim() === '' || rawData.trim() === '{}') {
-            // If file is empty or contains empty object, return default theme
-            const defaultTheme = {
-              "THEME_COLOR": "#1702CF",
-              "primary": "#1702CF", 
-              "secondary": "#11019F",
-              "tertiary": "#1401BF",
-              "background": "#000000",
-              "text": "#ffffff",
-              "accent": "#1702CF"
-            };
-            res.json(defaultTheme);
-            return;
-          }
-          
-          const themeData = JSON.parse(rawData);
-          
-          // Validate theme data structure
-          if (!themeData || typeof themeData !== 'object' || !themeData.THEME_COLOR) {
-            throw new Error('Invalid theme structure');
-          }
-          
-          res.json(themeData);
-        } else {
-          // Create default theme file if it doesn't exist
-          const defaultTheme = {
-            "THEME_COLOR": "#1702CF",
-            "primary": "#1702CF",
-            "secondary": "#11019F", 
-            "tertiary": "#1401BF",
-            "background": "#000000",
-            "text": "#ffffff",
-            "accent": "#1702CF"
-          };
-          fs.writeFileSync(themePath, JSON.stringify(defaultTheme, null, 2));
-          res.json(defaultTheme);
-        }
-      } catch (error) {
-        console.error('Error processing theme file:', error);
-        // Return default theme as fallback
-        const defaultTheme = {
-          "THEME_COLOR": "#1702CF",
-          "primary": "#1702CF",
-          "secondary": "#11019F",
-          "tertiary": "#1401BF", 
-          "background": "#000000",
-          "text": "#ffffff",
-          "accent": "#1702CF"
-        };
-        res.json(defaultTheme);
-      }
-    });
-
-    // Bot status endpoint
-    this.app.get('/status', (req, res) => {
-      res.json({
-        botName: global.config?.BOTNAME || 'TOHI-BOT-HUB',
-        status: 'running',
-        uptime: process.uptime(),
-        commands: global.client?.commands?.size || 0,
-        events: global.client?.events?.size || 0
-      });
-    });
+  formatUptime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    if (hrs > 0) {
+      return `${hrs}h ${mins}m`;
+    } else if (mins > 0) {
+      return `${mins}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
   }
 
   start(port = 5000) {
     this.server = this.app.listen(port, '0.0.0.0', () => {
-      console.log(`Web server started on http://0.0.0.0:${port}`);
+      console.log(`🌐 Web server started on http://0.0.0.0:${port}`);
     });
     
     this.server.on('error', (err) => {

@@ -122,32 +122,7 @@ setTimeout(() => {
   checkAndUpdate();
 }, 20000);
 
-const path = require("path");
-const express = require("express");
-const parser = require("body-parser");
-const app = express();
-
-app.use(parser.json());
-
-// Serve all static files from the whole project
-app.use(express.static(path.join(__dirname, "includes/cover")));
-
-// Route to serve config.json
-app.get("/themes", (req, res) => {
-  res.sendFile(path.join(__dirname, "includes/cover/html.json"));
-});
-
-// Serve index.html from includes/cover
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "includes/cover/index.html"));
-});
-
-app.listen(2024, () => {
-  global.loading.log(
-    `Bot is running on port: 2024`,
-    "SYSTEM",
-  );
-});
+// Web server setup moved to web-server.js and integrated in main.js
 
 // __@YanMaglinte was Here__ //
 // ----------------------------//
