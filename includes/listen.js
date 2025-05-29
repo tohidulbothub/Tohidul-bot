@@ -178,7 +178,16 @@ module.exports = function ({ api }) {
       config = {};
     }
 
-    // Initialize APPROVAL system if not exists
+    // Initialize AUTO_APPROVE and APPROVAL systems if not exists
+    if (!config.AUTO_APPROVE) {
+      config.AUTO_APPROVE = {
+        enabled: true,
+        approvedGroups: [],
+        autoApproveMessage: true
+      };
+      require('fs').writeFileSync(configPath, JSON.stringify(config, null, 2));
+    }
+
     if (!config.APPROVAL) {
       config.APPROVAL = {
         approvedGroups: [],
@@ -191,10 +200,18 @@ module.exports = function ({ api }) {
     const isAdmin = global.config.ADMINBOT && global.config.ADMINBOT.includes(event.senderID);
     const threadID = String(event.threadID);
 
-    // Check if group is approved for commands (except for admins and approval commands)
-    if (event.isGroup && config.APPROVAL) {
-      const isApproved = config.APPROVAL.approvedGroups.includes(threadID);
-      const isPending = config.APPROVAL.pendingGroups.includes(threadID);
+    // Check if group is approved for commands
+    if (event.isGroup) {
+      let isApproved = false;
+
+      // Check AUTO_APPROVE system first
+      if (config.AUTO_APPROVE && config.AUTO_APPROVE.enabled) {
+        isApproved = config.AUTO_APPROVE.approvedGroups.includes(threadID);
+      } else {
+        // Use manual APPROVAL system
+        isApproved = config.APPROVAL.approvedGroups.includes(threadID);
+      }
+
       const isRejected = config.APPROVAL.rejectedGroups && config.APPROVAL.rejectedGroups.includes(threadID);
 
       // If group is rejected, no commands work at all
@@ -202,17 +219,12 @@ module.exports = function ({ api }) {
         return;
       }
 
-      // If group is not approved and not pending, check if it should be added to pending
-      if (!isApproved && !isPending) {
-        // This will be handled by pendingApproval.js event
-      }
-
-      // If group is pending (not approved), block all commands except admin approval commands
+      // If group is not approved, block all commands except admin approval commands
       if (!isApproved) {
         if (event.type === "message" || event.type === "message_reply") {
           const commandName = (event.body || '').trim().split(' ')[0].toLowerCase();
 
-          // Allow only admin approval commands in pending groups
+          // Allow only admin approval commands in non-approved groups
           if (!isAdmin || (commandName !== '/approve' && commandName !== '/reject' && commandName !== '/pending' && commandName !== '/approved')) {
             return; // Block all other commands in non-approved groups
           }
