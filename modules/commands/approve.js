@@ -92,9 +92,12 @@ module.exports.run = async function ({ api, event, args }) {
         
         // Convert to string for consistent comparison
         approveTarget = String(approveTarget);
-        const approvedGroups = config.APPROVAL.approvedGroups.map(id => String(id));
         
-        if (approvedGroups.includes(approveTarget))
+        // Clean and normalize the approved groups list
+        if (!config.APPROVAL.approvedGroups) config.APPROVAL.approvedGroups = [];
+        config.APPROVAL.approvedGroups = [...new Set(config.APPROVAL.approvedGroups.map(id => String(id)))];
+        
+        if (config.APPROVAL.approvedGroups.includes(approveTarget))
             return api.sendMessage("✅ এই গ্রুপ ইতিমধ্যে চালু!", threadID, messageID);
         
         config.APPROVAL.approvedGroups.push(approveTarget);
