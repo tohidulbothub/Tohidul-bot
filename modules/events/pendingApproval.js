@@ -1,18 +1,19 @@
 
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   config: {
     name: "pendingApproval",
     eventType: ["message", "log:subscribe"],
-    version: "3.0.0",
+    version: "4.0.0",
     credits: "TOHIDUL (Enhanced by TOHI-BOT-HUB)",
     description: "Manual approval system - নতুন গ্রুপে notification এবং manual approval"
   },
   run: async function({ api, event }) {
     try {
       const configPath = path.join(__dirname, '../../config.json');
+      delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
 
       // Specific owner who can approve
@@ -86,8 +87,9 @@ module.exports = {
 ❓ এই গ্রুপ approve করবেন?
 
 🎯 Reply করুন:
-┣━ "yes" বা "approve" - Approve করতে
-┗━ "no" বা "reject" - Reject করতে
+┣━ "1" বা "yes" - Approve করতে
+┣━ "2" বা "no" - Reject করতে
+┗━ অথবা: /approve ${threadID}
 
 ⚠️ Approve না করা পর্যন্ত এই গ্রুপে কমান্ড কাজ করবে না!
 
@@ -115,7 +117,7 @@ module.exports = {
 
 🤖 ${global.config.BOTNAME || 'TOHI-BOT'} যুক্ত হয়েছে!
 
-⚠️ কিন্তু এই গ্রুপ এখনো approve হয়নি।
+⚠️ কিন্তু এই গ্রুপ এখনো approve হয়নি
 
 📋 Approval এর অপেক্ষায়:
 ┣━ Admin এর কাছে notification পাঠানো হয়েছে
@@ -149,15 +151,14 @@ module.exports = {
       return api.sendMessage(`⛔️ শুধুমাত্র নির্দিষ্ট admin (${OWNER_ID}) approval দিতে পারবেন!`, event.threadID);
     }
 
-    const { configPath } = global.client;
-    const { writeFileSync } = global.nodemodule["fs-extra"];
+    const configPath = path.join(__dirname, '../../config.json');
     delete require.cache[require.resolve(configPath)];
     var config = require(configPath);
 
     const threadID = handleReply.threadID;
     const choice = event.body.toLowerCase().trim();
 
-    if (choice === "yes" || choice === "y" || choice === "approve" || choice === "হ্যাঁ") {
+    if (choice === "yes" || choice === "y" || choice === "approve" || choice === "হ্যাঁ" || choice === "1") {
       // Approve the group
       if (!config.APPROVAL.approvedGroups.includes(threadID)) {
         config.APPROVAL.approvedGroups.push(threadID);
@@ -168,7 +169,7 @@ module.exports = {
         config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== threadID);
       }
 
-      writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
 
       try {
         const threadInfo = await api.getThreadInfo(threadID);
@@ -197,10 +198,10 @@ module.exports = {
         api.sendMessage(approvalMsg, threadID);
         api.sendMessage(`✅ গ্রুপ "${threadInfo.threadName}" সফলভাবে approve করা হয়েছে!`, event.threadID, event.messageID);
       } catch (error) {
-        api.sendMessage(`✅ গ্রুপ approve করা হয়েছে!`, event.threadID, event.messageID);
+        api.sendMessage(`✅ গ্রুপ approve করা হয়েছে কিন্তু তথ্য পেতে সমস্যা হয়েছে।`, event.threadID, event.messageID);
       }
 
-    } else if (choice === "no" || choice === "n" || choice === "reject" || choice === "না") {
+    } else if (choice === "no" || choice === "n" || choice === "reject" || choice === "না" || choice === "2") {
       // Reject the group
       if (!config.APPROVAL.rejectedGroups) {
         config.APPROVAL.rejectedGroups = [];
@@ -215,16 +216,34 @@ module.exports = {
         config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== threadID);
       }
 
-      writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
 
       try {
         const threadInfo = await api.getThreadInfo(threadID);
+        const rejectedMsg = `
+╔════════════════════════════╗
+  ❌ 𝗚𝗥𝗢𝗨𝗣 𝗥𝗘𝗝𝗘𝗖𝗧𝗘𝗗 ❌
+╚════════════════════════════╝
+
+🚫 আপনার গ্রুপ reject করা হয়েছে!
+
+📊 গ্রুপ তথ্য:
+┣━ নাম: ${threadInfo.threadName}
+┗━ স্ট্যাটাস: অনুমোদিত নয় ❌
+
+⚠️ এই গ্রুপে কোনো কমান্ড কাজ করবে না।
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+        api.sendMessage(rejectedMsg, threadID);
         api.sendMessage(`❌ গ্রুপ "${threadInfo.threadName}" reject করা হয়েছে!`, event.threadID, event.messageID);
       } catch (error) {
         api.sendMessage(`❌ গ্রুপ reject করা হয়েছে!`, event.threadID, event.messageID);
       }
     } else {
-      api.sendMessage(`❓ অবৈধ উত্তর! "yes" বা "no" লিখুন।`, event.threadID, event.messageID);
+      api.sendMessage(`❓ অবৈধ উত্তর! "1" (approve) বা "2" (reject) লিখুন।`, event.threadID, event.messageID);
     }
   }
 };
