@@ -30,7 +30,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // Initialize web server for performance monitoring
 const WebServer = require('./web-server');
 const webServer = new WebServer();
-webServer.start(5000);
+webServer.start(3000);
 
 function startProject() {
     try {
