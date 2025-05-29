@@ -202,23 +202,101 @@ module.exports.run = async function ({ api, event, args }) {
                 for (let i = 0; i < Math.min(pendingGroups.length, 10); i++) {
                     try {
                         const threadInfo = await api.getThreadInfo(pendingGroups[i]);
-                        listMsg += `${i + 1}. ${threadInfo.threadName}\n   ID: ${pendingGroups[i]}\n   সদস্য: ${threadInfo.participantIDs.length} জন\n\n`;
-                    } catch {
-                        listMsg += `${i + 1}. [তথ্য পাওয়া যায়নি]\n   ID: ${pendingGroups[i]}\n\n`;
+                        const groupName = threadInfo.threadName || `[নাম নেই]`;
+                        const memberCount = threadInfo.participantIDs ? threadInfo.participantIDs.length : 0;
+                        listMsg += `${i + 1}. ${groupName}\n   ID: ${pendingGroups[i]}\n   সদস্য: ${memberCount} জন\n\n`;
+                    } catch (error) {
+                        console.error(`Error getting thread info for ${pendingGroups[i]}:`, error);
+                        listMsg += `${i + 1}. [গ্রুপ তথ্য লোড হচ্ছে...]\n   ID: ${pendingGroups[i]}\n   স্ট্যাটাস: Pending ⏳\n\n`;
                     }
                 }
 
-                listMsg += `
-🎯 Approve করতে: /approve ${pendingGroups[0]}
+                if (pendingGroups.length > 0) {
+                    listMsg += `🎯 Approve করতে: /approve ${pendingGroups[0]}\n\n`;
+                }
 
-────────────✦────────────
+                listMsg += `────────────✦────────────
 🚩 Made by TOHIDUL
 ────────────✦────────────`;
 
                 return api.sendMessage(listMsg, threadID, messageID);
             }
 
-            case "all":
+            case "all": {
+                const pendingGroups = config.APPROVAL.pendingGroups || [];
+                const approvedGroups = config.APPROVAL.approvedGroups || [];
+                const rejectedGroups = config.APPROVAL.rejectedGroups || [];
+
+                let allMsg = `
+╔════════════════════════════╗
+  📊 𝗔𝗟𝗟 𝗚𝗥𝗢𝗨𝗣𝗦 𝗜𝗡𝗙𝗢 📊
+╚════════════════════════════╝
+
+`;
+
+                // Show approved groups
+                if (approvedGroups.length > 0) {
+                    allMsg += `✅ APPROVED গ্রুপ (${approvedGroups.length} টি):\n`;
+                    for (let i = 0; i < Math.min(approvedGroups.length, 5); i++) {
+                        try {
+                            const threadInfo = await api.getThreadInfo(approvedGroups[i]);
+                            const groupName = threadInfo.threadName || `[নাম নেই]`;
+                            allMsg += `${i + 1}. ${groupName}\n   ID: ${approvedGroups[i]}\n`;
+                        } catch {
+                            allMsg += `${i + 1}. [Group Info Loading...]\n   ID: ${approvedGroups[i]}\n`;
+                        }
+                    }
+                    if (approvedGroups.length > 5) {
+                        allMsg += `   ... এবং আরো ${approvedGroups.length - 5} টি গ্রুপ\n`;
+                    }
+                    allMsg += `\n`;
+                }
+
+                // Show pending groups
+                if (pendingGroups.length > 0) {
+                    allMsg += `⏳ PENDING গ্রুপ (${pendingGroups.length} টি):\n`;
+                    for (let i = 0; i < Math.min(pendingGroups.length, 3); i++) {
+                        try {
+                            const threadInfo = await api.getThreadInfo(pendingGroups[i]);
+                            const groupName = threadInfo.threadName || `[নাম নেই]`;
+                            allMsg += `${i + 1}. ${groupName}\n   ID: ${pendingGroups[i]}\n`;
+                        } catch {
+                            allMsg += `${i + 1}. [Group Info Loading...]\n   ID: ${pendingGroups[i]}\n`;
+                        }
+                    }
+                    if (pendingGroups.length > 3) {
+                        allMsg += `   ... এবং আরো ${pendingGroups.length - 3} টি গ্রুপ\n`;
+                    }
+                    allMsg += `\n`;
+                }
+
+                // Show rejected groups
+                if (rejectedGroups.length > 0) {
+                    allMsg += `❌ REJECTED গ্রুপ (${rejectedGroups.length} টি):\n`;
+                    for (let i = 0; i < Math.min(rejectedGroups.length, 3); i++) {
+                        try {
+                            const threadInfo = await api.getThreadInfo(rejectedGroups[i]);
+                            const groupName = threadInfo.threadName || `[নাম নেই]`;
+                            allMsg += `${i + 1}. ${groupName}\n   ID: ${rejectedGroups[i]}\n`;
+                        } catch {
+                            allMsg += `${i + 1}. [Group Info Loading...]\n   ID: ${rejectedGroups[i]}\n`;
+                        }
+                    }
+                    if (rejectedGroups.length > 3) {
+                        allMsg += `   ... এবং আরো ${rejectedGroups.length - 3} টি গ্রুপ\n`;
+                    }
+                    allMsg += `\n`;
+                }
+
+                allMsg += `📊 Total: ${approvedGroups.length + pendingGroups.length + rejectedGroups.length} টি গ্রুপ
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                return api.sendMessage(allMsg, threadID, messageID);
+            }
+
             case "status": {
                 const pendingGroups = config.APPROVAL.pendingGroups || [];
                 const approvedGroups = config.APPROVAL.approvedGroups || [];
@@ -238,10 +316,10 @@ module.exports.run = async function ({ api, event, args }) {
 👤 Approval Admin: ${OWNER_ID}
 
 🎯 Commands:
+┣━ /approve all - সব গ্রুপের তালিকা
 ┣━ /approve pending - pending তালিকা
 ┣━ /approve [threadID] - approve করুন
-┣━ /approve reject [threadID] - reject করুন
-┗━ Reply "1/2" দিয়ে approve/reject
+┗━ /approve reject [threadID] - reject করুন
 
 ────────────✦────────────
 🚩 Made by TOHIDUL
