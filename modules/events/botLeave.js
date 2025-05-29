@@ -46,16 +46,24 @@ module.exports.run = async function({ api, event, Threads }) {
           global.data.threadAllowNSFW.splice(nsfwIndex, 1);
         }
         
-        global.loading.log(`⫸ TBH ➤ [ DELETE DATA ] Perform group data deletion ${threadID}`, "DATABASE");
+        global.loading.log(`⫸ TBH ➤ [ DELETE DATA ] Group data deletion completed for ${threadID}`, "DATABASE");
         console.log(`✅ Successfully deleted all data for group: ${threadID}`);
         
       } catch (error) {
-        console.error(`❌ Error deleting group data for ${threadID}:`, error);
-        global.loading.err(`Failed to delete group data for ${threadID}: ${error.message}`, "DATABASE");
+        // Only log critical database errors, ignore API rate limit errors
+        if (!error.message.includes('Rate limited') && !error.message.includes('not part of the conversation')) {
+          console.error(`❌ Error deleting group data for ${threadID}:`, error);
+          global.loading.err(`Failed to delete group data for ${threadID}: ${error.message}`, "DATABASE");
+        }
       }
     }
     
   } catch (error) {
-    console.error("Error in botLeave event:", error);
+    // Ignore common API errors that happen when bot leaves groups
+    if (!error.message.includes('Rate limited') && 
+        !error.message.includes('not part of the conversation') && 
+        !error.message.includes('Jimp.read')) {
+      console.error("Error in botLeave event:", error);
+    };
   }
 };

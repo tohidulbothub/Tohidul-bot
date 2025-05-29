@@ -447,12 +447,22 @@ function onBot() {
     global.utils.complete({ raw });
     // Add global error handlers
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+  // Filter out common API errors
+  if (!error.message.includes('Rate limited') && 
+      !error.message.includes('Jimp.read') && 
+      !error.message.includes('not part of the conversation')) {
+    console.error('Uncaught Exception:', error);
+  }
   // Don't exit the process
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Filter out common API rejections
+  if (reason && !reason.toString().includes('Rate limited') && 
+      !reason.toString().includes('Jimp.read') && 
+      !reason.toString().includes('not part of the conversation')) {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  }
   // Don't exit the process
 });
 
