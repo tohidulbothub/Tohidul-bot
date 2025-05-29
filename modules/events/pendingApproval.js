@@ -5,7 +5,7 @@ const fs = require('fs');
 module.exports = {
   config: {
     name: "pendingApproval",
-    eventType: ["message", "log:subscribe"],
+    eventType: ["log:subscribe"],
     version: "4.0.0",
     credits: "TOHIDUL (Enhanced by TOHI-BOT-HUB)",
     description: "Manual approval system - নতুন গ্রুপে notification এবং manual approval"
@@ -42,7 +42,8 @@ module.exports = {
       fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
       // If bot is added to a new group
-      if (event.type === "log:subscribe" && 
+      if (event.logMessageData && 
+          event.logMessageData.addedParticipants && 
           event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 
         const threadID = event.threadID;
@@ -70,11 +71,13 @@ module.exports = {
         }
 
         try {
+          console.log(`⫸ TBH ➤ [ PENDING ] Bot added to new group: ${threadID}`);
           const threadInfo = await api.getThreadInfo(threadID);
           const currentTime = new Date().toLocaleString("bn-BD", {
             timeZone: "Asia/Dhaka",
             hour12: false
           });
+          console.log(`⫸ TBH ➤ [ PENDING ] Group info loaded: ${threadInfo.threadName}`);
 
           // Send notification to the specific owner
           const approvalRequestMsg = `
@@ -106,6 +109,7 @@ module.exports = {
 
           api.sendMessage(approvalRequestMsg, OWNER_ID, (error, info) => {
             if (!error) {
+              console.log(`⫸ TBH ➤ [ PENDING ] Approval notification sent to admin: ${OWNER_ID}`);
               global.client.handleReply.push({
                 name: this.config.name,
                 messageID: info.messageID,
@@ -113,6 +117,8 @@ module.exports = {
                 threadID: threadID,
                 type: "approval"
               });
+            } else {
+              console.error(`⫸ TBH ➤ [ ERROR ] Failed to send approval notification:`, error);
             }
           });
 
