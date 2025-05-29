@@ -7,6 +7,14 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         var { senderID, threadID } = event;
         var senderID = String(senderID);
         var threadID = String(threadID);
+        
+        // Approval system check
+        const approvedGroups = global.config.APPROVAL?.approvedGroups || [];
+        const isPM = threadID === senderID;
+        
+        // শুধুমাত্র APPROVED গ্রুপে বা ইনবক্সে বট কাজ করবে
+        if (!isPM && !approvedGroups.includes(threadID)) return;
+        
         if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == !![] && senderID == threadID) return;
         for (const eventReg of eventRegistered) {
             const cmd = commands.get(eventReg);
