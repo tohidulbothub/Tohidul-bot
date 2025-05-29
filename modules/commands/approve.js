@@ -407,13 +407,70 @@ module.exports.run = async function ({ api, event, args }) {
             }
 
             default: {
-                // If no args provided, approve current group
+                // If no args provided, approve current group (if in group) or show help
                 if (!args[0]) {
                     // Check if this is a group
                     if (!event.isGroup) {
-                        return api.sendMessage("❌ এটি গ্রুপ নয়! Personal chat এ approve করা যাবে না।", threadID, messageID);
+                        // If in inbox/personal chat, show pending groups to approve
+                        delete require.cache[require.resolve(configPath)];
+                        const freshConfig = require(configPath);
+                        const pendingGroups = freshConfig.APPROVAL.pendingGroups || [];
+                        
+                        if (pendingGroups.length === 0) {
+                            return api.sendMessage(`
+╔════════════════════════════╗
+  📋 𝗔𝗣𝗣𝗥𝗢𝗩𝗔𝗟 𝗛𝗘𝗟𝗣 📋
+╚════════════════════════════╝
+
+📭 কোনো pending গ্রুপ নেই!
+
+🎯 Commands:
+┣━ /approve pending - pending তালিকা
+┣━ /approve [threadID] - specific গ্রুপ approve
+┗━ গ্রুপে: /approve - সেই গ্রুপ approve
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`, threadID, messageID);
+                        }
+
+                        // Show first pending group with quick approve option
+                        try {
+                            const firstPending = pendingGroups[0];
+                            const threadInfo = await api.getThreadInfo(firstPending);
+                            
+                            const pendingMsg = `
+╔════════════════════════════╗
+  ⏳ 𝗣𝗘𝗡𝗗𝗜𝗡𝗚 𝗔𝗣𝗣𝗥𝗢𝗩𝗔𝗟 ⏳
+╚════════════════════════════╝
+
+📊 গ্রুপ তথ্য:
+┣━ নাম: ${threadInfo.threadName}
+┣━ আইডি: ${firstPending}
+┣━ সদস্য: ${threadInfo.participantIDs.length} জন
+┗━ স্ট্যাটাস: Pending ⏳
+
+🎯 Quick Commands:
+┣━ /approve ${firstPending} - এই গ্রুপ approve
+┣━ /approve reject ${firstPending} - reject
+┗━ /approve pending - সব pending তালিকা
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                            return api.sendMessage(pendingMsg, threadID, messageID);
+                        } catch {
+                            return api.sendMessage(`
+📋 Pending গ্রুপ: ${pendingGroups.length} টি
+
+🎯 Commands:
+┣━ /approve pending - সব তালিকা
+┗━ /approve [threadID] - approve করুন`, threadID, messageID);
+                        }
                     }
 
+                    // In group - approve current group
                     // Check if already approved
                     if (config.APPROVAL.approvedGroups.includes(threadID)) {
                         return api.sendMessage("✅ এই গ্রুপ ইতিমধ্যে approved!", threadID, messageID);
@@ -459,9 +516,6 @@ module.exports.run = async function ({ api, event, args }) {
 
                 // Direct approve by threadID
                 const targetThreadID = args[0];
-                if (!targetThreadID) {
-                    return api.sendMessage("❌ Thread ID দিন! উদাহরণ: /approve 123456789\nঅথবা: /approve (current গ্রুপ approve করতে)", threadID, messageID);
-                }
 
                 // Check if already approved
                 if (config.APPROVAL.approvedGroups.includes(targetThreadID)) {
