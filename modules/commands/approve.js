@@ -1,212 +1,165 @@
 module.exports.config = {
     name: "approve",
-    version: "2.1.0",
+    version: "3.0.0",
     permission: 2, // Only bot owner can use this command
     usePrefix: true,
     credits: "TOHI-BOT-HUB",
-    description: "Approve/remove threads or users by thread ID or mention. Only the bot owner can use.",
+    description: "Auto-approve system for groups. Bot automatically approves when added to groups.",
     commandCategory: "Admin",
-    usages: "approve [list|box|remove] [threadID|@mentions]",
+    usages: "approve [on|off|status|list]",
     cooldowns: 5
 };
 
 // Set your Facebook UID here (only you, the bot owner, can use this command)
 const OWNER_ID = "100092006324917"; // Change this to your Facebook ID
 
-module.exports.run = async function ({ api, event, args, Threads, Users }) {
+module.exports.run = async function ({ api, event, args }) {
     if (event.senderID !== OWNER_ID) {
         return api.sendMessage(`⛔️ এই কমান্ডটি শুধু বট মালিক (${OWNER_ID}) ব্যবহার করতে পারবেন!`, event.threadID, event.messageID);
     }
 
-    const content = args.slice(1);
-    const { threadID, messageID, mentions } = event;
+    const { threadID, messageID } = event;
     const { configPath } = global.client;
     const { writeFileSync } = global.nodemodule["fs-extra"];
-    const mention = Object.keys(mentions || {});
     delete require.cache[require.resolve(configPath)];
     var config = require(configPath);
 
-    // Initialize APPROVAL system if not exists
-    if (!config.APPROVAL) {
-        config.APPROVAL = {
+    // Initialize AUTO_APPROVE system if not exists
+    if (!config.AUTO_APPROVE) {
+        config.AUTO_APPROVE = {
+            enabled: true,
             approvedGroups: [],
-            pendingGroups: [],
-            rejectedGroups: []
+            autoApproveMessage: true
         };
     }
 
     try {
-        switch ((args[0] || "").toLowerCase()) {
+        const command = (args[0] || "status").toLowerCase();
+
+        switch (command) {
+            case "on":
+            case "enable": {
+                config.AUTO_APPROVE.enabled = true;
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
+                const enableMsg = `
+╔════════════════════════════╗
+  ✅ 𝗔𝗨𝗧𝗢 𝗔𝗣𝗣𝗥𝗢𝗩𝗘 𝗢𝗡 ✅
+╚════════════════════════════╝
+
+🤖 অটো এপ্রুভ সিস্টেম চালু করা হয়েছে!
+
+📋 বৈশিষ্ট্য:
+┣━ বট যেকোনো গ্রুপে যুক্ত হলে অটো এপ্রুভ
+┣━ তাৎক্ষণিক কমান্ড অ্যাক্সেস
+┣━ স্বয়ংক্রিয় স্বাগত বার্তা
+┗━ কোনো ম্যানুয়াল এপ্রুভালের প্রয়োজন নেই
+
+🎯 এখন বট যেকোনো গ্রুপে যুক্ত হলে তাৎক্ষণিক কাজ শুরু করবে!
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                return api.sendMessage(enableMsg, threadID, messageID);
+            }
+
+            case "off":
+            case "disable": {
+                config.AUTO_APPROVE.enabled = false;
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
+                const disableMsg = `
+╔════════════════════════════╗
+  ❌ 𝗔𝗨𝗧𝗢 𝗔𝗣𝗣𝗥𝗢𝗩𝗘 𝗢𝗙𝗙 ❌
+╚════════════════════════════╝
+
+🔒 অটো এপ্রুভ সিস্টেম বন্ধ করা হয়েছে!
+
+📋 পরিবর্তন:
+┣━ নতুন গ্রুপে ম্যানুয়াল এপ্রুভাল প্রয়োজন
+┣━ পুরাতন এপ্রুভড গ্রুপ এখনো কাজ করবে
+┣━ নতুন গ্রুপে কমান্ড কাজ করবে না
+┗━ এডমিনদের এপ্রুভাল দিতে হবে
+
+⚠️ এখন নতুন গ্রুপে ম্যানুয়াল এপ্রুভাল প্রয়োজন!
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                return api.sendMessage(disableMsg, threadID, messageID);
+            }
+
             case "list":
-            case "all":
-            case "-a": {
-                const approvedGroups = config.APPROVAL.approvedGroups || [];
-                const pendingGroups = config.APPROVAL.pendingGroups || [];
-                let msg = [];
-
-                if (approvedGroups.length > 0) {
-                    msg.push("✅ অনুমোদিত গ্রুপসমূহ:");
-                    for (const id of approvedGroups) {
-                        try {
-                            const groupName = (await global.data.threadInfo.get(id)).threadName || "Unknown Group";
-                            msg.push(`📌 গ্রুপ: ${groupName}\n🆔 আইডি: ${id}`);
-                        } catch (e) {
-                            msg.push(`📌 গ্রুপ: Unknown Group\n🆔 আইডি: ${id}`);
-                        }
-                    }
+            case "groups": {
+                const approvedGroups = config.AUTO_APPROVE.approvedGroups || [];
+                if (approvedGroups.length === 0) {
+                    return api.sendMessage("📋 কোনো গ্রুপ এপ্রুভড নেই!", threadID, messageID);
                 }
 
-                if (pendingGroups.length > 0) {
-                    msg.push("\n⏳ অপেক্ষমাণ গ্রুপসমূহ:");
-                    for (const id of pendingGroups) {
-                        try {
-                            const groupName = (await global.data.threadInfo.get(id)).threadName || "Unknown Group";
-                            msg.push(`📌 গ্রুপ: ${groupName}\n🆔 আইডি: ${id}`);
-                        } catch (e) {
-                            msg.push(`📌 গ্রুপ: Unknown Group\n🆔 আইডি: ${id}`);
-                        }
-                    }
-                }
+                let groupsList = `
+╔════════════════════════════╗
+  📋 𝗔𝗣𝗣𝗥𝗢𝗩𝗘𝗗 𝗚𝗥𝗢𝗨𝗣𝗦 📋
+╚════════════════════════════╝
 
-                const finalMsg = 
-`╭───🌟 𝗔𝗽𝗽𝗿𝗼𝘃𝗲𝗱 𝗟𝗶𝘀𝘁 🌟───╮
-${msg.length ? msg.join('\n\n') : "কেউ নেই!"}
-╰───────────────╯
-👑 Crafted by TOHIDUL`;
-                return api.sendMessage(finalMsg, threadID, messageID);
-            }
+🎉 মোট এপ্রুভড গ্রুপ: ${approvedGroups.length} টি
 
-            case "box": {
-                if (content.length && !isNaN(content[0])) {
-                    const targetThreadID = content[0];
-                    
-                    // Remove from pending if exists
-                    if (config.APPROVAL.pendingGroups.includes(targetThreadID)) {
-                        config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== targetThreadID);
-                    }
-                    
-                    // Remove from rejected if exists
-                    if (config.APPROVAL.rejectedGroups && config.APPROVAL.rejectedGroups.includes(targetThreadID)) {
-                        config.APPROVAL.rejectedGroups = config.APPROVAL.rejectedGroups.filter(id => id !== targetThreadID);
-                    }
-                    
-                    // Add to approved if not already there
-                    if (!config.APPROVAL.approvedGroups.includes(targetThreadID)) {
-                        config.APPROVAL.approvedGroups.push(targetThreadID);
-                    }
-                    
-                    writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
-                    
-                    let displayInfo;
+`;
+                for (let i = 0; i < Math.min(approvedGroups.length, 15); i++) {
                     try {
-                        const groupName = (await global.data.threadInfo.get(targetThreadID)).threadName || "Unknown Group";
-                        displayInfo = `📌 গ্রুপ: ${groupName}\n🆔 আইডি: ${targetThreadID}`;
-                    } catch (e) {
-                        displayInfo = `📌 গ্রুপ: Unknown Group\n🆔 আইডি: ${targetThreadID}`;
+                        const threadInfo = await api.getThreadInfo(approvedGroups[i]);
+                        groupsList += `${i + 1}. ${threadInfo.threadName}\n   ID: ${approvedGroups[i]}\n   সদস্য: ${threadInfo.participantIDs.length} জন\n\n`;
+                    } catch {
+                        groupsList += `${i + 1}. Unknown Group\n   ID: ${approvedGroups[i]}\n\n`;
                     }
-                    
-                    const addMsg = `✅ Approve সম্পন্ন!\n\n${displayInfo}\n\n👑 Crafted by TOHIDUL`;
-                    
-                    // Send activation message to the group
-                    const activationMsg = `
-╔════════════════════════════╗
-  🎊 𝗕𝗢𝗧 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 🎊
-╚════════════════════════════╝
-
-🤖 ${global.config.BOTNAME || 'TOHI-BOT'} এখন সক্রিয়!
-
-🎉 এই গ্রুপ সফলভাবে অনুমোদিত হয়েছে!
-✨ সব কমান্ড এখন কাজ করবে।
-
-🚀 শুরু করতে:
-┣━ ${global.config.PREFIX}help - সব কমান্ড দেখুন
-┣━ ${global.config.PREFIX}menu - ক্যাটাগরি মেনু
-┗━ ${global.config.PREFIX}info - বট তথ্য
-
-────────────✦────────────
-🚩 Made by TOHIDUL
-────────────✦────────────`;
-
-                    return api.sendMessage(activationMsg, targetThreadID, () => {
-                        return api.sendMessage(addMsg, threadID, messageID);
-                    });
-                } else {
-                    return api.sendMessage("❌ সঠিক threadID দিন! যেমন: /approve box 123456789", threadID, messageID);
                 }
+
+                if (approvedGroups.length > 15) {
+                    groupsList += `... এবং আরো ${approvedGroups.length - 15} টি গ্রুপ\n\n`;
+                }
+
+                groupsList += `────────────✦────────────\n🚩 Made by TOHIDUL\n────────────✦────────────`;
+                return api.sendMessage(groupsList, threadID, messageID);
             }
 
-            case "remove":
-            case "rm":
-            case "delete": {
-                if (content.length && !isNaN(content[0])) {
-                    const targetThreadID = content[0];
-                    
-                    // Remove from approved groups
-                    const approvedIndex = config.APPROVAL.approvedGroups.findIndex(item => item.toString() === targetThreadID);
-                    if (approvedIndex !== -1) {
-                        config.APPROVAL.approvedGroups.splice(approvedIndex, 1);
-                        
-                        // Add to rejected list
-                        if (!config.APPROVAL.rejectedGroups) config.APPROVAL.rejectedGroups = [];
-                        if (!config.APPROVAL.rejectedGroups.includes(targetThreadID)) {
-                            config.APPROVAL.rejectedGroups.push(targetThreadID);
-                        }
-                        
-                        writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
-                        
-                        let displayInfo;
-                        try {
-                            const groupName = (await global.data.threadInfo.get(targetThreadID)).threadName || "Unknown Group";
-                            displayInfo = `📌 গ্রুপ: ${groupName}\n🆔 আইডি: ${targetThreadID}`;
-                        } catch (e) {
-                            displayInfo = `📌 গ্রুপ: Unknown Group\n🆔 আইডি: ${targetThreadID}`;
-                        }
-                        
-                        const removeMsg = `🗑️ Remove সম্পন্ন!\n\n${displayInfo}\n\n👑 Crafted by TOHIDUL`;
-                        
-                        // Send rejection message to the group
-                        const rejectionMsg = `
-╔════════════════════════════╗
-  ❌ 𝗚𝗥𝗢𝗨𝗣 𝗥𝗘𝗝𝗘𝗖𝗧𝗘𝗗 ❌
-╚════════════════════════════╝
-
-🚫 গ্রুপ প্রত্যাখ্যান করা হয়েছে।
-
-⚠️ এই গ্রুপে বট কাজ করবে না।
-
-────────────✦────────────
-🚩 Made by TOHIDUL
-────────────✦────────────`;
-
-                        return api.sendMessage(rejectionMsg, targetThreadID, () => {
-                            return api.sendMessage(removeMsg, threadID, messageID);
-                        });
-                    } else {
-                        return api.sendMessage("❌ উক্ত আইডি Approve লিস্টে নেই!", threadID, messageID);
-                    }
-                } else {
-                    return api.sendMessage("❌ সঠিক threadID দিন! যেমন: /approve remove 123456789", threadID, messageID);
-                }
-            }
-
+            case "status":
             default: {
-                const helpMsg = `
-🤖 𝗔𝗽𝗽𝗿𝗼𝘃𝗲 𝗖𝗼𝗺𝗺𝗮𝗻𝗱 𝗛𝗲𝗹𝗽
+                const isEnabled = config.AUTO_APPROVE.enabled;
+                const totalApproved = (config.AUTO_APPROVE.approvedGroups || []).length;
 
-📋 ব্যবহার পদ্ধতি:
-┣━ /approve list - সব তালিকা দেখুন
-┣━ /approve box [threadID] - গ্রুপ অনুমোদন
-┗━ /approve remove [threadID] - গ্রুপ প্রত্যাখ্যান
+                const statusMsg = `
+╔════════════════════════════╗
+  📊 𝗔𝗨𝗧𝗢 𝗔𝗣𝗣𝗥𝗢𝗩𝗘 𝗦𝗧𝗔𝗧𝗨𝗦 📊
+╚════════════════════════════╝
 
-📌 উদাহরণ:
-┣━ /approve box 123456789
-┗━ /approve remove 123456789
+🔧 সিস্টেম স্ট্যাটাস: ${isEnabled ? '✅ চালু' : '❌ বন্ধ'}
 
-👑 Crafted by TOHIDUL`;
-                return api.sendMessage(helpMsg, threadID, messageID);
+📊 তথ্য:
+┣━ এপ্রুভড গ্রুপ: ${totalApproved} টি
+┣━ অটো এপ্রুভ: ${isEnabled ? 'সক্রিয় ✅' : 'নিষ্ক্রিয় ❌'}
+┣━ স্বাগত বার্তা: ${config.AUTO_APPROVE.autoApproveMessage ? 'চালু ✅' : 'বন্ধ ❌'}
+┗━ ম্যানুয়াল এপ্রুভাল: ${isEnabled ? 'প্রয়োজন নেই' : 'প্রয়োজন'}
+
+🎯 কমান্ডসমূহ:
+┣━ /approve on - অটো এপ্রুভ চালু
+┣━ /approve off - অটো এপ্রুভ বন্ধ
+┣━ /approve list - এপ্রুভড গ্রুপ দেখুন
+┗━ /approve status - বর্তমান স্ট্যাটাস
+
+${isEnabled ? 
+'🎉 বট এখন যেকোনো গ্রুপে অটো এপ্রুভ করবে!' : 
+'⚠️ নতুন গ্রুপে ম্যানুয়াল এপ্রুভাল প্রয়োজন!'}
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                return api.sendMessage(statusMsg, threadID, messageID);
             }
         }
     } catch (error) {
+        console.error('Approve command error:', error);
         return api.sendMessage("❌ কিছু একটা ভুল হয়েছে! আবার চেষ্টা করুন।", threadID, messageID);
     }
 };

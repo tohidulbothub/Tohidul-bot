@@ -95,6 +95,11 @@
     "logs": {
         "enable": true
     },
+    "AUTO_APPROVE": {
+        "enabled": true,
+        "approvedGroups": [],
+        "autoApproveMessage": true
+    },
     "APPROVAL": {
         "approvedGroups": [],
         "pendingGroups": []

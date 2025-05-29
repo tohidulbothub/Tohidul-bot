@@ -1,3 +1,4 @@
+
 let activeCmd = false;
 
 module.exports = function ({ api, models, Users, Threads, Currencies, ...rest }) {
@@ -28,26 +29,39 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
 
-      if (event.isGroup && config.APPROVAL) {
+      if (event.isGroup) {
         const threadID = event.threadID;
         const isAdmin = global.config.ADMINBOT.includes(event.senderID);
 
-        // Initialize APPROVAL object if it doesn't exist
-        if (!config.APPROVAL.approvedGroups) {
-          config.APPROVAL.approvedGroups = [];
-          fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-        }
-
-        // If group is not approved, block all commands except /approve for admins
-        if (!config.APPROVAL.approvedGroups.includes(threadID)) {
-          if (!isAdmin) {
-            return; // Non-admins can't use any commands in non-approved groups
+        // Check if AUTO_APPROVE system is enabled
+        if (config.AUTO_APPROVE && config.AUTO_APPROVE.enabled) {
+          // Auto-approve system: automatically approve any group the bot is in
+          if (!config.AUTO_APPROVE.approvedGroups.includes(threadID)) {
+            config.AUTO_APPROVE.approvedGroups.push(threadID);
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
           }
+          // All commands work in auto-approve mode
+        } else {
+          // Manual approval system: use the old APPROVAL system
+          if (config.APPROVAL) {
+            // Initialize APPROVAL object if it doesn't exist
+            if (!config.APPROVAL.approvedGroups) {
+              config.APPROVAL.approvedGroups = [];
+              fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+            }
 
-          // For admins, only allow /approve command in non-approved groups
-          const commandName = (event.body || '').trim().split(' ')[0];
-          if (commandName !== '/approve') {
-            return; // Only allow /approve command for admins in non-approved groups
+            // If group is not approved, block all commands except /approve for admins
+            if (!config.APPROVAL.approvedGroups.includes(threadID)) {
+              if (!isAdmin) {
+                return; // Non-admins can't use any commands in non-approved groups
+              }
+
+              // For admins, only allow /approve command in non-approved groups
+              const commandName = (event.body || '').trim().split(' ')[0];
+              if (commandName !== '/approve') {
+                return; // Only allow /approve command for admins in non-approved groups
+              }
+            }
           }
         }
       }
