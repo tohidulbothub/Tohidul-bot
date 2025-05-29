@@ -102,7 +102,9 @@
   },
   "APPROVAL": {
     "approvedGroups": [],
-    "pendingGroups": [],
+    "pendingGroups": [
+      "29215999454712506"
+    ],
     "rejectedGroups": []
   }
 }
