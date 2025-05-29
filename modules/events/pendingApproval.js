@@ -59,7 +59,14 @@ module.exports = {
         // Add to pending list if not already there
         if (!config.APPROVAL.pendingGroups.includes(threadID)) {
           config.APPROVAL.pendingGroups.push(threadID);
-          fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+          
+          // Save config immediately
+          try {
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+            console.log(`⫸ TBH ➤ [ PENDING ] Added to pending list: ${threadID}`);
+          } catch (error) {
+            console.error('Error saving config:', error);
+          }
         }
 
         try {
@@ -109,31 +116,8 @@ module.exports = {
             }
           });
 
-          // Send message to the group about pending approval
-          const pendingMsg = `
-╔════════════════════════════╗
-  ⏳ 𝗔𝗣𝗣𝗥𝗢𝗩𝗔𝗟 𝗣𝗘𝗡𝗗𝗜𝗡𝗚 ⏳
-╚════════════════════════════╝
-
-🤖 ${global.config.BOTNAME || 'TOHI-BOT'} যুক্ত হয়েছে!
-
-⚠️ কিন্তু এই গ্রুপ এখনো approve হয়নি
-
-📋 Approval এর অপেক্ষায়:
-┣━ Admin এর কাছে notification পাঠানো হয়েছে
-┣━ Approval পেলে সব কমান্ড কাজ করবে
-┣━ Approval না পেলে কমান্ড কাজ করবে না
-┗━ ধৈর্য ধরে অপেক্ষা করুন
-
-🎯 Approval পেলে আপনি notification পাবেন!
-
-────────────✦────────────
-🚩 Made by TOHIDUL
-────────────✦────────────`;
-
-          setTimeout(() => {
-            api.sendMessage(pendingMsg, threadID);
-          }, 2000);
+          // Don't send auto message to group - only send notification to admin
+          console.log(`⫸ TBH ➤ [ PENDING ] New group added: ${threadID} | Name: ${threadInfo.threadName}`);
 
         } catch (error) {
           console.error('Error in pendingApproval:', error);

@@ -170,7 +170,13 @@ module.exports.run = async function ({ api, event, args }) {
         switch (command) {
             case "list":
             case "pending": {
-                const pendingGroups = config.APPROVAL.pendingGroups || [];
+                // Reload config to get latest data
+                delete require.cache[require.resolve(configPath)];
+                const freshConfig = require(configPath);
+                const pendingGroups = freshConfig.APPROVAL.pendingGroups || [];
+                
+                console.log(`⫸ TBH ➤ [ DEBUG ] Pending groups found: ${pendingGroups.length}`);
+                console.log(`⫸ TBH ➤ [ DEBUG ] Pending list: ${JSON.stringify(pendingGroups)}`);
                 
                 if (pendingGroups.length === 0) {
                     return api.sendMessage(`
@@ -223,9 +229,14 @@ module.exports.run = async function ({ api, event, args }) {
             }
 
             case "all": {
-                const pendingGroups = config.APPROVAL.pendingGroups || [];
-                const approvedGroups = config.APPROVAL.approvedGroups || [];
-                const rejectedGroups = config.APPROVAL.rejectedGroups || [];
+                // Reload config to get latest data
+                delete require.cache[require.resolve(configPath)];
+                const freshConfig = require(configPath);
+                const pendingGroups = freshConfig.APPROVAL.pendingGroups || [];
+                const approvedGroups = freshConfig.APPROVAL.approvedGroups || [];
+                const rejectedGroups = freshConfig.APPROVAL.rejectedGroups || [];
+                
+                console.log(`⫸ TBH ➤ [ DEBUG ] All groups - Pending: ${pendingGroups.length}, Approved: ${approvedGroups.length}, Rejected: ${rejectedGroups.length}`);
 
                 let allMsg = `
 ╔════════════════════════════╗
@@ -298,9 +309,14 @@ module.exports.run = async function ({ api, event, args }) {
             }
 
             case "status": {
-                const pendingGroups = config.APPROVAL.pendingGroups || [];
-                const approvedGroups = config.APPROVAL.approvedGroups || [];
-                const rejectedGroups = config.APPROVAL.rejectedGroups || [];
+                // Reload config to get latest data
+                delete require.cache[require.resolve(configPath)];
+                const freshConfig = require(configPath);
+                const pendingGroups = freshConfig.APPROVAL.pendingGroups || [];
+                const approvedGroups = freshConfig.APPROVAL.approvedGroups || [];
+                const rejectedGroups = freshConfig.APPROVAL.rejectedGroups || [];
+                
+                console.log(`⫸ TBH ➤ [ DEBUG ] Status check - Pending: ${pendingGroups.length}, Approved: ${approvedGroups.length}, Rejected: ${rejectedGroups.length}`);
 
                 const statusMsg = `
 ╔════════════════════════════╗
