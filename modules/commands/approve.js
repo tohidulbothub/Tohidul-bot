@@ -407,11 +407,11 @@ module.exports.run = async function ({ api, event, args }) {
             }
 
             default: {
-                // If no args provided, approve current group (if in group) or show help
+                // If no args provided, approve current group (if in group) or auto-approve first pending (if in inbox)
                 if (!args[0]) {
                     // Check if this is a group
                     if (!event.isGroup) {
-                        // If in inbox/personal chat, show pending groups to approve
+                        // If in inbox/personal chat, auto-approve first pending group
                         delete require.cache[require.resolve(configPath)];
                         const freshConfig = require(configPath);
                         const pendingGroups = freshConfig.APPROVAL.pendingGroups || [];
@@ -426,7 +426,7 @@ module.exports.run = async function ({ api, event, args }) {
 
 🎯 Commands:
 ┣━ /approve pending - pending তালিকা
-┣━ /approve [threadID] - specific গ্রুপ approve
+┣━ /approve status - সিস্টেম স্ট্যাটাস
 ┗━ গ্রুপে: /approve - সেই গ্রুপ approve
 
 ────────────✦────────────
@@ -434,39 +434,49 @@ module.exports.run = async function ({ api, event, args }) {
 ────────────✦────────────`, threadID, messageID);
                         }
 
-                        // Show first pending group with quick approve option
+                        // Auto-approve first pending group
+                        const firstPending = pendingGroups[0];
+                        
+                        // Add to approved list
+                        if (!config.APPROVAL.approvedGroups.includes(firstPending)) {
+                            config.APPROVAL.approvedGroups.push(firstPending);
+                        }
+
+                        // Remove from other lists
+                        config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== firstPending);
+                        config.APPROVAL.rejectedGroups = config.APPROVAL.rejectedGroups.filter(id => id !== firstPending);
+
+                        writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
                         try {
-                            const firstPending = pendingGroups[0];
                             const threadInfo = await api.getThreadInfo(firstPending);
                             
-                            const pendingMsg = `
+                            const approvalMsg = `
 ╔════════════════════════════╗
-  ⏳ 𝗣𝗘𝗡𝗗𝗜𝗡𝗚 𝗔𝗣𝗣𝗥𝗢𝗩𝗔𝗟 ⏳
+  ✅ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗣𝗣𝗥𝗢𝗩𝗘𝗗 ✅
 ╚════════════════════════════╝
+
+🎉 আপনার গ্রুপ অনুমোদিত হয়েছে!
 
 📊 গ্রুপ তথ্য:
 ┣━ নাম: ${threadInfo.threadName}
-┣━ আইডি: ${firstPending}
 ┣━ সদস্য: ${threadInfo.participantIDs.length} জন
-┗━ স্ট্যাটাস: Pending ⏳
+┣━ স্ট্যাটাস: সক্রিয় ✅
 
-🎯 Quick Commands:
-┣━ /approve ${firstPending} - এই গ্রুপ approve
-┣━ /approve reject ${firstPending} - reject
-┗━ /approve pending - সব pending তালিকা
+🚀 এখন সব কমান্ড কাজ করবে!
 
 ────────────✦────────────
 🚩 Made by TOHIDUL
 ────────────✦────────────`;
 
-                            return api.sendMessage(pendingMsg, threadID, messageID);
-                        } catch {
-                            return api.sendMessage(`
-📋 Pending গ্রুপ: ${pendingGroups.length} টি
+                            api.sendMessage(approvalMsg, firstPending);
+                            return api.sendMessage(`✅ গ্রুপ "${threadInfo.threadName}" সফলভাবে approve করা হয়েছে!
 
-🎯 Commands:
-┣━ /approve pending - সব তালিকা
-┗━ /approve [threadID] - approve করুন`, threadID, messageID);
+📋 ${pendingGroups.length - 1} টি গ্রুপ এখনো pending আছে।`, threadID, messageID);
+                        } catch {
+                            return api.sendMessage(`✅ গ্রুপ (${firstPending}) approve করা হয়েছে!
+
+📋 ${pendingGroups.length - 1} টি গ্রুপ এখনো pending আছে।`, threadID, messageID);
                         }
                     }
 
