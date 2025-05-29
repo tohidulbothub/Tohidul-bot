@@ -1,54 +1,60 @@
+// API Helper utilities for rate limiting and error handling
+const logger = require('./log.js');
 
-const axios = require('axios');
+class APIHelper {
+  constructor() {
+    this.lastCallTime = 0;
+    this.minDelay = 1000; // Minimum 1 second between API calls
+  }
 
-async function apiCallWithRetry(url, options = {}, maxRetries = 3) {
-    let lastError = null;
-    
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            // Set timeout for requests
-            const config = {
-                timeout: 15000, // Increased timeout
-                ...options
-            };
-            
-            const response = await axios(url, config);
-            return response;
-        } catch (error) {
-            lastError = error;
-            
-            // Handle different error types
-            if (error.response?.status === 429 || error.code === 'ECONNABORTED' || error.message.includes('Rate limit')) {
-                const delay = Math.min(Math.pow(2, attempt) * 1500, 10000); // Increased delays
-                console.log(`Rate limited. Retrying in ${delay}ms... (${attempt + 1}/${maxRetries})`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                
-                if (attempt === maxRetries - 1) {
-                    console.log('Max retries reached for API call');
-                    throw new Error('Max retries reached for API call');
-                }
-            } else if (error.response?.status >= 500 || error.code === 'ENOTFOUND' || error.code === 'ECONNRESET') {
-                // Server errors or network issues - retry with delay
-                const delay = 3000 * (attempt + 1);
-                console.log(`Network/Server error. Retrying in ${delay}ms... (${attempt + 1}/${maxRetries})`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                
-                if (attempt === maxRetries - 1) {
-                    throw error;
-                }
-            } else {
-                // Client errors (4xx) or other errors - don't retry immediately but still log
-                if (attempt < maxRetries - 1) {
-                    console.log(`API error ${error.response?.status || error.code}. Retrying... (${attempt + 1}/${maxRetries})`);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                } else {
-                    throw error;
-                }
-            }
-        }
+  // Add delay between API calls to prevent rate limiting
+  async rateLimitedCall(apiFunction, ...args) {
+    const now = Date.now();
+    const timeSinceLastCall = now - this.lastCallTime;
+
+    if (timeSinceLastCall < this.minDelay) {
+      const delayNeeded = this.minDelay - timeSinceLastCall;
+      await new Promise(resolve => setTimeout(resolve, delayNeeded));
     }
-    
-    throw lastError;
+
+    this.lastCallTime = Date.now();
+
+    try {
+      return await apiFunction(...args);
+    } catch (error) {
+      // Handle rate limiting with exponential backoff
+      if (error.message && error.message.includes('Rate limited')) {
+        const retryDelay = 2000; // Start with 2 seconds
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        return await apiFunction(...args);
+      }
+      throw error;
+    }
+  }
+
+  // Wrapper for removeUserFromGroup with rate limiting
+  async removeUserFromGroup(api, userID, threadID) {
+    return this.rateLimitedCall(
+      () => new Promise((resolve, reject) => {
+        api.removeUserFromGroup(userID, threadID, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      })
+    );
+  }
+
+  // Wrapper for addUserToGroup with rate limiting  
+  async addUserToGroup(api, userID, threadID) {
+    return this.rateLimitedCall(
+      () => new Promise((resolve, reject) => {
+        api.addUserToGroup(userID, threadID, (err, info) => {
+          if (err) reject(err);
+          else resolve(info);
+        });
+      })
+    );
+  }
 }
 
-module.exports = { apiCallWithRetry };
+module.exports = new APIHelper();

@@ -445,12 +445,25 @@ function onBot() {
     global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
     global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
     global.utils.complete({ raw });
-    // Add global error handlers
+    // Add comprehensive global error handlers
 process.on('uncaughtException', (error) => {
-  // Filter out common API errors
-  if (!error.message.includes('Rate limited') && 
-      !error.message.includes('Jimp.read') && 
-      !error.message.includes('not part of the conversation')) {
+  // Filter out common API errors that we don't need to log
+  const ignoredErrors = [
+    'Rate limited',
+    'Jimp.read is not a function',
+    'not part of the conversation',
+    'Max retries reached for API call',
+    'Background download error',
+    'Avatar processing error',
+    'Got error 1545012',
+    'WARN sendMessage'
+  ];
+  
+  const shouldIgnore = ignoredErrors.some(ignored => 
+    error.message && error.message.includes(ignored)
+  );
+  
+  if (!shouldIgnore) {
     console.error('Uncaught Exception:', error);
   }
   // Don't exit the process
@@ -458,9 +471,22 @@ process.on('uncaughtException', (error) => {
 
 process.on('unhandledRejection', (reason, promise) => {
   // Filter out common API rejections
-  if (reason && !reason.toString().includes('Rate limited') && 
-      !reason.toString().includes('Jimp.read') && 
-      !reason.toString().includes('not part of the conversation')) {
+  const ignoredRejections = [
+    'Rate limited',
+    'Jimp.read is not a function', 
+    'not part of the conversation',
+    'Max retries reached for API call',
+    'Background download error',
+    'Avatar processing error',
+    'Got error 1545012'
+  ];
+  
+  const reasonStr = reason ? reason.toString() : '';
+  const shouldIgnore = ignoredRejections.some(ignored => 
+    reasonStr.includes(ignored)
+  );
+  
+  if (!shouldIgnore) {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   }
   // Don't exit the process
@@ -469,6 +495,7 @@ process.on('unhandledRejection', (reason, promise) => {
 const listener = require('./includes/listen')({ api });
     global.handleListen = api.listenMqtt(async (error, event) => {
       if (error) {
+        // Handle critical login errors
         if (error.error === 'Not logged in.') {
           logger.log("Your bot account has been logged out!", 'LOGIN');
           return process.exit(1);
@@ -477,17 +504,40 @@ const listener = require('./includes/listen')({ api });
           logger.log("Your account has been checkpointed, please confirm your account and log in again!", 'CHECKPOINT');
           return process.exit(0);
         }
+        
         // Filter out ready state messages
         if (error.type === 'ready' && error.error === null) {
           return; // Silently handle ready state
         }
-        console.log(error);
-        return process.exit(0);
+        
+        // Filter out common API errors that don't require logging
+        const ignoredListenErrors = [
+          'Rate limited',
+          'Max retries reached',
+          'Avatar processing error',
+          'Background download error',
+          'Got error 1545012',
+          'Jimp.read is not a function'
+        ];
+        
+        const errorStr = error.toString();
+        const shouldIgnore = ignoredListenErrors.some(ignored => 
+          errorStr.includes(ignored)
+        );
+        
+        if (!shouldIgnore) {
+          console.log('Listen Error:', error);
+        }
+        
+        // Don't exit on common API errors
+        return;
       }
+      
       // Filter out ready state events
       if (event && event.type === 'ready' && event.error === null) {
         return; // Silently handle ready state
       }
+      
       return listener(event);
     });
   });

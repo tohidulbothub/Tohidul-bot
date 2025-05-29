@@ -11,14 +11,46 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-  var threadInfo = await api.getThreadInfo(event.threadID)
-  var id = threadInfo.participantIDs
-  const user = args.join(" ")
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  };
-  for (let user of id) {
-    await delay(5000)
-    api.removeUserFromGroup(user, event.threadID, user);
+  try {
+    var threadInfo = await api.getThreadInfo(event.threadID);
+    var id = threadInfo.participantIDs;
+    
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    let successCount = 0;
+    let failCount = 0;
+    
+    for (let user of id) {
+      try {
+        await delay(2000); // Reduced delay but still prevent rate limiting
+        await new Promise((resolve, reject) => {
+          api.removeUserFromGroup(user, event.threadID, (err) => {
+            if (err) {
+              // Silently handle common errors
+              if (!err.message || (!err.message.includes('Rate limited') && 
+                  !err.message.includes('not part of the conversation') &&
+                  !err.message.includes('1545012'))) {
+                failCount++;
+              }
+              resolve(); // Don't reject to continue with next user
+            } else {
+              successCount++;
+              resolve();
+            }
+          });
+        });
+      } catch (error) {
+        // Silently continue with next user
+        failCount++;
+      }
+    }
+    
+    if (successCount > 0 || failCount > 0) {
+      api.sendMessage(`Kickall completed. Success: ${successCount}, Failed: ${failCount}`, event.threadID);
+    }
+  } catch (error) {
+    api.sendMessage("An error occurred while processing kickall command.", event.threadID);
   }
 };
