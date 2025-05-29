@@ -97,14 +97,12 @@
   },
   "AUTO_APPROVE": {
     "enabled": false,
-    "approvedGroups": [
-      "29215999454712506",
-      "9826242237455305"
-    ],
-    "autoApproveMessage": true
+    "approvedGroups": [],
+    "autoApproveMessage": false
   },
   "APPROVAL": {
     "approvedGroups": [],
-    "pendingGroups": []
+    "pendingGroups": [],
+    "rejectedGroups": []
   }
 }
