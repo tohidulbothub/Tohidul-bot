@@ -368,7 +368,8 @@ module.exports.run = async function ({ api, event, args }) {
 ┗━ /approve all - সব তালিকা
 
 ✅ Approve করুন:
-┣━ /approve [threadID] - approve
+┣━ /approve - current গ্রুপ approve
+┣━ /approve [threadID] - specific গ্রুপ approve
 ┣━ Reply "1" বা "yes" - approve
 ┗━ Direct approve from notification
 
@@ -390,10 +391,60 @@ module.exports.run = async function ({ api, event, args }) {
             }
 
             default: {
+                // If no args provided, approve current group
+                if (!args[0]) {
+                    // Check if this is a group
+                    if (!event.isGroup) {
+                        return api.sendMessage("❌ এটি গ্রুপ নয়! Personal chat এ approve করা যাবে না।", threadID, messageID);
+                    }
+
+                    // Check if already approved
+                    if (config.APPROVAL.approvedGroups.includes(threadID)) {
+                        return api.sendMessage("✅ এই গ্রুপ ইতিমধ্যে approved!", threadID, messageID);
+                    }
+
+                    // Approve current group
+                    if (!config.APPROVAL.approvedGroups.includes(threadID)) {
+                        config.APPROVAL.approvedGroups.push(threadID);
+                    }
+
+                    // Remove from other lists
+                    config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== threadID);
+                    config.APPROVAL.rejectedGroups = config.APPROVAL.rejectedGroups.filter(id => id !== threadID);
+
+                    writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
+                    try {
+                        const threadInfo = await api.getThreadInfo(threadID);
+                        
+                        const approvalMsg = `
+╔════════════════════════════╗
+  ✅ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗣𝗣𝗥𝗢𝗩𝗘𝗗 ✅
+╚════════════════════════════╝
+
+🎉 এই গ্রুপ অনুমোদিত হয়েছে!
+
+📊 গ্রুপ তথ্য:
+┣━ নাম: ${threadInfo.threadName}
+┣━ সদস্য: ${threadInfo.participantIDs.length} জন
+┣━ স্ট্যাটাস: সক্রিয় ✅
+
+🚀 এখন সব কমান্ড কাজ করবে!
+
+────────────✦────────────
+🚩 Made by TOHIDUL
+────────────✦────────────`;
+
+                        return api.sendMessage(approvalMsg, threadID, messageID);
+                    } catch {
+                        return api.sendMessage(`✅ এই গ্রুপ approve করা হয়েছে!`, threadID, messageID);
+                    }
+                }
+
                 // Direct approve by threadID
                 const targetThreadID = args[0];
                 if (!targetThreadID) {
-                    return api.sendMessage("❌ Thread ID দিন! উদাহরণ: /approve 123456789", threadID, messageID);
+                    return api.sendMessage("❌ Thread ID দিন! উদাহরণ: /approve 123456789\nঅথবা: /approve (current গ্রুপ approve করতে)", threadID, messageID);
                 }
 
                 // Check if already approved
