@@ -1,4 +1,3 @@
-
 module.exports.config = {
   name: "leave",
   eventType: ["log:unsubscribe"],
@@ -119,7 +118,7 @@ module.exports.run = async function({ api, event, Users, Threads }) {
           console.error('Font download error:', fontError.message);
         }
       }
-      
+
       if (fs.existsSync(fontPath)) {
         registerFont(fontPath, { family: 'CustomFont' });
       }
@@ -145,10 +144,10 @@ module.exports.run = async function({ api, event, Users, Threads }) {
       try {
         let avatarUrl = `https://graph.facebook.com/${leftParticipantFbId}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
         let avatarPath = path.join(__dirname, "cache/leave/leave_avatar.png");
-        
+
         let avatarResponse = await apiCallWithRetry(avatarUrl, { responseType: 'arraybuffer' }, 2);
         fs.writeFileSync(avatarPath, avatarResponse.data);
-        
+
         let avatar = await Jimp.read(avatarPath);
         avatar.circle();
         let roundAvatar = await avatar.getBufferAsync('image/png');
@@ -176,7 +175,7 @@ module.exports.run = async function({ api, event, Users, Threads }) {
 
       // Draw texts with custom font or fallback
       const fontFamily = fs.existsSync(fontPath) ? 'CustomFont' : 'Arial';
-      
+
       ctx.font = `bold 80px ${fontFamily}`;
       ctx.fillStyle = '#FFF';
       ctx.textAlign = 'center';
@@ -212,7 +211,7 @@ module.exports.run = async function({ api, event, Users, Threads }) {
 
     } catch (imageError) {
       console.error('Leave image generation error:', imageError.message);
-      
+
       // Send message without image if image processing fails
       try {
         return api.sendMessage({
@@ -227,18 +226,18 @@ module.exports.run = async function({ api, event, Users, Threads }) {
 
   } catch (error) {
     console.error('LeaveNoti main error:', error.message);
-    
+
     // Fallback simple leave message
     try {
       const leftParticipantFbId = event.logMessageData.leftParticipantFbId;
       const name = global.data.userName.get(leftParticipantFbId) || "Unknown User";
       const isSelfLeave = event.author == leftParticipantFbId;
-      
+
       const fallbackMsg = `
 ${isSelfLeave ? '👋' : '⚡'} ${name} ${isSelfLeave ? 'গ্রুপ ছেড়ে চলে গেছেন' : 'কে গ্রুপ থেকে রিমুভ করা হয়েছে'}।
 
 🚩 Made by TOHIDUL`;
-      
+
       return api.sendMessage(fallbackMsg, event.threadID);
     } catch (finalError) {
       console.error('Final fallback also failed:', finalError.message);
