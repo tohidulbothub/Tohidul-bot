@@ -82,14 +82,27 @@ module.exports.run = async function ({ api, event, args }) {
         let approveTarget = (args[0] && !isNaN(args[0])) ? args[0] : threadID;
         if (config.APPROVAL.approvedGroups.includes(approveTarget))
             return api.sendMessage("✅ এই গ্রুপ ইতিমধ্যে চালু!", threadID, messageID);
-        if (!config.APPROVAL.approvedGroups.includes(approveTarget))
-            config.APPROVAL.approvedGroups.push(approveTarget);
+        
+        config.APPROVAL.approvedGroups.push(approveTarget);
         config.APPROVAL.pendingGroups = config.APPROVAL.pendingGroups.filter(id => id !== approveTarget);
         config.APPROVAL.rejectedGroups = config.APPROVAL.rejectedGroups.filter(id => id !== approveTarget);
         writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+        
         try {
           const info = await api.getThreadInfo(approveTarget);
-          api.sendMessage(
+          if (approveTarget === threadID) {
+            // Current group approval
+            api.sendMessage(
+`✅ এই গ্রুপ চালু হয়েছে!
+
+নাম: ${info.threadName}
+মেম্বার: ${info.participantIDs.length} জন
+
+এখন সব কমান্ড চালু!
+/help লিখে দেখুন।`, threadID, messageID);
+          } else {
+            // Different group approval
+            api.sendMessage(
 `✅ এই গ্রুপ চালু হয়েছে!
 
 নাম: ${info.threadName}
@@ -97,10 +110,12 @@ module.exports.run = async function ({ api, event, args }) {
 
 এখন সব কমান্ড চালু!
 /help লিখে দেখুন।`, approveTarget);
-          api.sendMessage(`✅ "${info.threadName}" গ্রুপটি চালু হয়েছে!`, threadID, messageID);
+            api.sendMessage(`✅ "${info.threadName}" গ্রুপটি চালু হয়েছে!`, threadID, messageID);
+          }
         } catch {
-          api.sendMessage(`✅ এই গ্রুপ চালু হয়েছে!`, threadID, messageID);
+          api.sendMessage(`✅ গ্রুপ চালু হয়েছে!`, threadID, messageID);
         }
+        break;
       }
     }
   } catch (error) {
