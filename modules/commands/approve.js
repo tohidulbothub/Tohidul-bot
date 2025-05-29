@@ -62,7 +62,16 @@ module.exports.run = async function ({ api, event, args }) {
       }
       case "status": {
         const { approvedGroups = [], pendingGroups = [], rejectedGroups = [] } = config.APPROVAL;
-        let msg = `✅ Approved: ${approvedGroups.length}\n⏳ Pending: ${pendingGroups.length}\n❌ Rejected: ${rejectedGroups.length}\n\n${usageMsg}`;
+        const currentThreadStatus = approvedGroups.includes(String(threadID)) ? "✅ Approved" : 
+                                   pendingGroups.includes(String(threadID)) ? "⏳ Pending" : 
+                                   rejectedGroups.includes(String(threadID)) ? "❌ Rejected" : "❓ Unknown";
+        
+        let msg = `📊 APPROVAL STATUS:\n\n`;
+        msg += `🏠 Current Group: ${currentThreadStatus}\n\n`;
+        msg += `✅ Total Approved: ${approvedGroups.length}\n`;
+        msg += `⏳ Total Pending: ${pendingGroups.length}\n`;
+        msg += `❌ Total Rejected: ${rejectedGroups.length}\n\n`;
+        msg += usageMsg;
         return api.sendMessage(msg, threadID, messageID);
       }
       case "reject": {
@@ -80,7 +89,12 @@ module.exports.run = async function ({ api, event, args }) {
       default: {
         // Approve current group or by ID
         let approveTarget = (args[0] && !isNaN(args[0])) ? args[0] : threadID;
-        if (config.APPROVAL.approvedGroups.includes(approveTarget))
+        
+        // Convert to string for consistent comparison
+        approveTarget = String(approveTarget);
+        const approvedGroups = config.APPROVAL.approvedGroups.map(id => String(id));
+        
+        if (approvedGroups.includes(approveTarget))
             return api.sendMessage("✅ এই গ্রুপ ইতিমধ্যে চালু!", threadID, messageID);
         
         config.APPROVAL.approvedGroups.push(approveTarget);
