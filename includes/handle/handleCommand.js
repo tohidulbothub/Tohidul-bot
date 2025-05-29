@@ -161,6 +161,19 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
           return; // Simply ignore invalid commands
         }
       }
+    } else {
+      // Handle commands without prefix (usePrefix: false)
+      if (!command) {
+        const firstWord = body.trim().split(' ')[0].toLowerCase();
+        // Check if any command has usePrefix: false and matches the first word
+        for (const [cmdName, cmdModule] of commands.entries()) {
+          if (cmdModule.config && cmdModule.config.usePrefix === false && 
+              cmdName.toLowerCase() === firstWord) {
+            command = cmdModule;
+            break;
+          }
+        }
+      }
     }
 
     if (commandBanned.get(threadID) || commandBanned.get(senderID)) {
@@ -203,18 +216,17 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     }
 
     if (command && command.config) {
-      if (
-        command.config.usePrefix === false &&
-        commandName.toLowerCase() !== command.config.name.toLowerCase() &&
-        !command.config.allowPrefix
-      ) {
-        api.sendMessage(
-          global.getText("handleCommand", "notMatched", command.config.name),
-          event.threadID,
-          event.messageID,
-        );
-        return;
+      // For commands with usePrefix: false, check if the command name matches exactly
+      if (command.config.usePrefix === false) {
+        if (commandName.toLowerCase() !== command.config.name.toLowerCase()) {
+          // If it doesn't match exactly, try to find the command without prefix
+          const bodyLower = body.toLowerCase();
+          if (bodyLower !== command.config.name.toLowerCase() && !bodyLower.startsWith(command.config.name.toLowerCase() + " ")) {
+            return; // Silently ignore if not matching
+          }
+        }
       }
+      // For commands with usePrefix: true, require prefix
       if (command.config.usePrefix === true && !body.startsWith(PREFIX)) {
         return;
       }
