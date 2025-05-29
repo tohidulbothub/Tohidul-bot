@@ -1,10 +1,10 @@
 
 module.exports.config = {
   name: "admin noti",
-  eventType: ['log:subscribe'],
+  eventType: [], // Disabled - conflicts with manual approval system
   version: "1.2.0",
   credits: "TOHI-BOT-HUB, improved by TOHIDUL",
-  description: "Stylish Admin Group Update Notification with Rate Limit Handling"
+  description: "Stylish Admin Group Update Notification with Rate Limit Handling - DISABLED"
 };
 
 const ADMIN = 'TOHIDUL';

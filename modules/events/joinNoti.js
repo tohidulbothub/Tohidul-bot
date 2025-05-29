@@ -1,11 +1,10 @@
-
 const fs = require("fs-extra");
 const path = require("path");
 const { apiCallWithRetry } = require("../../utils/apiHelper");
 
 module.exports.config = {
     name: "joinNoti",
-    eventType: ["log:subscribe"],
+    eventType: [], // Disabled - conflicts with manual approval system
     version: "1.2.0",
     credits: "TOHIDUL (Enhanced by TOHI-BOT-HUB)",
     description: "Enhanced notification system for bot and user joins with random media support",
@@ -25,25 +24,25 @@ module.exports.onLoad = function () {
 module.exports.run = async function({ api, event, Users }) {
     try {
         const { threadID } = event;
-        
+
         // If bot is added
         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
             try {
                 // Set nickname for bot
                 const botname = global.config.BOTNAME || "TOHI-BOT";
                 await api.changeNickname(`[ ${global.config.PREFIX} ] • ${botname}`, threadID, api.getCurrentUserID());
-                
+
                 // Get thread info
                 const threadInfo = await api.getThreadInfo(threadID);
                 const threadName = threadInfo.threadName || "Unknown Group";
                 const memberCount = threadInfo.participantIDs.length;
-                
+
                 // Enhanced welcome message for bot
                 const currentTime = new Date().toLocaleString("bn-BD", {
                     timeZone: "Asia/Dhaka",
                     hour12: false
                 });
-                
+
                 const msg = `
 ╔════════════════════════════╗
   🤖 𝗕𝗢𝗧 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 🤖
@@ -88,7 +87,7 @@ module.exports.run = async function({ api, event, Users }) {
                 }
             } catch (botJoinError) {
                 console.error('Bot join notification error:', botJoinError);
-                
+
                 // Fallback simple message
                 const fallbackMsg = `🤖 ${global.config.BOTNAME || "TOHI-BOT"} সফলভাবে গ্রুপে যুক্ত হয়েছে!\n\n${global.config.PREFIX}help লিখে কমান্ড দেখুন।\n\n🚩 Made by TOHIDUL`;
                 return api.sendMessage(fallbackMsg, threadID);
@@ -99,7 +98,7 @@ module.exports.run = async function({ api, event, Users }) {
         try {
             const { threadName, participantIDs } = await api.getThreadInfo(threadID);
             const threadData = global.data.threadData.get(parseInt(threadID)) || {};
-            
+
             // Enhanced default join message template
             const joinMsgTemplate = (typeof threadData.customJoin == "undefined")
                 ? `
@@ -156,7 +155,7 @@ module.exports.run = async function({ api, event, Users }) {
                     return ['.gif', '.mp4', '.jpg', '.jpeg', '.png'].includes(ext);
                 });
             }
-            
+
             let attachment;
             if (files.length > 0) {
                 const randomFile = files[Math.floor(Math.random() * files.length)];
@@ -170,13 +169,13 @@ module.exports.run = async function({ api, event, Users }) {
 
         } catch (memberJoinError) {
             console.error('Member join notification error:', memberJoinError);
-            
+
             // Fallback notification for new members
             const memJoin = event.logMessageData.addedParticipants;
             const nameArray = memJoin.map(user => user.fullName);
-            
+
             const fallbackMsg = `🎉 স্বাগতম ${nameArray.join(', ')}!\n\nআমাদের গ্রুপে যোগ দেওয়ার জন্য ধন্যবাদ। ${global.config.PREFIX}help লিখে বট কমান্ড দেখুন।\n\n🚩 Made by TOHIDUL`;
-            
+
             return api.sendMessage(fallbackMsg, threadID);
         }
     } catch (error) {
