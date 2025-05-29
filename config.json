@@ -101,9 +101,7 @@
     "autoApproveMessage": false
   },
   "APPROVAL": {
-    "approvedGroups": [
-      "29215999454712506"
-    ],
+    "approvedGroups": [],
     "pendingGroups": [],
     "rejectedGroups": []
   }
