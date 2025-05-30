@@ -472,13 +472,19 @@ process.on('uncaughtException', (error) => {
   // Filter out common API errors that we don't need to log
   const ignoredErrors = [
     'Rate limited',
+    'status code 429',
+    'Too Many Requests',
     'Jimp.read is not a function',
     'not part of the conversation',
     'Max retries reached for API call',
     'Background download error',
     'Avatar processing error',
     'Got error 1545012',
-    'WARN sendMessage'
+    'WARN sendMessage',
+    'socket hang up',
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'ENOTFOUND'
   ];
   
   const shouldIgnore = ignoredErrors.some(ignored => 
@@ -495,6 +501,8 @@ process.on('unhandledRejection', (reason, promise) => {
   // Filter out common API rejections
   const ignoredRejections = [
     'Rate limited',
+    'status code 429',
+    'Too Many Requests',
     'jimp.read is not a function',
     'Jimp.read is not a function', 
     'not part of the conversation',
@@ -502,7 +510,11 @@ process.on('unhandledRejection', (reason, promise) => {
     'Background download error',
     'Avatar processing error',
     'Got error 1545012',
-    'ENOENT: no such file or directory'
+    'ENOENT: no such file or directory',
+    'socket hang up',
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'ENOTFOUND'
   ];
   
   const reasonStr = reason ? reason.toString() : '';

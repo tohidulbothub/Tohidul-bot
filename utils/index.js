@@ -107,21 +107,46 @@ module.exports.cleanAnilistHTML = function (text) {
 
 module.exports.downloadFile = async function (url, path) {
   const { createWriteStream } = require("fs");
+  const rateLimitHandler = require("./rateLimitHandler");
 
-  const response = await axios({
-    method: "GET",
-    responseType: "stream",
-    url,
-  });
+  try {
+    const response = await rateLimitHandler.downloadWithRetry(url, path, axios, require("fs"));
+    if (!response) {
+      console.log(`Failed to download ${url} after retries`);
+      return null;
+    }
+    return response;
+  } catch (error) {
+    const is429 = error.response?.status === 429 || error.toString().includes('429');
+    if (is429) {
+      console.log(`Rate limit hit for ${url}, skipping download`);
+      return null;
+    }
+    
+    // Fallback to original method for non-rate-limit errors
+    try {
+      const response = await axios({
+        method: "GET",
+        responseType: "stream",
+        url,
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
 
-  const writer = createWriteStream(path);
+      const writer = createWriteStream(path);
+      response.data.pipe(writer);
 
-  response.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
+      return new Promise((resolve, reject) => {
+        writer.on("finish", resolve);
+        writer.on("error", reject);
+      });
+    } catch (fallbackError) {
+      console.log(`Download failed for ${url}:`, fallbackError.message);
+      return null;
+    }
+  }
 };
 
 module.exports.getContent = async function (url) {
