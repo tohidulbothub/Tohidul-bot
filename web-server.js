@@ -249,9 +249,27 @@ class WebServer {
       });
     });
 
-    // Keep-alive endpoint
+    // Enhanced keep-alive endpoint
     this.app.get('/ping', (req, res) => {
-      res.status(200).send('pong');
+      res.status(200).json({
+        status: 'alive',
+        bot: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+        uptime: this.formatUptime(process.uptime()),
+        timestamp: new Date().toISOString(),
+        message: '24/7 Keep-Alive Active'
+      });
+    });
+    
+    // Keep-alive status endpoint
+    this.app.get('/keepalive', (req, res) => {
+      res.status(200).json({
+        service: 'TOHI-BOT 24/7 Keep-Alive',
+        status: 'Active',
+        uptime: this.formatUptime(process.uptime()),
+        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
+        bot_status: 'Online',
+        message: 'Your bot is running 24/7!'
+      });
     });
 
     // Uptime endpoint
