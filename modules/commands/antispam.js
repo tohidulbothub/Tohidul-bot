@@ -47,7 +47,19 @@ module.exports.handleEvent = async function ({ Users, Threads, api, event }) {
 
     // Check if the user is a bot admin or group admin (skip spam detection for admins)
     const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
-    const isGroupAdmin = (await api.getThreadInfo(event.threadID)).adminIDs.some(admin => admin.id === senderID);
+    let isGroupAdmin = false;
+    
+    try {
+        const threadInfo = await api.getThreadInfo(event.threadID);
+        isGroupAdmin = threadInfo.adminIDs.some(admin => admin.id === senderID);
+    } catch (error) {
+        if (error.toString().includes('429') || error.toString().includes('Rate limited')) {
+            // Skip admin check if rate limited
+            console.log('Rate limited while checking admin status');
+            return;
+        }
+        isGroupAdmin = false;
+    }
     
     if (isBotAdmin || isGroupAdmin) return;
 

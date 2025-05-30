@@ -23,15 +23,27 @@ module.exports.onLoad = async() => {
   const dirMaterial = __dirname + `/cache/`;
   const path = resolve(__dirname, 'cache', 'hon.png');
   if (!existsSync(dirMaterial + "")) mkdirSync(dirMaterial, { recursive: true });
-  if (!existsSync(path)) await downloadFile("https://i.imgur.com/BtSlsSS.jpg", path);
-
+  
+  // Download with retry logic for rate limiting
+  if (!existsSync(path)) {
+    try {
+      await downloadFile("https://i.imgur.com/BtSlsSS.jpg", path);
+    } catch (error) {
+      if (error.message && error.message.includes('429')) {
+        console.log('Rate limited, using fallback image URL');
+        await downloadFile("https://i.postimg.cc/7ZKqCxKQ/kiss-template.jpg", path);
+      } else {
+        throw error;
+      }
+    }
+  }
 }
 
 async function makeImage({ one, two }) {
   const fs = global.nodemodule["fs-extra"];
   const path = global.nodemodule["path"];
   const axios = global.nodemodule["axios"]; 
-  const jimp = global.nodemodule["jimp"];
+  const jimp = require("jimp"); // Use require instead of global.nodemodule
   const __root = path.resolve(__dirname, "cache");
 
   let hon_img = await jimp.read(__root + "/hon.png");
@@ -39,11 +51,25 @@ async function makeImage({ one, two }) {
   let avatarOne = __root + `/avt_${one}.png`;
   let avatarTwo = __root + `/avt_${two}.png`;
 
-  let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-  fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
+  // Add retry logic for avatar downloads
+  const downloadAvatar = async (url, filepath, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 10000 });
+        fs.writeFileSync(filepath, Buffer.from(response.data));
+        return;
+      } catch (error) {
+        if (error.response?.status === 429 && i < retries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Wait 2s, 4s, 6s
+          continue;
+        }
+        throw error;
+      }
+    }
+  };
 
-  let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-  fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
+  await downloadAvatar(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, avatarOne);
+  await downloadAvatar(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, avatarTwo);
 
   let circleOne = await jimp.read(await circle(avatarOne));
   let circleTwo = await jimp.read(await circle(avatarTwo));
