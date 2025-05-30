@@ -2,6 +2,7 @@ module.exports.config = {
   name: "kiss",
   version: "2.0.0",
   hasPermssion: 0,
+  usePrefix: true,
   credits: "MrTomXxX",
   description: "Kiss the person you want",
   commandCategory: "Love",
