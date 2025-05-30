@@ -58,18 +58,14 @@ const keepAlive = new KeepAlive();
 
 webServer.start(3000);
 
-// Start enhanced 24/7 keep-alive service
+// Start keep-alive service after a short delay
 setTimeout(() => {
-  keepAlive.start(3); // Ping every 3 minutes for better uptime
+  keepAlive.start(5); // Ping every 5 minutes
   
-  console.log('🔄 Enhanced 24/7 Keep-alive service initialized');
-  console.log('🌟 Your bot will now stay online 24/7 even when you\'re offline!');
+  // Add external URLs if you have any monitoring services
+  // keepAlive.addUrl('https://your-monitoring-service.com/ping');
   
-  // Log keep-alive status every 30 minutes
-  setInterval(() => {
-    const status = keepAlive.getDetailedStatus();
-    console.log(`🔄 24/7 Status: ${status.status} | Uptime: ${status.uptime} | Success Rate: ${status.stats.successRate}`);
-  }, 1800000); // 30 minutes
+  console.log('🔄 Keep-alive service initialized');
 }, 10000); // Wait 10 seconds for server to fully start
 
 function startProject() {
