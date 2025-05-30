@@ -9,6 +9,7 @@ const moment = require("moment-timezone");
 const logger = require("./utils/log.js");
 const chalk = require("chalk");
 const pkg = require('./package.json');
+const WebServer = require('./web-server.js');
 
 console.log(chalk.bold.dim(` TOHI-BOT-HUB`.toUpperCase() + `(v${pkg.version})`));
 logger.log(`Getting Started!`, "STARTER");
@@ -464,6 +465,11 @@ function onBot() {
     global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
     global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
     global.utils.complete({ raw });
+    
+    // Start web server
+    const webServer = new WebServer();
+    webServer.start(3000);
+    
     // Add comprehensive global error handlers
 process.on('uncaughtException', (error) => {
   // Filter out common API errors that we don't need to log
