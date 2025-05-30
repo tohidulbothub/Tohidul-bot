@@ -7,7 +7,66 @@ class WebServer {
   constructor() {
     this.app = express();
     this.server = null;
+    this.startTime = Date.now();
+    this.requestCount = 0;
+    this.setupMiddleware();
     this.setupRoutes();
+    this.setupKeepAlive();
+  }
+
+  setupMiddleware() {
+    // Request counter for monitoring
+    this.app.use((req, res, next) => {
+      this.requestCount++;
+      next();
+    });
+
+    // Basic security headers
+    this.app.use((req, res, next) => {
+      res.setHeader('X-Powered-By', 'TOHI-BOT-HUB');
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      next();
+    });
+  }
+
+  setupKeepAlive() {
+    // Self-ping to keep the server alive
+    setInterval(() => {
+      try {
+        const http = require('http');
+        const options = {
+          hostname: '0.0.0.0',
+          port: 3000,
+          path: '/health',
+          method: 'GET',
+          timeout: 5000
+        };
+
+        const req = http.request(options, (res) => {
+          // Server is responding
+        });
+
+        req.on('error', (err) => {
+          console.log('Keep-alive ping failed:', err.message);
+        });
+
+        req.on('timeout', () => {
+          req.abort();
+        });
+
+        req.end();
+      } catch (error) {
+        console.log('Keep-alive error:', error.message);
+      }
+    }, 300000); // Ping every 5 minutes
+
+    // Memory cleanup
+    setInterval(() => {
+      if (global.gc) {
+        global.gc();
+      }
+    }, 600000); // Run garbage collection every 10 minutes
   }
 
   setupRoutes() {
@@ -159,20 +218,70 @@ class WebServer {
 
     // API endpoint for bot status
     this.app.get('/api/status', (req, res) => {
+      const memUsage = process.memoryUsage();
       res.json({
         name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
         status: 'online',
         uptime: process.uptime(),
+        serverUptime: Math.floor((Date.now() - this.startTime) / 1000),
         commands: global.client?.commands?.size || 0,
         events: global.client?.events?.size || 0,
         version: global.config?.version || '1.8.0',
-        timestamp: new Date().toISOString()
+        requestCount: this.requestCount,
+        memory: {
+          used: Math.round(memUsage.heapUsed / 1024 / 1024),
+          total: Math.round(memUsage.heapTotal / 1024 / 1024),
+          external: Math.round(memUsage.external / 1024 / 1024)
+        },
+        timestamp: new Date().toISOString(),
+        platform: process.platform,
+        nodeVersion: process.version
       });
     });
 
     // Health check
     this.app.get('/health', (req, res) => {
-      res.json({ status: 'ok', timestamp: new Date().toISOString() });
+      res.json({ 
+        status: 'ok', 
+        uptime: process.uptime(),
+        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
+        timestamp: new Date().toISOString() 
+      });
+    });
+
+    // Keep-alive endpoint
+    this.app.get('/ping', (req, res) => {
+      res.status(200).send('pong');
+    });
+
+    // Uptime endpoint
+    this.app.get('/uptime', (req, res) => {
+      const uptime = process.uptime();
+      const days = Math.floor(uptime / 86400);
+      const hours = Math.floor((uptime % 86400) / 3600);
+      const minutes = Math.floor((uptime % 3600) / 60);
+      const seconds = Math.floor(uptime % 60);
+      
+      res.json({
+        uptime: {
+          raw: uptime,
+          formatted: `${days}d ${hours}h ${minutes}m ${seconds}s`
+        },
+        serverUptime: Math.floor((Date.now() - this.startTime) / 1000),
+        bot: {
+          name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+          status: 'running'
+        }
+      });
+    });
+
+    // Wake-up endpoint for external monitoring services
+    this.app.get('/wake', (req, res) => {
+      res.json({
+        message: 'Bot is awake and running',
+        timestamp: new Date().toISOString(),
+        uptime: this.formatUptime(process.uptime())
+      });
     });
   }
 
@@ -190,14 +299,36 @@ class WebServer {
     }
   }
 
-  start(port = 5000) {
+  start(port = 3000) {
     this.server = this.app.listen(port, '0.0.0.0', () => {
-      console.log(`🌐 Web server started on http://0.0.0.0:${port}`);
+      console.log(`🌐 Keep-alive server started on http://0.0.0.0:${port}`);
+      console.log(`📊 Health check: http://0.0.0.0:${port}/health`);
+      console.log(`📈 Status API: http://0.0.0.0:${port}/api/status`);
+      console.log(`⏰ Uptime: http://0.0.0.0:${port}/uptime`);
     });
     
     this.server.on('error', (err) => {
-      console.error('Web server error:', err);
+      if (err.code === 'EADDRINUSE') {
+        console.log(`Port ${port} is busy, trying port ${port + 1}`);
+        this.start(port + 1);
+      } else {
+        console.error('Web server error:', err);
+      }
     });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('Received SIGTERM, shutting down gracefully');
+      this.server.close(() => {
+        console.log('Keep-alive server stopped');
+        process.exit(0);
+      });
+    });
+
+    // Keep server alive with periodic logs
+    setInterval(() => {
+      console.log(`🔄 Keep-alive: Server running for ${this.formatUptime(process.uptime())}`);
+    }, 1800000); // Log every 30 minutes
   }
 
   stop() {
