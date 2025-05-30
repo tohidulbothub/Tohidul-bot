@@ -26,10 +26,10 @@ async function makeImage({ one, two }) {
     const fs = global.nodemodule["fs-extra"];
     const path = global.nodemodule["path"];
     const axios = global.nodemodule["axios"]; 
-    const jimp = require("jimp");
+    const { Jimp } = require("jimp");
     const __root = path.resolve(__dirname, "cache", "canvas");
 
-    let pairing_img = await jimp.read(__root + "/pairing.png");
+    let pairing_img = await Jimp.read(__root + "/pairing.png");
     let pathImg = __root + `/pairing_${one}_${two}.png`;
     let avatarOne = __root + `/avt_${one}.png`;
     let avatarTwo = __root + `/avt_${two}.png`;
@@ -40,8 +40,8 @@ async function makeImage({ one, two }) {
     let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
     fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
 
-    let circleOne = await jimp.read(await circle(avatarOne));
-    let circleTwo = await jimp.read(await circle(avatarTwo));
+    let circleOne = await Jimp.read(await circle(avatarOne));
+    let circleTwo = await Jimp.read(await circle(avatarTwo));
     pairing_img.composite(circleOne.resize(150, 150), 980, 200).composite(circleTwo.resize(150, 150), 140, 200);
 
     let raw = await pairing_img.getBufferAsync("image/png");
@@ -53,7 +53,7 @@ async function makeImage({ one, two }) {
     return pathImg;
 }
 async function circle(image) {
-    const Jimp = require("jimp");
+    const { Jimp } = require("jimp");
     image = await Jimp.read(image);
     image.circle();
     return await image.getBufferAsync("image/png");

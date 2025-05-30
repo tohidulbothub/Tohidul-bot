@@ -44,7 +44,7 @@
     "gradient-string": "^2.0.2",
     "https-proxy-agent": "^7.0.2",
     "image-downloader": "^4.3.0",
-    "jimp": "^1.6.0",
+    "jimp": "^0.22.12",
     "lodash.pad": "^4.5.1",
     "lodash.padend": "^4.6.1",
     "lodash.padstart": "^4.6.1",
