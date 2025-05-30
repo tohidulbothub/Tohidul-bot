@@ -55,10 +55,11 @@ async function makeImage({ one, two }) {
   const jimp = global.nodemodule["jimp"];
   const __root = path.resolve(__dirname, "cache");
 
-  let hon_img = await jimp.read(__root + "/hon.png");
-  let pathImg = __root + `/hon_${one}_${two}.png`;
-  let avatarOne = __root + `/avt_${one}.png`;
-  let avatarTwo = __root + `/avt_${two}.png`;
+  try {
+    let hon_img = await jimp.read(__root + "/hon.png");
+    let pathImg = __root + `/hon_${one}_${two}.png`;
+    let avatarOne = __root + `/avt_${one}.png`;
+    let avatarTwo = __root + `/avt_${two}.png`;
 
   // Enhanced avatar download with comprehensive error handling
   const downloadAvatar = async (url, filepath, retries = 5) => {
@@ -109,19 +110,26 @@ async function makeImage({ one, two }) {
   };
 
   await downloadAvatar(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, avatarOne);
-  await downloadAvatar(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, avatarTwo);
+    await downloadAvatar(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, avatarTwo);
 
-  let circleOne = await jimp.read(await circle(avatarOne));
-  let circleTwo = await jimp.read(await circle(avatarTwo));
-  hon_img.resize(700, 440).composite(circleOne.resize(200, 200), 390, 23).composite(circleTwo.resize(180, 180), 140, 80);
+    let circleOne = await jimp.read(await circle(avatarOne));
+    let circleTwo = await jimp.read(await circle(avatarTwo));
+    hon_img.resize(700, 440).composite(circleOne.resize(200, 200), 390, 23).composite(circleTwo.resize(180, 180), 140, 80);
 
-  let raw = await hon_img.getBufferAsync("image/png");
+    let raw = await hon_img.getBufferAsync("image/png");
 
-  fs.writeFileSync(pathImg, raw);
-  fs.unlinkSync(avatarOne);
-  fs.unlinkSync(avatarTwo);
+    fs.writeFileSync(pathImg, raw);
+    
+    // Clean up avatar files
+    if (fs.existsSync(avatarOne)) fs.unlinkSync(avatarOne);
+    if (fs.existsSync(avatarTwo)) fs.unlinkSync(avatarTwo);
 
-  return pathImg;
+    return pathImg;
+    
+  } catch (error) {
+    console.log('makeImage error:', error);
+    throw new Error('Failed to create kiss image');
+  }
 }
 async function circle(image) {
   const jimp = global.nodemodule["jimp"];
@@ -137,10 +145,26 @@ module.exports.run = async function ({ event, api, args, Currencies }) {
   const { threadID, messageID, senderID } = event;
   const mention = Object.keys(event.mentions);
   var one = senderID, two = mention[0];
-await Currencies.increaseMoney(event.senderID, parseInt(hc*rd));
 
-if (!two) return api.sendMessage("Please tag 1 person", threadID, messageID);
-else {
-      return makeImage({ one, two }).then(path => api.sendMessage({ body: `[❤️] The level of affection between you and that person is: ${hc} %\n[❤️] The two of you are blessed by BOT: ${((hc)*rd)} $\n[❤️] Wish you happy 🍀`, attachment: fs.createReadStream(path)}, threadID, () => fs.unlinkSync(path), messageID));
+  if (!two) return api.sendMessage("Please tag 1 person", threadID, messageID);
+
+  try {
+    await Currencies.increaseMoney(event.senderID, parseInt(hc*rd));
+    
+    // Send processing message
+    api.sendMessage("💖 Creating your kiss image... Please wait! 😘", threadID);
+    
+    const path = await makeImage({ one, two });
+    const message = `[❤️] The level of affection between you and that person is: ${hc} %\n[❤️] The two of you are blessed by BOT: ${((hc)*rd)} $\n[❤️] Wish you happy 🍀`;
+    
+    return api.sendMessage({ 
+      body: message, 
+      attachment: fs.createReadStream(path)
+    }, threadID, () => fs.unlinkSync(path), messageID);
+    
+  } catch (error) {
+    console.log('Kiss command error:', error);
+    return api.sendMessage("❌ Sorry! There was an error creating your kiss image. Please try again later! 💔", threadID, messageID);
+  }
 }
 }
