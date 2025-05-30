@@ -21,31 +21,89 @@ module.exports.config = {
 
 module.exports.run = async ({ event, args, api }) => {
   try {
-  const prompt = args.join(" ");
-  /*let prompt2, ratio;
-  if (prompt.includes("--ratio")) {
-    const parts = prompt.split("--ratio");
-    prompt2 = parts[0].trim();
-    ratio = parts[1].trim();
-  } else {
-    prompt2 = prompt;
-    ratio = "1024x1024";
-  }*/
-    const startTime = new Date().getTime();
-    const ok = api.sendMessage('wait baby <😘', event.threadID, event.messageID);
-    api.setMessageReaction("⌛", event.messageID, (err) => {}, true);
-    const apiUrl = `${await baseApiUrl()}/flux11?prompt=${prompt}`;
+    const prompt = args.join(" ");
+    
+    if (!prompt) {
+      return api.sendMessage("❌ Please provide a prompt for image generation!\nExample: /fluxpro a beautiful sunset", event.threadID, event.messageID);
+    }
 
-    api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-     api.unsendMessage(ok.messageID)
-    const attachment = (await axios.get(apiUrl, { responseType: "stream" })).data
-    const endTime = new Date().getTime();
-    await api.sendMessage({
-          body: `Here's your image\nModel Name: "Flux.1 Pro"\nTime Taken: ${(endTime - startTime) / 1000} second/s`, 
-          attachment
+    const startTime = new Date().getTime();
+    const loadingMsg = await api.sendMessage('🎨 Generating your image with Flux.1 Pro... Please wait! ⏳', event.threadID, event.messageID);
+    api.setMessageReaction("⌛", event.messageID, (err) => {}, true);
+
+    // Try multiple backup APIs
+    const fluxApis = [
+      `https://api.kenliejugarap.com/flux/?prompt=${encodeURIComponent(prompt)}`,
+      `https://openapi-idk8.onrender.com/flux?prompt=${encodeURIComponent(prompt)}`,
+      `https://joshweb.click/api/flux?prompt=${encodeURIComponent(prompt)}`,
+      `https://markdevs-last-api.onrender.com/flux?prompt=${encodeURIComponent(prompt)}`
+    ];
+
+    let imageUrl = null;
+    let apiUsed = null;
+
+    // Try each API until one works
+    for (let i = 0; i < fluxApis.length; i++) {
+      try {
+        console.log(`Trying Flux API ${i + 1}: ${fluxApis[i]}`);
+        
+        const response = await axios.get(fluxApis[i], { 
+          timeout: 30000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        if (response.data && (response.data.url || response.data.image || response.data.result)) {
+          imageUrl = response.data.url || response.data.image || response.data.result;
+          apiUsed = i + 1;
+          console.log(`Flux API ${i + 1} successful, image URL: ${imageUrl}`);
+          break;
+        }
+      } catch (apiError) {
+        console.log(`Flux API ${i + 1} failed:`, apiError.message);
+        continue;
+      }
+    }
+
+    if (!imageUrl) {
+      await api.unsendMessage(loadingMsg.messageID);
+      api.setMessageReaction("❌", event.messageID, (err) => {}, true);
+      return api.sendMessage("❌ Sorry, all Flux.1 Pro APIs are currently unavailable. Please try again later!", event.threadID, event.messageID);
+    }
+
+    // Download and send the image
+    try {
+      const imageResponse = await axios.get(imageUrl, { 
+        responseType: "stream",
+        timeout: 20000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+
+      await api.unsendMessage(loadingMsg.messageID);
+      api.setMessageReaction("✅", event.messageID, (err) => {}, true);
+      
+      const endTime = new Date().getTime();
+      await api.sendMessage({
+        body: `🎨 Here's your Flux.1 Pro generated image!\n\n📝 Prompt: ${prompt}\n🤖 Model: Flux.1 Pro\n⏱️ Time Taken: ${((endTime - startTime) / 1000).toFixed(2)} seconds\n🔗 API Used: ${apiUsed}`, 
+        attachment: imageResponse.data
       }, event.threadID, event.messageID);
-  } catch (e) {
-    console.log(e);
-    api.sendMessage("Error: " + e.message, event.threadID, event.messageID);
+
+    } catch (downloadError) {
+      console.log("Image download error:", downloadError.message);
+      await api.unsendMessage(loadingMsg.messageID);
+      api.setMessageReaction("❌", event.messageID, (err) => {}, true);
+      return api.sendMessage("❌ Failed to download the generated image. Please try again!", event.threadID, event.messageID);
+    }
+
+  } catch (error) {
+    console.log("FluxPro command error:", error.message);
+    try {
+      api.setMessageReaction("❌", event.messageID, (err) => {}, true);
+    } catch (e) {}
+    
+    return api.sendMessage("❌ An unexpected error occurred while generating the image. Please try again later!", event.threadID, event.messageID);
   }
 };
