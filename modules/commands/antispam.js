@@ -19,9 +19,14 @@ module.exports.languages = {
 };
 
 module.exports.run = async function ({ api, event }) {
-    // Check if the user is an admin
-    if (!event.senderID || !(await api.getThreadInfo(event.threadID)).adminIDs.includes(event.senderID)) {
-        return api.sendMessage("🚫 **Access Denied!** Only group admins can use this command! 😎", event.threadID, event.messageID);
+    const { senderID, threadID, messageID } = event;
+    
+    // Check if the user is a bot admin or group admin
+    const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
+    const isGroupAdmin = (await api.getThreadInfo(threadID)).adminIDs.some(admin => admin.id === senderID);
+    
+    if (!isBotAdmin && !isGroupAdmin) {
+        return api.sendMessage("🚫 **Access Denied!** Only bot admins or group admins can use this command! 😎", threadID, messageID);
     }
 
     try {
@@ -40,8 +45,11 @@ module.exports.run = async function ({ api, event }) {
 module.exports.handleEvent = async function ({ Users, Threads, api, event }) {
     let { senderID, messageID, threadID } = event;
 
-    // Check if the user is an admin (skip spam detection for admins)
-    if ((await api.getThreadInfo(event.threadID)).adminIDs.includes(senderID)) return;
+    // Check if the user is a bot admin or group admin (skip spam detection for admins)
+    const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
+    const isGroupAdmin = (await api.getThreadInfo(event.threadID)).adminIDs.some(admin => admin.id === senderID);
+    
+    if (isBotAdmin || isGroupAdmin) return;
 
     try {
         let datathread = (await Threads.getData(event.threadID)).threadInfo;
