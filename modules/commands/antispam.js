@@ -4,7 +4,7 @@ const timee = 10; // Time window (in seconds) for detecting spam
 module.exports.config = {
     name: "antispam",
     version: "1.0.2",
-    permission: 2, // Only admins can use this command
+    permission: 1, // Only admins can use this command
     usePrefix: true,
     credits: "TOHI-BOT-HUB",
     description: "Automatically bans users who spam 10 times within a time window.",
