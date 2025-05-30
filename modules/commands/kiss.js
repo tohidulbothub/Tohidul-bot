@@ -1,59 +1,160 @@
-const request = global.nodemodule["request"];
-  const fs = global.nodemodule["fs-extra"];
+
+const axios = require('axios');
+const fs = require("fs-extra");
+const path = require("path");
+
 module.exports.config = {
   name: "kiss",
-  version: "1.0.0",
+  version: "2.0.0",
   hasPermssion: 0,
   usePrefix: true,
-  credits: "𝙈𝙧𝙏𝙤𝙢𝙓𝙭𝙓",
-  description: "Kiss the friend tag",
+  credits: "TOHI-BOT-HUB",
+  description: "Kiss the friend you tag with cute anime GIFs",
   commandCategory: "anime",
-  usages: "kiss [Tag someone you need Kissing]",
+  usages: "kiss [@mention]",
   cooldowns: 5,
 };
 
-
 module.exports.run = async ({ api, event, args }) => {
-  const axios = require('axios');
-  const request = require('request');
-  const fs = require("fs");
-  const rateLimitHandler = require("../../utils/rateLimitHandler");
-    var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
-  if (!args.join("")) return out("Please tag someone");
-  else
   try {
-    const res = await rateLimitHandler.apiCall(() => axios.get('https://api.satou-chan.xyz/api/endpoint/kiss'), 'kiss_api');
+    const { threadID, messageID, mentions } = event;
     
-    if (!res || !res.data || !res.data.url) {
-      return api.sendMessage("❌ Kiss API is temporarily unavailable. Please try again later.", event.threadID, event.messageID);
+    if (!Object.keys(mentions).length) {
+      return api.sendMessage("❤️ Please tag someone you want to kiss! 💋", threadID, messageID);
     }
-    
-    let ext = res.data.url.substring(res.data.url.lastIndexOf(".") + 1);
-    var mention = Object.keys(event.mentions)[0];
-    let tag = event.mentions[mention].replace("@", "");    
 
-    let callback = function () {
-      api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-      api.sendMessage({
-        body: tag + ", I love you so much ummmmmaaaaaahhhhh ❤️",
-        mentions: [{
-          tag: tag,
-          id: Object.keys(event.mentions)[0]
-        }],
-        attachment: fs.createReadStream(__dirname + `/cache/kiss.${ext}`)
-      }, event.threadID, () => {
+    const mentionedUser = Object.keys(mentions)[0];
+    const mentionedName = mentions[mentionedUser].replace("@", "");
+
+    // Send loading message
+    const loadingMsg = await api.sendMessage("💋 Preparing a sweet kiss... 💕", threadID);
+
+    try {
+      // Multiple backup APIs for kiss GIFs
+      const kissApis = [
+        "https://api.waifu.pics/sfw/kiss",
+        "https://nekos.life/api/v2/img/kiss",
+        "https://api.otakugifs.xyz/gif?reaction=kiss",
+      ];
+
+      let imageUrl = null;
+      let apiUsed = null;
+
+      // Try each API until one works
+      for (let i = 0; i < kissApis.length; i++) {
         try {
-          fs.unlinkSync(__dirname + `/cache/kiss.${ext}`);
-        } catch (e) {
-          console.log("Error cleaning up kiss file:", e.message);
+          await new Promise(resolve => setTimeout(resolve, 1000 * i)); // Add delay between attempts
+          
+          const response = await axios.get(kissApis[i], { timeout: 10000 });
+          
+          if (response.data && (response.data.url || response.data.link)) {
+            imageUrl = response.data.url || response.data.link;
+            apiUsed = i + 1;
+            break;
+          }
+        } catch (apiError) {
+          console.log(`Kiss API ${i + 1} failed:`, apiError.message);
+          continue;
         }
-      }, event.messageID)
-    };
+      }
 
-    request(res.data.url).pipe(fs.createWriteStream(__dirname + `/cache/kiss.${ext}`)).on("close", callback);
-  } catch (err) {
-    console.log("Kiss command error:", err.message);
-    api.sendMessage("❌ Failed to generate gif, be sure that you've tag someone!", event.threadID, event.messageID);
-    api.setMessageReaction("☹️", event.messageID, (err) => {}, true);
-  }     
-}
+      if (!imageUrl) {
+        await api.unsendMessage(loadingMsg.messageID);
+        return api.sendMessage("💔 Sorry, all kiss APIs are currently unavailable. Please try again later!", threadID, messageID);
+      }
+
+      // Download the image with retry logic
+      const cacheDir = path.join(__dirname, 'cache');
+      if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+      }
+
+      const fileName = `kiss_${Date.now()}.gif`;
+      const filePath = path.join(cacheDir, fileName);
+
+      let downloadSuccess = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+          
+          const imageResponse = await axios({
+            url: imageUrl,
+            method: 'GET',
+            responseType: 'stream',
+            timeout: 15000,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+          });
+
+          const writer = fs.createWriteStream(filePath);
+          imageResponse.data.pipe(writer);
+
+          await new Promise((resolve, reject) => {
+            writer.on('finish', resolve);
+            writer.on('error', reject);
+          });
+
+          downloadSuccess = true;
+          break;
+        } catch (downloadError) {
+          console.log(`Download attempt ${attempt} failed:`, downloadError.message);
+          if (attempt === 3) {
+            await api.unsendMessage(loadingMsg.messageID);
+            return api.sendMessage("💔 Failed to download kiss image. Please try again later!", threadID, messageID);
+          }
+        }
+      }
+
+      if (!downloadSuccess) {
+        await api.unsendMessage(loadingMsg.messageID);
+        return api.sendMessage("💔 Failed to prepare kiss image. Please try again later!", threadID, messageID);
+      }
+
+      // Prepare the kiss message
+      const kissMessages = [
+        `💋 *mwah* ${mentionedName}, you got a sweet kiss! 💕`,
+        `😘 ${mentionedName}, someone wants to kiss you! 💋`,
+        `💕 Aww, ${mentionedName} received a lovely kiss! 😘`,
+        `💋 *smooch* ${mentionedName}, you're so kissable! 💖`,
+        `😘 ${mentionedName}, here's a kiss full of love! 💕`
+      ];
+
+      const randomMessage = kissMessages[Math.floor(Math.random() * kissMessages.length)];
+
+      await api.unsendMessage(loadingMsg.messageID);
+
+      // Send the kiss image
+      await api.sendMessage({
+        body: randomMessage,
+        mentions: [{
+          tag: mentionedName,
+          id: mentionedUser
+        }],
+        attachment: fs.createReadStream(filePath)
+      }, threadID, () => {
+        // Clean up the file after sending
+        try {
+          fs.unlinkSync(filePath);
+        } catch (cleanupError) {
+          console.log("Error cleaning up kiss file:", cleanupError.message);
+        }
+      }, messageID);
+
+      // Add reaction to the original message
+      api.setMessageReaction("💋", messageID, (err) => {}, true);
+
+    } catch (error) {
+      console.log("Kiss command error:", error.message);
+      try {
+        await api.unsendMessage(loadingMsg.messageID);
+      } catch (e) {}
+      
+      return api.sendMessage("💔 Something went wrong while preparing your kiss. Please try again!", threadID, messageID);
+    }
+
+  } catch (error) {
+    console.log("Kiss command outer error:", error.message);
+    return api.sendMessage("💔 An unexpected error occurred. Please try again later!", event.threadID, event.messageID);
+  }
+};
