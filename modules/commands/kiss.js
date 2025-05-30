@@ -166,5 +166,5 @@ module.exports.run = async function ({ event, api, args, Currencies }) {
     console.log('Kiss command error:', error);
     return api.sendMessage("❌ Sorry! There was an error creating your kiss image. Please try again later! 💔", threadID, messageID);
   }
-}
+};
 }
