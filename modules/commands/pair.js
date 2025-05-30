@@ -4,7 +4,7 @@ const axios = require("axios");
 
 module.exports.config = {
   name: "pairlove",
-  version: "2.0.0",
+  version: "2.1.0",
   permssion: 0,
   usePrefix: true,
   credits: "TOHI-BOT-HUB & Copilot",
@@ -63,31 +63,31 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 7. Draw avatars (left & right perfect fit for your given bg)
-    // Left avatar (boy): center x=260, y=390, radius=94, image: 188x188
+    // 7. Draw avatars (left: boy, right: girl) with updated positions
+    // Left avatar (boy): more left & higher (x=110, y=216)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(260, 390, 94, 0, Math.PI * 2, true);
+    ctx.arc(204, 250, 100, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt1, 166, 296, 188, 188);
+    ctx.drawImage(avt1, 110, 216, 188, 188);
     ctx.restore();
 
-    // Right avatar (girl): center x=1277, y=390, radius=94, image: 188x188
+    // Right avatar (girl): more right & higher (x=1330, y=210)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(1277, 390, 94, 0, Math.PI * 2, true);
+    ctx.arc(1424, 250, 100, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt2, 1183, 296, 188, 188);
+    ctx.drawImage(avt2, 1330, 210, 188, 188);
     ctx.restore();
 
-    // 8. Draw names under each box
+    // 8. Draw names under each box with new positions
     ctx.font = "bold 36px Arial";
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    ctx.fillText(name1, 260, 525); // left
-    ctx.fillText(name2, 1277, 525); // right
+    ctx.fillText(name1, 204, 445); // left
+    ctx.fillText(name2, 1424, 440); // right
 
     // 9. Draw random percentage (center, below LOVE)
     const percentage = Math.floor(Math.random() * 100) + 1;
@@ -105,18 +105,22 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     // 11. Save & cleanup
     const imgBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imgBuffer);
-    fs.removeSync(pathAvt1);
-    fs.removeSync(pathAvt2);
 
-    // 12. Send message
+    // 12. Send message with proper mentions & delete temp files after send
     return api.sendMessage({
-      body: `✨✨ ${name1} ❤️ ${name2}\nনতুন জুটিকে অনেক অনেক শুভেচ্ছা! ✨✨\n💞 Love Percentage: ${percentage}% 💞`,
+      body: `✨✨`,
       mentions: [
         { tag: name1, id: id1 },
         { tag: name2, id: id2 }
       ],
       attachment: fs.createReadStream(pathImg)
-    }, event.threadID, () => fs.unlinkSync(pathImg), event.messageID);
+    }, event.threadID, (err) => {
+        try {
+          fs.unlinkSync(pathImg);
+          fs.unlinkSync(pathAvt1);
+          fs.unlinkSync(pathAvt2);
+        } catch(e) {}
+      }, event.messageID);
 
   } catch (err) {
     console.error(err);
