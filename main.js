@@ -473,12 +473,14 @@ process.on('unhandledRejection', (reason, promise) => {
   // Filter out common API rejections
   const ignoredRejections = [
     'Rate limited',
+    'jimp.read is not a function',
     'Jimp.read is not a function', 
     'not part of the conversation',
     'Max retries reached for API call',
     'Background download error',
     'Avatar processing error',
-    'Got error 1545012'
+    'Got error 1545012',
+    'ENOENT: no such file or directory'
   ];
   
   const reasonStr = reason ? reason.toString() : '';
