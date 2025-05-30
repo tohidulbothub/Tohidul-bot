@@ -2,7 +2,7 @@
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
-const jimp = require("jimp");
+const Jimp = require("jimp");
 
 module.exports.config = {
   name: "kiss2",
@@ -124,7 +124,7 @@ async function makeImage({ one, two }) {
       return null;
     }
 
-    const batgiam_img = await jimp.read(backgroundPath);
+    const batgiam_img = await Jimp.read(backgroundPath);
     const pathImg = path.join(__root, `kiss_${one}_${two}_${Date.now()}.png`);
     const avatarOne = path.join(__root, `avt_${one}_${Date.now()}.png`);
     const avatarTwo = path.join(__root, `avt_${two}_${Date.now()}.png`);
@@ -151,8 +151,8 @@ async function makeImage({ one, two }) {
     }
 
     // Create circular avatars
-    const circleOne = await jimp.read(await createCircle(avatarOne));
-    const circleTwo = await jimp.read(await createCircle(avatarTwo));
+    const circleOne = await Jimp.read(await createCircle(avatarOne));
+    const circleTwo = await Jimp.read(await createCircle(avatarTwo));
     
     // Composite the images (adjust positions as needed)
     batgiam_img
@@ -179,7 +179,7 @@ async function makeImage({ one, two }) {
 
 async function createCircle(imagePath) {
   try {
-    const image = await jimp.read(imagePath);
+    const image = await Jimp.read(imagePath);
     image.circle();
     return await image.getBufferAsync("image/png");
   } catch (error) {
