@@ -221,7 +221,8 @@
             "timestamp": 1748590742297
         },
         "data": {
-            "timestamp": 1748590742297
+            "timestamp": 1748590742297,
+            "rankup": true
         }
     }
 }
