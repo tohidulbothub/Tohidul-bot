@@ -31,7 +31,7 @@ module.exports.onLoad = async() => {
     } catch (error) {
       if (error.message && error.message.includes('429')) {
         console.log('Rate limited, using fallback image URL');
-        await downloadFile("https://i.postimg.cc/7ZKqCxKQ/kiss-template.jpg", path);
+        await downloadFile("https://i.imgur.com/nBV7zKt.png", path);
       } else {
         throw error;
       }
@@ -43,7 +43,7 @@ async function makeImage({ one, two }) {
   const fs = global.nodemodule["fs-extra"];
   const path = global.nodemodule["path"];
   const axios = global.nodemodule["axios"]; 
-  const jimp = require("jimp"); // Use require instead of global.nodemodule
+  const jimp = global.nodemodule["jimp"];
   const __root = path.resolve(__dirname, "cache");
 
   let hon_img = await jimp.read(__root + "/hon.png");
@@ -84,7 +84,7 @@ async function makeImage({ one, two }) {
   return pathImg;
 }
 async function circle(image) {
-  const jimp = require("jimp");
+  const jimp = global.nodemodule["jimp"];
   image = await jimp.read(image);
   image.circle();
   return await image.getBufferAsync("image/png");
