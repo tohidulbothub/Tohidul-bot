@@ -19,7 +19,7 @@ const baseApiUrl = async () => {
 };
 
 module.exports.config = {
-  name: "teach2",
+  name: "teach",
   version: "7.0.0",
   credits: "TOHI-BOT-HUB",
   cooldowns: 0,
@@ -29,7 +29,7 @@ module.exports.config = {
   category: "teach",
   usePrefix: true,
   prefix: true,
-  usages: `teach2 [YourMessage] - [Reply1], [Reply2], [Reply3]... OR\nteach2 [react] [YourMessage] - [react1], [react2], [react3]... OR\nteach2 amar [YourMessage] - [Reply1], [Reply2]... OR\nteach2 list OR\nteach2 remove [YourMessage] OR\nteach2 stats`,
+  usages: `teach [YourMessage] - [Reply1], [Reply2], [Reply3]... OR\nteach [react] [YourMessage] - [react1], [react2], [react3]... OR\nteach amar [YourMessage] - [Reply1], [Reply2]... OR\nteach list OR\nteach remove [YourMessage] OR\nteach stats`,
 };
 
 // Helper function to get user name using API
@@ -60,17 +60,17 @@ module.exports.run = async function ({ api, event, args }) {
 
         // Show help if no arguments
         if (!args[0]) {
-            const helpMsg = `🤖 **TEACH2 Command Help** 🤖\n\n` +
+            const helpMsg = `🤖 **TEACH Command Help** 🤖\n\n` +
                            `📝 **Basic Teaching:**\n` +
-                           `teach2 [message] - [reply1], [reply2]\n\n` +
+                           `teach [message] - [reply1], [reply2]\n\n` +
                            `💭 **Personal Teaching:**\n` +
-                           `teach2 amar [message] - [reply1], [reply2]\n\n` +
+                           `teach amar [message] - [reply1], [reply2]\n\n` +
                            `😄 **Reaction Teaching:**\n` +
-                           `teach2 react [message] - [😀], [😂], [❤️]\n\n` +
+                           `teach react [message] - [😀], [😂], [❤️]\n\n` +
                            `📊 **Commands:**\n` +
-                           `• teach2 list - View all teachings\n` +
-                           `• teach2 stats - Your teaching stats\n` +
-                           `• teach2 remove [message] - Remove teaching\n\n` +
+                           `• teach list - View all teachings\n` +
+                           `• teach stats - Your teaching stats\n` +
+                           `• teach remove [message] - Remove teaching\n\n` +
                            `🎯 **Your Total Teachings:** ${teachCounts[uid] || 0}`;
             return api.sendMessage(helpMsg, event.threadID, event.messageID);
         }
@@ -98,7 +98,7 @@ module.exports.run = async function ({ api, event, args }) {
                 const listMsg = `📋 **Teaching Database** 📋\n\n` +
                               `📊 **Total Teachings:** ${totalTeachings}\n` +
                               `🎯 **Your Contributions:** ${teachCounts[uid] || 0}\n\n` +
-                              `💡 Use "teach2 [message] - [reply]" to add more!`;
+                              `💡 Use "teach [message] - [reply]" to add more!`;
                 return api.sendMessage(listMsg, event.threadID, event.messageID);
             } catch (error) {
                 return api.sendMessage('❌ | Error fetching teaching list', event.threadID, event.messageID);
@@ -109,7 +109,7 @@ module.exports.run = async function ({ api, event, args }) {
         if (args[0] === 'remove') {
             const messageToRemove = args.slice(1).join(" ");
             if (!messageToRemove) {
-                return api.sendMessage('❌ | Please specify the message to remove\nFormat: teach2 remove [message]', event.threadID, event.messageID);
+                return api.sendMessage('❌ | Please specify the message to remove\nFormat: teach remove [message]', event.threadID, event.messageID);
             }
             
             try {
@@ -187,7 +187,7 @@ module.exports.run = async function ({ api, event, args }) {
         }
 
         // If no valid command format is found
-        return api.sendMessage('❌ | Invalid command format!\n\nAvailable options:\n• teach2 [message] - [reply]\n• teach2 amar [message] - [reply]\n• teach2 react [message] - [reactions]\n• teach2 remove [message]\n• teach2 list\n• teach2 stats', event.threadID, event.messageID);
+        return api.sendMessage('❌ | Invalid command format!\n\nAvailable options:\n• teach [message] - [reply]\n• teach amar [message] - [reply]\n• teach react [message] - [reactions]\n• teach remove [message]\n• teach list\n• teach stats', event.threadID, event.messageID);
 
     } catch (e) {
         console.error('Error in teach2 command execution:', e);
