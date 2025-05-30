@@ -11,6 +11,10 @@ const chalk = require("chalk");
 const pkg = require('./package.json');
 const WebServer = require('./web-server.js');
 
+// Initialize web server
+const webServer = new WebServer();
+webServer.start();
+
 console.log(chalk.bold.dim(` TOHI-BOT-HUB`.toUpperCase() + `(v${pkg.version})`));
 logger.log(`Getting Started!`, "STARTER");
 
