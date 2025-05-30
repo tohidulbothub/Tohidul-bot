@@ -170,6 +170,9 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
           if (cmdModule.config && cmdModule.config.usePrefix === false && 
               cmdName.toLowerCase() === firstWord) {
             command = cmdModule;
+            // Update commandName and args for non-prefix commands
+            const tempArgs = body.trim().split(/ +/);
+            tempArgs.shift(); // Remove the command name
             break;
           }
         }
@@ -218,13 +221,15 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     if (command && command.config) {
       // For commands with usePrefix: false, check if the command name matches exactly
       if (command.config.usePrefix === false) {
-        if (commandName.toLowerCase() !== command.config.name.toLowerCase()) {
-          // If it doesn't match exactly, try to find the command without prefix
-          const bodyLower = body.toLowerCase();
-          if (bodyLower !== command.config.name.toLowerCase() && !bodyLower.startsWith(command.config.name.toLowerCase() + " ")) {
-            return; // Silently ignore if not matching
-          }
+        const firstWord = body.trim().split(' ')[0].toLowerCase();
+        if (firstWord !== command.config.name.toLowerCase()) {
+          return; // Silently ignore if not matching
         }
+        // Update args for non-prefix commands
+        const tempArgs = body.trim().split(/ +/);
+        tempArgs.shift(); // Remove the command name
+        args.length = 0; // Clear existing args
+        args.push(...tempArgs); // Add new args
       }
       // For commands with usePrefix: true, require prefix
       if (command.config.usePrefix === true && !body.startsWith(PREFIX)) {
