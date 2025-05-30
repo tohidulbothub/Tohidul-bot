@@ -1,3 +1,4 @@
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -8,6 +9,8 @@ class WebServer {
     this.server = null;
     this.startTime = Date.now();
     this.requestCount = 0;
+    this.pingCount = 0;
+    this.lastPingTime = Date.now();
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -21,32 +24,38 @@ class WebServer {
 
     // Basic security headers
     this.app.use((req, res, next) => {
-      res.setHeader('X-Powered-By', 'TOHI-BOT-HUB');
+      res.setHeader('X-Powered-By', 'TOHI-BOT-HUB Keep-Alive');
       res.setHeader('X-Frame-Options', 'DENY');
       res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Access-Control-Allow-Origin', '*');
       next();
     });
   }
 
   setupRoutes() {
-    // Basic bot status page
+    // Main keep-alive endpoint for UptimeRobot
     this.app.get('/', (req, res) => {
+      this.pingCount++;
+      this.lastPingTime = Date.now();
+      
       const botInfo = {
         name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
-        status: 'Online',
+        status: 'Online & Active',
         uptime: this.formatUptime(process.uptime()),
         commands: global.client?.commands?.size || 0,
         events: global.client?.events?.size || 0,
-        version: global.config?.version || '1.8.0'
+        version: global.config?.version || '1.8.0',
+        pingCount: this.pingCount,
+        lastPing: new Date(this.lastPingTime).toLocaleString('bn-BD')
       };
 
       const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${botInfo.name} - Bot Status</title>
+    <title>${botInfo.name} - Keep Alive Status</title>
     <style>
         * {
             margin: 0;
@@ -56,7 +65,7 @@ class WebServer {
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
             display: flex;
@@ -66,69 +75,92 @@ class WebServer {
         
         .container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
             padding: 40px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             text-align: center;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .bot-name {
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             background: linear-gradient(45deg, #fff, #e0e0e0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
         .status {
             display: inline-block;
-            padding: 8px 20px;
-            background: #4CAF50;
-            border-radius: 25px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 30px;
             font-weight: bold;
             margin-bottom: 30px;
             animation: pulse 2s infinite;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
         }
         
         .stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
         
         .stat-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
+            padding: 25px 15px;
             border-radius: 15px;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .stat-item:hover {
             transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         .stat-number {
-            font-size: 2em;
+            font-size: 2.2em;
             font-weight: bold;
             color: #FFD700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         
         .stat-label {
             font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 5px;
+            opacity: 0.9;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .ping-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .ping-title {
+            font-size: 1.3em;
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
         
         .footer {
@@ -138,12 +170,44 @@ class WebServer {
             font-size: 0.9em;
             opacity: 0.8;
         }
+        
+        .keep-alive-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 10px;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 107, 107, 0.8); }
+        }
+        
+        .url-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+            border-left: 4px solid #FFD700;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="bot-name">${botInfo.name}</h1>
-        <div class="status">${botInfo.status}</div>
+        <div class="status">🤖 ${botInfo.status}</div>
+        <div class="keep-alive-badge">⚡ Keep-Alive Active</div>
+        
+        <div class="ping-info">
+            <div class="ping-title">📡 Ping Information</div>
+            <div>Total Pings: <strong>${botInfo.pingCount}</strong></div>
+            <div>Last Ping: <strong>${botInfo.lastPing}</strong></div>
+        </div>
         
         <div class="stats">
             <div class="stat-item">
@@ -164,8 +228,14 @@ class WebServer {
             </div>
         </div>
         
+        <div class="url-info">
+            <strong>🔗 UptimeRobot URL:</strong><br>
+            ${req.get('host') ? `https://${req.get('host')}` : 'Your Replit URL'}
+        </div>
+        
         <div class="footer">
             <p>🤖 Bot is running successfully!</p>
+            <p>⏰ Add this URL to UptimeRobot with 5-minute intervals</p>
             <p>Made with ❤️ by TOHIDUL</p>
         </div>
     </div>
@@ -175,7 +245,54 @@ class WebServer {
       res.send(html);
     });
 
-    // API endpoint for bot status
+    // Ping endpoint specifically for UptimeRobot
+    this.app.get('/ping', (req, res) => {
+      this.pingCount++;
+      this.lastPingTime = Date.now();
+      res.json({
+        status: 'alive',
+        message: 'Bot is running perfectly',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+        botName: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+        pingCount: this.pingCount,
+        commands: global.client?.commands?.size || 0,
+        events: global.client?.events?.size || 0
+      });
+    });
+
+    // Keep-alive endpoint
+    this.app.get('/keep-alive', (req, res) => {
+      this.pingCount++;
+      this.lastPingTime = Date.now();
+      res.json({
+        alive: true,
+        status: 'Bot is active and running',
+        uptime: this.formatUptime(process.uptime()),
+        timestamp: new Date().toLocaleString('bn-BD'),
+        pingCount: this.pingCount,
+        botInfo: {
+          name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
+          commands: global.client?.commands?.size || 0,
+          events: global.client?.events?.size || 0,
+          version: global.config?.version || '1.8.0'
+        }
+      });
+    });
+
+    // Health check
+    this.app.get('/health', (req, res) => {
+      res.json({ 
+        status: 'healthy', 
+        uptime: process.uptime(),
+        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
+        timestamp: new Date().toISOString(),
+        pingCount: this.pingCount,
+        lastPing: new Date(this.lastPingTime).toISOString()
+      });
+    });
+
+    // Status API
     this.app.get('/api/status', (req, res) => {
       const memUsage = process.memoryUsage();
       res.json({
@@ -187,6 +304,8 @@ class WebServer {
         events: global.client?.events?.size || 0,
         version: global.config?.version || '1.8.0',
         requestCount: this.requestCount,
+        pingCount: this.pingCount,
+        lastPingTime: this.lastPingTime,
         memory: {
           used: Math.round(memUsage.heapUsed / 1024 / 1024),
           total: Math.round(memUsage.heapTotal / 1024 / 1024),
@@ -195,16 +314,6 @@ class WebServer {
         timestamp: new Date().toISOString(),
         platform: process.platform,
         nodeVersion: process.version
-      });
-    });
-
-    // Health check
-    this.app.get('/health', (req, res) => {
-      res.json({ 
-        status: 'ok', 
-        uptime: process.uptime(),
-        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
-        timestamp: new Date().toISOString() 
       });
     });
 
@@ -224,17 +333,23 @@ class WebServer {
         serverUptime: Math.floor((Date.now() - this.startTime) / 1000),
         bot: {
           name: global.config?.BOTNAME || 'TOHI-BOT-HUB',
-          status: 'running'
+          status: 'running',
+          pingCount: this.pingCount,
+          lastPing: new Date(this.lastPingTime).toLocaleString('bn-BD')
         }
       });
     });
 
-    // Wake-up endpoint for external monitoring services
+    // Wake-up endpoint
     this.app.get('/wake', (req, res) => {
+      this.pingCount++;
+      this.lastPingTime = Date.now();
       res.json({
         message: 'Bot is awake and running',
         timestamp: new Date().toISOString(),
-        uptime: this.formatUptime(process.uptime())
+        uptime: this.formatUptime(process.uptime()),
+        pingCount: this.pingCount,
+        status: 'active'
       });
     });
   }
@@ -259,6 +374,9 @@ class WebServer {
       console.log(`📊 Health check: http://0.0.0.0:${port}/health`);
       console.log(`📈 Status API: http://0.0.0.0:${port}/api/status`);
       console.log(`⏰ Uptime: http://0.0.0.0:${port}/uptime`);
+      console.log(`🔄 Keep-Alive: http://0.0.0.0:${port}/keep-alive`);
+      console.log(`📡 Ping: http://0.0.0.0:${port}/ping`);
+      console.log(`\n🔗 Add this URL to UptimeRobot: https://your-repl-name.replit.app`);
     });
     
     this.server.on('error', (err) => {
@@ -269,6 +387,16 @@ class WebServer {
         console.error('Web server error:', err);
       }
     });
+
+    // Auto-ping mechanism to keep the bot alive
+    setInterval(() => {
+      // Self-ping to maintain activity
+      const now = Date.now();
+      if (now - this.lastPingTime > 300000) { // 5 minutes
+        console.log('🔄 Auto-ping: Keeping bot alive...');
+        this.lastPingTime = now;
+      }
+    }, 240000); // Check every 4 minutes
 
     // Graceful shutdown
     process.on('SIGTERM', () => {

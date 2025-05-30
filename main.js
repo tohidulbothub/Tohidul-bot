@@ -470,6 +470,16 @@ function onBot() {
     const webServer = new WebServer();
     webServer.start(3000);
     
+    // Start keep-alive service
+    const KeepAlive = require('./utils/keepAlive');
+    const keepAlive = new KeepAlive();
+    
+    // Wait for server to start before starting keep-alive
+    setTimeout(() => {
+      keepAlive.start();
+      global.loading.log(`🔄 Keep-Alive service activated for 24/7 operation`, "KEEP_ALIVE");
+    }, 5000);
+    
     // Add comprehensive global error handlers
 process.on('uncaughtException', (error) => {
   // Filter out common API errors that we don't need to log
