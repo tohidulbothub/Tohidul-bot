@@ -52,7 +52,7 @@ async function makeImage({ one, two }) {
   const fs = global.nodemodule["fs-extra"];
   const path = global.nodemodule["path"];
   const axios = global.nodemodule["axios"]; 
-  const jimp = global.nodemodule["jimp"];
+  const jimp = require("jimp");
   const __root = path.resolve(__dirname, "cache");
 
   try {
@@ -132,7 +132,7 @@ async function makeImage({ one, two }) {
   }
 }
 async function circle(image) {
-  const jimp = global.nodemodule["jimp"];
+  const jimp = require("jimp");
   image = await jimp.read(image);
   image.circle();
   return await image.getBufferAsync("image/png");
