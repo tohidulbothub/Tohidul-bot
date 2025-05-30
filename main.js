@@ -32,18 +32,19 @@ process.on('unhandledRejection', (reason, promise) => {
     'Jimp.read is not a function', 
     'not part of the conversation',
     'Max retries reached for API call',
+    'Max retries reached for API call',
     'Background download error',
     'Avatar processing error',
     'Got error 1545012',
     'ENOENT: no such file or directory',
     'Request failed with status code 429'
   ];
-  
+
   const reasonStr = reason ? reason.toString() : '';
   const shouldIgnore = ignoredRejections.some(ignored => 
     reasonStr.includes(ignored)
   );
-  
+
   if (!shouldIgnore) {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   }
@@ -56,7 +57,7 @@ const maxRestarts = 5;
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
-  
+
   // Critical errors that should restart
   const criticalErrors = [
     'ECONNRESET',
@@ -65,11 +66,11 @@ process.on('uncaughtException', (error) => {
     'Network Error',
     'Connection lost'
   ];
-  
+
   const isCritical = criticalErrors.some(err => 
     error.message && error.message.includes(err)
   );
-  
+
   if (isCritical && restartCount < maxRestarts) {
     restartCount++;
     console.log(`⚡ Auto-restarting bot (${restartCount}/${maxRestarts})...`);
@@ -165,10 +166,10 @@ const { main, secondary, tertiary, html } = getThemeColors();
 try {
   const themePath = './includes/cover/html.json';
   let themeData;
-  
+
   if (fs.existsSync(themePath)) {
     const rawData = fs.readFileSync(themePath, 'utf8');
-    
+
     if (rawData.trim() === '' || rawData.trim() === '{}') {
       themeData = null; // Will create default theme
     } else {
@@ -186,7 +187,7 @@ try {
   } else {
     themeData = null; // File doesn't exist, create default
   }
-  
+
   if (!themeData) {
     // Create default theme
     const defaultTheme = {
@@ -499,21 +500,7 @@ function onBot() {
     global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
     global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
     global.utils.complete({ raw });
-    
-    // Start web server
-    const webServer = new WebServer();
-    webServer.start(3000);
-    
-    // Start keep-alive service
-    const KeepAlive = require('./utils/keepAlive');
-    const keepAlive = new KeepAlive();
-    
-    // Wait for server to start before starting keep-alive
-    setTimeout(() => {
-      keepAlive.start();
-      global.loading.log(`🔄 Keep-Alive service activated for 24/7 operation`, "KEEP_ALIVE");
-    }, 5000);
-    
+
     // Add comprehensive global error handlers
 process.on('uncaughtException', (error) => {
   // Filter out common API errors that we don't need to log
@@ -533,11 +520,11 @@ process.on('uncaughtException', (error) => {
     'ETIMEDOUT',
     'ENOTFOUND'
   ];
-  
+
   const shouldIgnore = ignoredErrors.some(ignored => 
     error.message && error.message.includes(ignored)
   );
-  
+
   if (!shouldIgnore) {
     console.error('Uncaught Exception:', error);
   }
@@ -563,12 +550,12 @@ process.on('unhandledRejection', (reason, promise) => {
     'ETIMEDOUT',
     'ENOTFOUND'
   ];
-  
+
   const reasonStr = reason ? reason.toString() : '';
   const shouldIgnore = ignoredRejections.some(ignored => 
     reasonStr.includes(ignored)
   );
-  
+
   if (!shouldIgnore) {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   }
@@ -587,12 +574,12 @@ const listener = require('./includes/listen')({ api });
           logger.log("Your account has been checkpointed, please confirm your account and log in again!", 'CHECKPOINT');
           return process.exit(0);
         }
-        
+
         // Filter out ready state messages
         if (error.type === 'ready' && error.error === null) {
           return; // Silently handle ready state
         }
-        
+
         // Comprehensive list of errors to ignore
         const ignoredListenErrors = [
           'Rate limited',
@@ -608,25 +595,25 @@ const listener = require('./includes/listen')({ api });
           'ETIMEDOUT',
           'socket hang up'
         ];
-        
+
         const errorStr = error.toString();
         const shouldIgnore = ignoredListenErrors.some(ignored => 
           errorStr.includes(ignored)
         );
-        
+
         if (!shouldIgnore) {
           console.log('Listen Error:', error);
         }
-        
+
         // Don't exit on common API errors
         return;
       }
-      
+
       // Filter out ready state events
       if (event && event.type === 'ready' && event.error === null) {
         return; // Silently handle ready state
       }
-      
+
       return listener(event);
     });
   });

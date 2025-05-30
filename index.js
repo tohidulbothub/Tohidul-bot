@@ -122,7 +122,7 @@ setTimeout(() => {
   checkAndUpdate();
 }, 20000);
 
-// Web server setup moved to web-server.js and integrated in main.js
+
 
 // __@YanMaglinte was Here__ //
 // ----------------------------//
