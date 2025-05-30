@@ -107,35 +107,35 @@ module.exports.run = async function ({ api, event, args }) {
 
         // Remove teaching
         if (args[0] === 'remove') {
-            const messageToRemove = dipto.replace("remove ", "");
+            const messageToRemove = args.slice(1).join(" ");
             if (!messageToRemove) {
-                return api.sendMessage('❌ | Please specify the message to remove', event.threadID, event.messageID);
+                return api.sendMessage('❌ | Please specify the message to remove\nFormat: teach2 remove [message]', event.threadID, event.messageID);
             }
             
             try {
-                const response = await axios.get(`${link}?remove=${messageToRemove}&senderID=${uid}`);
+                const response = await axios.get(`${link}?remove=${encodeURIComponent(messageToRemove)}&senderID=${uid}`);
                 return api.sendMessage(`✅ ${response.data.message}`, event.threadID, event.messageID);
             } catch (error) {
-                return api.sendMessage('❌ | Error removing teaching', event.threadID, event.messageID);
+                console.error('Remove teaching error:', error);
+                return api.sendMessage('❌ | Error removing teaching. Please try again.', event.threadID, event.messageID);
             }
         }
 
-        // Regular teaching
-        if (args[0] === 'teach2' && args[1] !== 'amar' && args[1] !== 'react') {
+        // Regular teaching (only if it contains ' - ' separator and not a command)
+        if (dipto.includes(' - ') && args[0] !== 'remove' && args[0] !== 'list' && args[0] !== 'stats' && args[1] !== 'amar' && args[1] !== 'react') {
             const [comd, command] = dipto.split(' - ');
-            const final = comd.replace("teach2 ", "");
             if (!command || command.length < 2) {
                 return api.sendMessage('❌ | Invalid format! Use: teach2 [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
             }
 
-            const re = await axios.get(`${link}?teach=${final}&reply=${command}&senderID=${uid}`);
+            const re = await axios.get(`${link}?teach=${encodeURIComponent(comd)}&reply=${encodeURIComponent(command)}&senderID=${uid}`);
             const name = await getUserName(re.data.teacher, api);
 
             // Update teach count for the user
             updateTeachCount(uid);
 
             const successMsg = `✅ **Teaching Added Successfully!** ✅\n\n` +
-                             `📝 **Message:** ${final}\n` +
+                             `📝 **Message:** ${comd}\n` +
                              `💬 **Replies:** ${command}\n` +
                              `👤 **Teacher:** ${name || "unknown"}\n` +
                              `📊 **Total Teachings:** ${re.data.teachs}\n` +
@@ -145,14 +145,14 @@ module.exports.run = async function ({ api, event, args }) {
         }
 
         // Personal teaching (amar)
-        if (args[0] === 'teach2' && args[1] === 'amar') {
+        if (args[0] === 'amar' && dipto.includes(' - ')) {
             const [comd, command] = dipto.split(' - ');
-            const final = comd.replace("teach2 amar ", "");
+            const final = comd.replace("amar ", "");
             if (!command || command.length < 2) {
                 return api.sendMessage('❌ | Invalid format! Use: teach2 amar [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
             }
 
-            const re = await axios.get(`${link}?teach=${final}&senderID=${uid}&reply=${command}&key=intro`);
+            const re = await axios.get(`${link}?teach=${encodeURIComponent(final)}&senderID=${uid}&reply=${encodeURIComponent(command)}&key=intro`);
 
             // Update teach count for the user
             updateTeachCount(uid);
@@ -166,14 +166,14 @@ module.exports.run = async function ({ api, event, args }) {
         }
 
         // Reaction teaching
-        if (args[0] === 'teach2' && args[1] === 'react') {
+        if (args[0] === 'react' && dipto.includes(' - ')) {
             const [comd, command] = dipto.split(' - ');
-            const final = comd.replace("teach2 react ", "");
+            const final = comd.replace("react ", "");
             if (!command || command.length < 2) {
                 return api.sendMessage('❌ | Invalid format! Use: teach2 react [YourMessage] - [react1], [react2], [react3]...', event.threadID, event.messageID);
             }
 
-            const re = await axios.get(`${link}?teach=${final}&react=${command}`);
+            const re = await axios.get(`${link}?teach=${encodeURIComponent(final)}&react=${encodeURIComponent(command)}`);
 
             // Update teach count for the user
             updateTeachCount(uid);
@@ -186,26 +186,8 @@ module.exports.run = async function ({ api, event, args }) {
             return api.sendMessage(successMsg, event.threadID, event.messageID);
         }
 
-        // If no specific command matched, treat as regular teaching
-        const [comd, command] = dipto.split(' - ');
-        if (!command || command.length < 2) {
-            return api.sendMessage('❌ | Invalid format! Use: teach2 [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
-        }
-
-        const re = await axios.get(`${link}?teach=${comd}&reply=${command}&senderID=${uid}`);
-        const name = await getUserName(re.data.teacher, api);
-
-        // Update teach count for the user
-        updateTeachCount(uid);
-
-        const successMsg = `✅ **Teaching Added Successfully!** ✅\n\n` +
-                         `📝 **Message:** ${comd}\n` +
-                         `💬 **Replies:** ${command}\n` +
-                         `👤 **Teacher:** ${name || "unknown"}\n` +
-                         `📊 **Total Teachings:** ${re.data.teachs}\n` +
-                         `🎯 **Your Teach Count:** ${teachCounts[uid]}`;
-
-        return api.sendMessage(successMsg, event.threadID, event.messageID);
+        // If no valid command format is found
+        return api.sendMessage('❌ | Invalid command format!\n\nAvailable options:\n• teach2 [message] - [reply]\n• teach2 amar [message] - [reply]\n• teach2 react [message] - [reactions]\n• teach2 remove [message]\n• teach2 list\n• teach2 stats', event.threadID, event.messageID);
 
     } catch (e) {
         console.error('Error in teach2 command execution:', e);
