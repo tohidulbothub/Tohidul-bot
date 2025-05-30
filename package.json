@@ -54,7 +54,7 @@
     "node-cron": "^4.0.7",
     "node-superfetch": "^0.3.5",
     "npmlog": "^7.0.1",
-    "openai": "^4.103.0",
+    "openai": "^5.0.1",
     "pastebin-api": "^7.0.0",
     "path": "^0.12.7",
     "pidusage": "^4.0.1",
