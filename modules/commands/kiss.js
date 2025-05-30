@@ -167,4 +167,3 @@ module.exports.run = async function ({ event, api, args, Currencies }) {
     return api.sendMessage("❌ Sorry! There was an error creating your kiss image. Please try again later! 💔", threadID, messageID);
   }
 };
-}
