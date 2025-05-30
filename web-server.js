@@ -388,39 +388,13 @@ class WebServer {
       }
     });
 
-    // Enhanced auto-ping mechanism to keep the bot alive
+    // Activity tracker - just log activity
     setInterval(() => {
-      // Self-ping to maintain activity
       const now = Date.now();
-      if (now - this.lastPingTime > 240000) { // 4 minutes
-        console.log('🔄 Auto-ping: Keeping bot alive...');
-        this.lastPingTime = now;
-        // Self-ping to ensure activity
-        try {
-          const http = require('http');
-          const options = {
-            hostname: '0.0.0.0',
-            port: 3000,
-            path: '/ping',
-            method: 'GET',
-            timeout: 5000
-          };
-          const req = http.request(options, (res) => {
-            console.log('✅ Self-ping successful');
-          });
-          req.on('error', () => {
-            console.log('⚠️ Self-ping failed, but continuing...');
-          });
-          req.on('timeout', () => {
-            req.destroy();
-            console.log('⚠️ Self-ping timeout');
-          });
-          req.end();
-        } catch (error) {
-          console.log('⚠️ Self-ping error, but continuing...');
-        }
+      if (now - this.lastPingTime > 120000) { // 2 minutes
+        console.log('📊 Server Activity: Keep-alive system is handling pings...');
       }
-    }, 180000); // Check every 3 minutes
+    }, 300000); // Check every 5 minutes
 
     // Health monitoring - check bot status
     setInterval(() => {
