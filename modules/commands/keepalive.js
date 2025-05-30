@@ -1,43 +1,5 @@
 
-module.exports.config = {
-  name: "keepalive",
-  version: "1.0.0",
-  hasPermssion: 2,
-  credits: "TOHI-BOT-HUB",
-  description: "Monitor keep-alive server status",
-  commandCategory: "admin",
-  usePrefix: true,
-  usages: "keepalive [status|stats|restart]",
-  cooldowns: 5
-};
-
-module.exports.run = async ({ api, event, args }) => {
-  try {
-    const { threadID, messageID } = event;
-    const action = args[0]?.toLowerCase() || 'status';
-
-    let message = '';
-
-    switch (action) {
-      case 'status':
-        const uptime = process.uptime();
-        const days = Math.floor(uptime / 86400);
-        const hours = Math.floor((uptime % 86400) / 3600);
-        const minutes = Math.floor((uptime % 3600) / 60);
-        const seconds = Math.floor(uptime % 60);
-        
-        const memUsage = process.memoryUsage();
-        const memUsed = Math.round(memUsage.heapUsed / 1024 / 1024);
-        const memTotal = Math.round(memUsage.heapTotal / 1024 / 1024);
-
-        message = `🤖 TOHI-BOT Keep-Alive Status\n\n` +
-                 `📊 Server Status: Online ✅\n` +
-                 `⏰ Uptime: ${days}d ${hours}h ${minutes}m ${seconds}s\n` +
-                 `💾 Memory: ${memUsed}MB / ${memTotal}MB\n` +
-                 `🌐 Web Server: Running on port 3000\n` +
-                 `🔄 Keep-Alive: Active\n` +
-                 `📡 Health Check: http://0.0.0.0:3000/health\n\n` +
-                 `✨ Bot is running 24/7!`;
+// This command has been removedg 24/7!`;
         break;
 
       case 'stats':

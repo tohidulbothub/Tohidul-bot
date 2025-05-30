@@ -49,24 +49,7 @@ process.on('unhandledRejection', (reason, promise) => {
   // Don't exit the process
 });
 
-// Initialize web server for performance monitoring and keep-alive
-const WebServer = require('./web-server');
-const KeepAlive = require('./utils/keepAlive');
 
-const webServer = new WebServer();
-const keepAlive = new KeepAlive();
-
-webServer.start(3000);
-
-// Start keep-alive service after a short delay
-setTimeout(() => {
-  keepAlive.start(5); // Ping every 5 minutes
-  
-  // Add external URLs if you have any monitoring services
-  // keepAlive.addUrl('https://your-monitoring-service.com/ping');
-  
-  console.log('🔄 Keep-alive service initialized');
-}, 10000); // Wait 10 seconds for server to fully start
 
 function startProject() {
     try {

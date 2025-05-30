@@ -1,4 +1,3 @@
-
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -11,7 +10,6 @@ class WebServer {
     this.requestCount = 0;
     this.setupMiddleware();
     this.setupRoutes();
-    this.setupKeepAlive();
   }
 
   setupMiddleware() {
@@ -28,45 +26,6 @@ class WebServer {
       res.setHeader('X-Content-Type-Options', 'nosniff');
       next();
     });
-  }
-
-  setupKeepAlive() {
-    // Self-ping to keep the server alive
-    setInterval(() => {
-      try {
-        const http = require('http');
-        const options = {
-          hostname: '0.0.0.0',
-          port: 3000,
-          path: '/health',
-          method: 'GET',
-          timeout: 5000
-        };
-
-        const req = http.request(options, (res) => {
-          // Server is responding
-        });
-
-        req.on('error', (err) => {
-          console.log('Keep-alive ping failed:', err.message);
-        });
-
-        req.on('timeout', () => {
-          req.abort();
-        });
-
-        req.end();
-      } catch (error) {
-        console.log('Keep-alive error:', error.message);
-      }
-    }, 300000); // Ping every 5 minutes
-
-    // Memory cleanup
-    setInterval(() => {
-      if (global.gc) {
-        global.gc();
-      }
-    }, 600000); // Run garbage collection every 10 minutes
   }
 
   setupRoutes() {
@@ -249,11 +208,6 @@ class WebServer {
       });
     });
 
-    // Keep-alive endpoint
-    this.app.get('/ping', (req, res) => {
-      res.status(200).send('pong');
-    });
-
     // Uptime endpoint
     this.app.get('/uptime', (req, res) => {
       const uptime = process.uptime();
@@ -324,11 +278,6 @@ class WebServer {
         process.exit(0);
       });
     });
-
-    // Keep server alive with periodic logs
-    setInterval(() => {
-      console.log(`🔄 Keep-alive: Server running for ${this.formatUptime(process.uptime())}`);
-    }, 1800000); // Log every 30 minutes
   }
 
   stop() {
