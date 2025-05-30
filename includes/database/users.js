@@ -27,7 +27,7 @@ module.exports = function ({ api }) {
             if (!userID) throw new Error("User ID cannot be blank");
             if (isNaN(userID)) throw new Error("Invalid user ID");
             var userInfo = await api.getUserInfo(userID);
-            return `User ID: ${userID}`;
+            return userInfo[userID]?.name || `User ${userID}`;
         } catch (error) {
             return `Facebook users`
         }

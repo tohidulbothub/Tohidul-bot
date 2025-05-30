@@ -403,7 +403,7 @@ mess = "{name}"
 
 }
 
-module.exports.run = async function({ api, event, args }) {
+module.exports.run = async function({ api, event, args, Users }) {
   const { threadID, messageID, senderID } = event;
 
   if (!args[0]) {
@@ -413,9 +413,8 @@ module.exports.run = async function({ api, event, args }) {
   const message = args.join(" ");
 
   try {
-    // Get user info to fetch the name
-    const userInfo = await api.getUserInfo(senderID);
-    const userName = userInfo[senderID]?.name || "User";
+    // Get user name using the Users helper
+    const userName = await Users.getNameUser(senderID);
 
     // Send reply with name mention instead of UID
     return api.sendMessage({
@@ -427,13 +426,7 @@ module.exports.run = async function({ api, event, args }) {
     }, threadID, messageID);
   } catch (error) {
     console.error("Error fetching user info:", error);
-    // Fallback to UID if name fetch fails
-    return api.sendMessage({
-      body: `${message}`,
-      mentions: [{
-        tag: `@${senderID}`,
-        id: senderID
-      }]
-    }, threadID, messageID);
+    // Fallback to basic message without mention
+    return api.sendMessage(`${message}`, threadID, messageID);
   }
 };
