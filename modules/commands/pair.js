@@ -108,7 +108,7 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
 
     // 12. Send message with proper mentions & delete temp files after send
     return api.sendMessage({
-      body: `✨✨`,
+      body: `✨ @${name1} ❤️ @${name2} ✨`,
       mentions: [
         { tag: name1, id: id1 },
         { tag: name2, id: id2 }

@@ -102,7 +102,7 @@ module.exports.run = async function({ event, api, args }) {
     makeImage({ one: id1, two: id2 }).then(imgPath => {
       api.sendMessage(
         {
-          body: `👉${mentionTag} love you so much🥰’”`,
+          body: `👉 @${mentionTag} love you so much🥰'"`,
           mentions: [{ tag: mentionTag, id: mentionId }],
           attachment: fs.createReadStream(imgPath)
         },
