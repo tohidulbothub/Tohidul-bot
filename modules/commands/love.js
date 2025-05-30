@@ -24,7 +24,7 @@ module.exports.config = {
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
-const jimp = require("jimp");
+const Jimp = require("jimp");
 
 module.exports.onLoad = async () => {
   const cachePath = __dirname + "/cache/";
@@ -38,7 +38,7 @@ module.exports.onLoad = async () => {
 };
 
 async function circle(imgPath) {
-  let img = await jimp.read(imgPath);
+  let img = await Jimp.read(imgPath);
   img.circle();
   return await img.getBufferAsync("image/png");
 }
@@ -47,10 +47,10 @@ async function makeImage({ one, two }) {
   const fs = require("fs-extra");
   const path = require("path");
   const axios = require("axios");
-  const jimp = require("jimp");
+  const Jimp = require("jimp");
 
   const basePath = path.resolve(__dirname, "cache");
-  let baseImg = await jimp.read(basePath + "/ewhd.png");
+  let baseImg = await Jimp.read(basePath + "/ewhd.png");
 
   // Download avatars
   let avatarOnePath = basePath + `/avt_${one}.png`;
@@ -72,8 +72,8 @@ async function makeImage({ one, two }) {
   fs.writeFileSync(avatarTwoPath, Buffer.from(res2.data, "utf-8"));
 
   // Read and process avatars
-  let circledOne = await jimp.read(await circle(avatarOnePath));
-  let circledTwo = await jimp.read(await circle(avatarTwoPath));
+  let circledOne = await Jimp.read(await circle(avatarOnePath));
+  let circledTwo = await Jimp.read(await circle(avatarTwoPath));
 
   baseImg
     .resize(1632, 917)
