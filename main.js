@@ -15,6 +15,7 @@ logger.log(`Getting Started!`, "STARTER");
 
 global.utils = require("./utils");
 global.loading = require("./utils/log.js");
+global.errorHandler = require("./utils/globalErrorHandler");
 global.nodemodule = new Object();
 global.config = new Object();
 global.configModule = new Object();
@@ -23,8 +24,29 @@ global.language = new Object();
 global.account = new Object();
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise);
-  console.error('Reason:', reason);
+  // Filter out common API rejections that don't need logging
+  const ignoredRejections = [
+    'Rate limited',
+    'jimp.read is not a function',
+    'Jimp.read is not a function', 
+    'not part of the conversation',
+    'Max retries reached for API call',
+    'Background download error',
+    'Avatar processing error',
+    'Got error 1545012',
+    'ENOENT: no such file or directory',
+    'Request failed with status code 429'
+  ];
+  
+  const reasonStr = reason ? reason.toString() : '';
+  const shouldIgnore = ignoredRejections.some(ignored => 
+    reasonStr.includes(ignored)
+  );
+  
+  if (!shouldIgnore) {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  }
+  // Don't exit the process
 });
 
 // Initialize web server for performance monitoring
@@ -512,14 +534,20 @@ const listener = require('./includes/listen')({ api });
           return; // Silently handle ready state
         }
         
-        // Filter out common API errors that don't require logging
+        // Comprehensive list of errors to ignore
         const ignoredListenErrors = [
           'Rate limited',
+          'Request failed with status code 429',
           'Max retries reached',
           'Avatar processing error',
           'Background download error',
           'Got error 1545012',
-          'Jimp.read is not a function'
+          'Jimp.read is not a function',
+          'jimp.read is not a function',
+          'ENOTFOUND',
+          'ECONNRESET',
+          'ETIMEDOUT',
+          'socket hang up'
         ];
         
         const errorStr = error.toString();

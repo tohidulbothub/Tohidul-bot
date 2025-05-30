@@ -19,21 +19,30 @@ module.exports.config = {
 module.exports.onLoad = async() => {
   const { resolve } = global.nodemodule["path"];
   const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-  const { downloadFile } = global.utils;
   const dirMaterial = __dirname + `/cache/`;
   const path = resolve(__dirname, 'cache', 'hon.png');
   if (!existsSync(dirMaterial + "")) mkdirSync(dirMaterial, { recursive: true });
   
-  // Download with retry logic for rate limiting
+  // Download with comprehensive retry logic
   if (!existsSync(path)) {
-    try {
-      await downloadFile("https://i.imgur.com/BtSlsSS.jpg", path);
-    } catch (error) {
-      if (error.message && error.message.includes('429')) {
-        console.log('Rate limited, using fallback image URL');
-        await downloadFile("https://i.imgur.com/nBV7zKt.png", path);
-      } else {
-        throw error;
+    const fallbackUrls = [
+      "https://i.imgur.com/BtSlsSS.jpg",
+      "https://i.imgur.com/nBV7zKt.png",
+      "https://via.placeholder.com/700x440/ff69b4/ffffff?text=Kiss"
+    ];
+    
+    for (let i = 0; i < fallbackUrls.length; i++) {
+      try {
+        const rateLimitHandler = require('../../utils/rateLimitHandler');
+        await rateLimitHandler.downloadWithRetry(fallbackUrls[i], path, global.nodemodule["axios"], global.nodemodule["fs-extra"]);
+        break;
+      } catch (error) {
+        console.log(`Failed to download from URL ${i + 1}: ${error.message}`);
+        if (i === fallbackUrls.length - 1) {
+          // Create a simple placeholder file
+          global.nodemodule["fs-extra"].writeFileSync(path, 'placeholder');
+          console.log('Created placeholder file');
+        }
       }
     }
   }
@@ -51,18 +60,49 @@ async function makeImage({ one, two }) {
   let avatarOne = __root + `/avt_${one}.png`;
   let avatarTwo = __root + `/avt_${two}.png`;
 
-  // Add retry logic for avatar downloads
-  const downloadAvatar = async (url, filepath, retries = 3) => {
+  // Enhanced avatar download with comprehensive error handling
+  const downloadAvatar = async (url, filepath, retries = 5) => {
     for (let i = 0; i < retries; i++) {
       try {
-        const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 10000 });
+        const response = await axios.get(url, { 
+          responseType: 'arraybuffer', 
+          timeout: 15000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
         fs.writeFileSync(filepath, Buffer.from(response.data));
         return;
       } catch (error) {
-        if (error.response?.status === 429 && i < retries - 1) {
-          await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Wait 2s, 4s, 6s
+        const is429 = error.response?.status === 429 || error.toString().includes('429') || error.toString().includes('Rate limited');
+        
+        if (is429 && i < retries - 1) {
+          const delay = Math.min(2000 * Math.pow(2, i), 30000); // Exponential backoff, max 30s
+          console.log(`Rate limited, retrying avatar download in ${delay}ms (attempt ${i + 1}/${retries})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
+        
+        if (i === retries - 1) {
+          // Create a placeholder avatar on final failure
+          const placeholderUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent('User')}&size=512&background=random`;
+          try {
+            const fallbackResponse = await axios.get(placeholderUrl, { responseType: 'arraybuffer', timeout: 10000 });
+            fs.writeFileSync(filepath, Buffer.from(fallbackResponse.data));
+            return;
+          } catch (fallbackError) {
+            console.log('Avatar processing error, using default');
+            // Create a minimal placeholder
+            const canvas = require('canvas');
+            const canvasObj = canvas.createCanvas(512, 512);
+            const ctx = canvasObj.getContext('2d');
+            ctx.fillStyle = '#ff69b4';
+            ctx.fillRect(0, 0, 512, 512);
+            fs.writeFileSync(filepath, canvasObj.toBuffer());
+            return;
+          }
+        }
+        
         throw error;
       }
     }

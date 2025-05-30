@@ -50,12 +50,13 @@ module.exports.handleEvent = async function ({ Users, Threads, api, event }) {
     let isGroupAdmin = false;
     
     try {
-        const threadInfo = await api.getThreadInfo(event.threadID);
+        const apiHelper = require('../../utils/apiHelper');
+        const threadInfo = await apiHelper.rateLimitedCall(() => api.getThreadInfo(event.threadID));
         isGroupAdmin = threadInfo.adminIDs.some(admin => admin.id === senderID);
     } catch (error) {
-        if (error.toString().includes('429') || error.toString().includes('Rate limited')) {
-            // Skip admin check if rate limited
-            console.log('Rate limited while checking admin status');
+        const is429 = error.toString().includes('429') || error.toString().includes('Rate limited');
+        if (is429) {
+            console.log('Rate limited while checking admin status, skipping check');
             return;
         }
         isGroupAdmin = false;
