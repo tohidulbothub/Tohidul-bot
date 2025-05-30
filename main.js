@@ -50,6 +50,40 @@ process.on('unhandledRejection', (reason, promise) => {
   // Don't exit the process
 });
 
+// Auto-restart mechanism for better stability
+let restartCount = 0;
+const maxRestarts = 5;
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  
+  // Critical errors that should restart
+  const criticalErrors = [
+    'ECONNRESET',
+    'ENOTFOUND', 
+    'socket hang up',
+    'Network Error',
+    'Connection lost'
+  ];
+  
+  const isCritical = criticalErrors.some(err => 
+    error.message && error.message.includes(err)
+  );
+  
+  if (isCritical && restartCount < maxRestarts) {
+    restartCount++;
+    console.log(`⚡ Auto-restarting bot (${restartCount}/${maxRestarts})...`);
+    setTimeout(() => {
+      process.exit(1); // This will trigger the restart in startProject()
+    }, 3000);
+  }
+});
+
+// Reset restart counter every hour
+setInterval(() => {
+  restartCount = 0;
+}, 3600000);
+
 
 
 function startProject() {

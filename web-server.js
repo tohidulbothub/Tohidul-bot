@@ -388,15 +388,56 @@ class WebServer {
       }
     });
 
-    // Auto-ping mechanism to keep the bot alive
+    // Enhanced auto-ping mechanism to keep the bot alive
     setInterval(() => {
       // Self-ping to maintain activity
       const now = Date.now();
-      if (now - this.lastPingTime > 300000) { // 5 minutes
+      if (now - this.lastPingTime > 240000) { // 4 minutes
         console.log('🔄 Auto-ping: Keeping bot alive...');
         this.lastPingTime = now;
+        // Self-ping to ensure activity
+        try {
+          const http = require('http');
+          const options = {
+            hostname: '0.0.0.0',
+            port: 3000,
+            path: '/ping',
+            method: 'GET',
+            timeout: 5000
+          };
+          const req = http.request(options, (res) => {
+            console.log('✅ Self-ping successful');
+          });
+          req.on('error', () => {
+            console.log('⚠️ Self-ping failed, but continuing...');
+          });
+          req.on('timeout', () => {
+            req.destroy();
+            console.log('⚠️ Self-ping timeout');
+          });
+          req.end();
+        } catch (error) {
+          console.log('⚠️ Self-ping error, but continuing...');
+        }
       }
-    }, 240000); // Check every 4 minutes
+    }, 180000); // Check every 3 minutes
+
+    // Health monitoring - check bot status
+    setInterval(() => {
+      if (global.client && global.client.api) {
+        try {
+          // Check if bot is still logged in
+          const botId = global.client.api.getCurrentUserID();
+          if (!botId) {
+            console.log('⚠️ Bot seems disconnected, may need restart');
+          } else {
+            console.log('💚 Bot health check passed');
+          }
+        } catch (error) {
+          console.log('⚠️ Bot health check failed:', error.message);
+        }
+      }
+    }, 600000); // Check every 10 minutes
 
     // Graceful shutdown
     process.on('SIGTERM', () => {
