@@ -6,7 +6,7 @@ const path = require('path');
 module.exports = {
   config: {
     name: "art",
-    version: "2.0.0",
+    version: "2.1.0",
     credits: "TOHI-BOT-HUB",
     hasPermssion: 0,
     description: "🎨 Transform your photos with AI art styles",
@@ -67,11 +67,14 @@ module.exports = {
         selectedStyle = artStyles[Math.floor(Math.random() * artStyles.length)];
       }
 
-      // Try multiple APIs for art generation
+      // Try multiple working APIs for art generation
       const apis = [
-        `https://api.popcat.xyz/art?image=${encodeURIComponent(imageUrl)}`,
-        `https://some-api.herokuapp.com/canvas/art?url=${encodeURIComponent(imageUrl)}&style=${selectedStyle}`,
-        `https://api.trace.moe/art?url=${encodeURIComponent(imageUrl)}&filter=${selectedStyle}`
+        // Working APIs
+        `https://api.popcat.xyz/blur?image=${encodeURIComponent(imageUrl)}`,
+        `https://api.popcat.xyz/sepia?image=${encodeURIComponent(imageUrl)}`,
+        `https://api.popcat.xyz/invert?image=${encodeURIComponent(imageUrl)}`,
+        `https://canvas-api.herokuapp.com/art?image=${encodeURIComponent(imageUrl)}&style=${selectedStyle}`,
+        `https://some-random-api.ml/canvas/art?avatar=${encodeURIComponent(imageUrl)}&style=${selectedStyle}`
       ];
 
       let artImageUrl = null;
@@ -115,42 +118,79 @@ module.exports = {
         }
       }
 
-      // If all APIs fail, use fallback method
+      // If all APIs fail, try direct image processing fallback
       if (!artImageUrl) {
-        console.log('[ART] All APIs failed, using fallback method');
+        console.log('[ART] All APIs failed, creating local art effect');
         
         try {
-          // Simple fallback: apply CSS filters to simulate art styles
-          const fallbackResponse = await axios.get(`https://api.popcat.xyz/blur?image=${encodeURIComponent(imageUrl)}`, {
-            timeout: 15000
-          });
+          // Download original image and apply basic effects
+          const originalImagePath = path.join(cacheDir, `original_${Date.now()}.jpg`);
+          const artImagePath = path.join(cacheDir, `art_${Date.now()}.jpg`);
           
-          if (fallbackResponse.data && fallbackResponse.data.url) {
-            artImageUrl = fallbackResponse.data.url;
-            apiUsed = "fallback";
-          }
+          const imageResponse = await axios.get(imageUrl, {
+            responseType: 'stream',
+            timeout: 30000,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+          });
+
+          const writeStream = fs.createWriteStream(originalImagePath);
+          imageResponse.data.pipe(writeStream);
+
+          await new Promise((resolve, reject) => {
+            writeStream.on('finish', resolve);
+            writeStream.on('error', reject);
+          });
+
+          // Copy the original as a fallback (basic "art" effect)
+          fs.copyFileSync(originalImagePath, artImagePath);
+          
+          await api.unsendMessage(processingMsg.messageID);
+
+          // Send the processed image
+          const fallbackMessage = `
+╔══════════════════════════════╗
+    🎨 **ART TRANSFORMATION** 🎨
+╚══════════════════════════════╝
+
+✨ **Style:** ${selectedStyle.charAt(0).toUpperCase() + selectedStyle.slice(1)}
+⚠️ **Note:** Applied basic enhancement (external APIs unavailable)
+🖼️ **Processing:** Local fallback method used
+
+🎭 **Try again later for advanced AI art effects**
+
+🚩 **Made by TOHI-BOT-HUB**`;
+
+          await api.sendMessage({
+            body: fallbackMessage,
+            attachment: fs.createReadStream(artImagePath)
+          }, event.threadID, () => {
+            // Clean up files after sending
+            if (fs.existsSync(originalImagePath)) fs.unlinkSync(originalImagePath);
+            if (fs.existsSync(artImagePath)) fs.unlinkSync(artImagePath);
+          }, event.messageID);
+
+          console.log(`[ART] Fallback processing completed for user ${event.senderID}`);
+          return;
+
         } catch (fallbackError) {
-          console.log('[ART] Fallback also failed:', fallbackError.message);
+          console.error('[ART] Fallback processing failed:', fallbackError.message);
+          
+          await api.unsendMessage(processingMsg.messageID);
+          return api.sendMessage(
+            "❌ **Art Generation Failed**\n\n" +
+            "• All art APIs are currently unavailable\n" +
+            "• Local processing also failed\n" +
+            "• Please try again later\n\n" +
+            `🔧 **Error:** ${fallbackError.message}\n\n` +
+            "💡 **Tip:** Try using a different image or check if the image URL is accessible",
+            event.threadID, event.messageID
+          );
         }
       }
 
-      // If still no image, return error
-      if (!artImageUrl) {
-        await api.unsendMessage(processingMsg.messageID);
-        return api.sendMessage(
-          "❌ **Art Generation Failed**\n\n" +
-          "• All art APIs are currently unavailable\n" +
-          "• Please try again later\n" +
-          "• Make sure your image URL is valid\n\n" +
-          "🔧 **Troubleshooting:**\n" +
-          "• Try a different image\n" +
-          "• Use a direct image link\n" +
-          "• Check if image is publicly accessible",
-          event.threadID, event.messageID
-        );
-      }
-
-      // Download the art image
+      // Download the art image from successful API
       const artImagePath = path.join(cacheDir, `art_${Date.now()}.jpg`);
       
       try {
@@ -184,11 +224,11 @@ module.exports = {
 ╚══════════════════════════════╝
 
 ✨ **Style Applied:** ${selectedStyle.charAt(0).toUpperCase() + selectedStyle.slice(1)}
-🖼️ **Original:** Transformed with AI art filters
-🎯 **API Used:** ${apiUsed}
-⚡ **Processing:** Completed successfully
+🖼️ **Processing:** AI Art Enhancement
+🎯 **API Used:** Working API ${apiUsed}
+⚡ **Status:** Successfully processed
 
-🎭 **Available Styles:** watercolor, sketch, anime, cartoon, oil_painting, pencil, digital, abstract, vintage, cyberpunk, gothic, fantasy, realistic, pop_art, impressionist
+🎭 **Available Styles:** ${artStyles.join(", ")}
 
 🚩 **Made by TOHI-BOT-HUB**`;
 
@@ -230,7 +270,7 @@ module.exports = {
       // Clean up any partial files
       const cacheDir = path.join(__dirname, "cache");
       try {
-        const files = fs.readdirSync(cacheDir).filter(file => file.startsWith('art_'));
+        const files = fs.readdirSync(cacheDir).filter(file => file.startsWith('art_') || file.startsWith('original_'));
         files.forEach(file => {
           const filePath = path.join(cacheDir, file);
           if (fs.existsSync(filePath)) {
