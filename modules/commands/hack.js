@@ -1,7 +1,12 @@
 
+const axios = require('axios');
+const fs = require('fs-extra');
+const { createCanvas, loadImage } = require('canvas');
+
 const OWNER_UIDS = ["100092006324917"];
 
-module.exports.config = {
+module.exports = {
+config: {
   name: "hack",
   version: "1.0.3",
   hasPermssion: 0,
@@ -16,9 +21,9 @@ module.exports.config = {
     "canvas": ""
   },
   cooldowns: 0
-};
+},
 
-wrapText: async (ctx, name, maxWidth) => {
+wrapText: async function (ctx, name, maxWidth) {
   return new Promise((resolve) => {
     if (ctx.measureText(name).width < maxWidth) return resolve([name]);
     if (ctx.measureText("W").width > maxWidth) return resolve(null);
@@ -48,7 +53,7 @@ wrapText: async (ctx, name, maxWidth) => {
   });
 },
 
-onStart: async function ({ args, usersData, threadsData, api, event }) {
+run: async function ({ args, usersData, threadsData, api, event }) {
   let pathImg = __dirname + "/cache/background.png";
   let pathAvt1 = __dirname + "/cache/Avtmot.png";
   var id = Object.keys(event.mentions)[0] || event.senderID;
