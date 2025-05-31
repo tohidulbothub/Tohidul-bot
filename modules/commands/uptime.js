@@ -1,3 +1,4 @@
+
 module.exports.config = {
   name: "uptime",
   version: "1.0.0",
@@ -19,104 +20,39 @@ function byte2mb(bytes) {
 
 module.exports.run = async ({ api, event, args }) => {
   const { threadID, messageID } = event;
-  const pidusage = require("pidusage");
-  const axios = require("axios");
-  const fs = require("fs-extra");
-  const moment = require("moment-timezone");
-  const { loadImage, createCanvas, registerFont } = require("canvas");
   const timeStart = Date.now();
-
-  // Get CPU and memory usage
-  const stats = await pidusage(process.pid);
-
-  // Uptime calculation
-  const time = process.uptime();
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time % 3600) / 60);
-  const seconds = Math.floor(time % 60);
-  const z_1 = (hours < 10) ? '0' + hours : hours;
-  const x_1 = (minutes < 10) ? '0' + minutes : minutes;
-  const y_1 = (seconds < 10) ? '0' + seconds : seconds;
-  const timeNow = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
-  const { commands } = global.client;
-
-  // Font download & register
-  const fontDir = __dirname + "/tohibot_fonts";
-  if (!fs.existsSync(fontDir)) fs.mkdirSync(fontDir);
-  const fonts = [
-    { name: "UTM-Avo.ttf", url: "https://github.com/hanakuUwU/font/raw/main/UTM%20Avo.ttf" },
-    { name: "phenomicon.ttf", url: "https://github.com/hanakuUwU/font/raw/main/phenomicon.ttf" },
-    { name: "CaviarDreams.ttf", url: "https://github.com/hanakuUwU/font/raw/main/CaviarDreams.ttf" }
-  ];
-  for (const font of fonts) {
-    const fontPath = `${fontDir}/${font.name}`;
-    if (!fs.existsSync(fontPath)) {
-      const fontData = (await axios.get(font.url, { responseType: "arraybuffer" })).data;
-      fs.writeFileSync(fontPath, Buffer.from(fontData, "utf-8"));
+  
+  try {
+    // Send initial loading message
+    const loadingMsg = await api.sendMessage("⏳ Loading uptime information...", threadID);
+    
+    // Basic uptime calculation
+    const time = process.uptime();
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor(time % 60);
+    const z_1 = (hours < 10) ? '0' + hours : hours;
+    const x_1 = (minutes < 10) ? '0' + minutes : minutes;
+    const y_1 = (seconds < 10) ? '0' + seconds : seconds;
+    
+    // Get current time
+    const moment = require("moment-timezone");
+    const timeNow = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
+    const { commands } = global.client;
+    
+    // Get system stats with fallback
+    let stats = { cpu: 0, memory: 0 };
+    try {
+      const pidusage = require("pidusage");
+      stats = await pidusage(process.pid);
+    } catch (error) {
+      console.log("Could not get system stats:", error.message);
     }
-  }
+    
+    // Compose stylish message
+    let msg = `╭━━━[ 🤖 𝚃𝙾𝙷𝙸-𝙱𝙾𝚃 𝚄𝙿𝚃𝙸𝙼𝙴 🤖 ]━━━╮
 
-  // Random anime background + avatar
-  const bgLinks = [
-    "https://i.imgur.com/9jbBPIM.jpg",
-    "https://i.imgur.com/cPvDTd9.jpg",
-    "https://i.imgur.com/ZT8CgR1.jpg",
-    "https://i.imgur.com/WhOaTx7.jpg",
-    "https://i.imgur.com/BIcgJOA.jpg",
-    "https://i.imgur.com/EcJt1yq.jpg",
-    "https://i.imgur.com/0dtnQ2m.jpg"
-  ];
-  const lengthchar = (await axios.get('https://raw.githubusercontent.com/mraikero-01/saikidesu_data/main/imgs_data2.json')).data;
-  const id = Math.floor(Math.random() * lengthchar.length);
-
-  let pathImg = `${fontDir}/uptime_bg.png`;
-  let pathAva = `${fontDir}/uptime_ava.png`;
-  let background = (await axios.get(bgLinks[Math.floor(Math.random() * bgLinks.length)], { responseType: "arraybuffer" })).data;
-  fs.writeFileSync(pathImg, Buffer.from(background, "utf-8"));
-  let ava = (await axios.get(lengthchar[id].imgAnime, { responseType: "arraybuffer" })).data;
-  fs.writeFileSync(pathAva, Buffer.from(ava, "utf-8"));
-
-  let bg = await loadImage(pathImg);
-  let av = await loadImage(pathAva);
-  let canvas = createCanvas(bg.width, bg.height);
-  let ctx = canvas.getContext("2d");
-
-  // Draw background & avatar
-  ctx.fillStyle = lengthchar[id].colorBg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-  ctx.drawImage(av, 800, -160, 1100, 1100);
-
-  // UPTIME BANNER
-  registerFont(`${fontDir}/phenomicon.ttf`, { family: "phenomicon" });
-  ctx.textAlign = "start";
-  ctx.font = "130px phenomicon";
-  ctx.fillStyle = "#ffb830";
-  ctx.filter = "brightness(100%) contrast(110%)";
-  ctx.fillText("TOHI-BOT UPTIME", 95, 340);
-
-  // Uptime time
-  registerFont(`${fontDir}/UTM-Avo.ttf`, { family: "UTM" });
-  ctx.font = "70px UTM";
-  ctx.fillStyle = "#fdfdfd";
-  ctx.fillText(`⏰ ${z_1} : ${x_1} : ${y_1}`, 180, 440);
-
-  // Footer
-  registerFont(`${fontDir}/CaviarDreams.ttf`, { family: "time" });
-  ctx.font = "45px time";
-  ctx.fillStyle = "#eab5ff";
-  ctx.fillText("🌐 TOHI-BOT | Owner: TOHIDUL", 250, 515);
-  ctx.fillText("💎 Stay awesome with TOHI-BOT!", 250, 575);
-
-  // Save image
-  const imageBuffer = canvas.toBuffer();
-  fs.writeFileSync(pathImg, imageBuffer);
-
-  // Compose stylish message
-  let msg =
-`╭━━━[ 🤖 𝚃𝙾𝙷𝙸-𝙱𝙾𝚃 𝚄𝙿𝚃𝙸𝙼𝙴 🤖 ]━━━╮
-
-🟢 Bot Status: 𝙊𝙉𝙇𝙄𝙉𝙀
+🟢 Bot Status: 𝙊𝙉𝙻𝙄𝙉𝙴
 ⏱️ Uptime: ${hours}h ${minutes}m ${seconds}s
 📅 Date: ${timeNow}
 
@@ -130,16 +66,100 @@ module.exports.run = async ({ api, event, args }) => {
 🧠 CPU: ${stats.cpu.toFixed(1)}%
 💾 RAM: ${byte2mb(stats.memory)}
 🌐 Ping: ${Date.now() - timeStart}ms
-🎭 Character ID: ${id}
 ━━━━━━━━━━━━━━━━━━
 🌟 Thank you for using TOHI-BOT!
 ╰━━━━━━━━━━━━━━━━━━━━╯`;
 
-  return api.sendMessage({
-    body: msg,
-    attachment: fs.createReadStream(pathImg)
-  }, threadID, () => {
-    fs.unlinkSync(pathImg);
-    fs.unlinkSync(pathAva);
-  }, messageID);
+    // Try to create image with canvas (with fallback)
+    let attachment = null;
+    try {
+      const axios = require("axios");
+      const fs = require("fs-extra");
+      const { loadImage, createCanvas, registerFont } = require("canvas");
+      
+      // Create cache directory
+      const fontDir = __dirname + "/tohibot_fonts";
+      if (!fs.existsSync(fontDir)) fs.mkdirSync(fontDir);
+      
+      // Simple background color
+      let canvas = createCanvas(1200, 600);
+      let ctx = canvas.getContext("2d");
+      
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 1200, 600);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1200, 600);
+      
+      // Add text (using default font)
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 48px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("TOHI-BOT UPTIME", 600, 150);
+      
+      ctx.font = "36px Arial";
+      ctx.fillText(`⏰ ${z_1} : ${x_1} : ${y_1}`, 600, 250);
+      
+      ctx.font = "24px Arial";
+      ctx.fillText("🌐 TOHI-BOT | Owner: TOHIDUL", 600, 350);
+      ctx.fillText("💎 Stay awesome with TOHI-BOT!", 600, 400);
+      
+      ctx.font = "20px Arial";
+      ctx.fillText(`Commands: ${commands.size} | Users: ${global.data.allUserID.length}`, 600, 450);
+      ctx.fillText(`CPU: ${stats.cpu.toFixed(1)}% | RAM: ${byte2mb(stats.memory)}`, 600, 480);
+      ctx.fillText(`Ping: ${Date.now() - timeStart}ms`, 600, 510);
+      
+      // Save image
+      const imageBuffer = canvas.toBuffer();
+      const pathImg = `${fontDir}/uptime_simple.png`;
+      fs.writeFileSync(pathImg, imageBuffer);
+      attachment = fs.createReadStream(pathImg);
+      
+    } catch (error) {
+      console.log("Could not create image:", error.message);
+    }
+    
+    // Remove loading message
+    if (loadingMsg && loadingMsg.messageID) {
+      try {
+        await api.unsendMessage(loadingMsg.messageID);
+      } catch (e) {
+        console.log("Could not unsend loading message");
+      }
+    }
+    
+    // Send final message
+    return api.sendMessage({
+      body: msg,
+      attachment: attachment
+    }, threadID, () => {
+      // Clean up image file if it exists
+      const pathImg = __dirname + "/tohibot_fonts/uptime_simple.png";
+      if (attachment && fs.existsSync(pathImg)) {
+        try {
+          fs.unlinkSync(pathImg);
+        } catch (e) {
+          console.log("Could not clean up image file");
+        }
+      }
+    }, messageID);
+    
+  } catch (error) {
+    console.error("Uptime command error:", error);
+    
+    // Fallback simple message
+    const time = process.uptime();
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor(time % 60);
+    
+    return api.sendMessage(`🤖 TOHI-BOT Status
+⏱️ Uptime: ${hours}h ${minutes}m ${seconds}s
+🟢 Status: Online
+🌐 Ping: ${Date.now() - timeStart}ms
+📂 Commands: ${global.client.commands.size}
+👥 Users: ${global.data.allUserID.length}
+💬 Threads: ${global.data.allThreadID.length}`, threadID, messageID);
+  }
 };
