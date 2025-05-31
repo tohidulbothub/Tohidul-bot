@@ -26,7 +26,7 @@ module.exports.onLoad = async () => {
   const fs = require("fs-extra");
   
   const dirMaterial = __dirname + `/cache/canvas/`;
-  const arrestImagePath = resolve(__dirname, 'cache/canvas', 'arrest_bg.png');
+  const arrestImagePath = resolve(__dirname, 'cache/canvas', 'batgiam.png');
   
   if (!existsSync(dirMaterial)) {
     mkdirSync(dirMaterial, { recursive: true });
@@ -124,7 +124,7 @@ async function createArrestImage(userOne, userTwo) {
   
   try {
     const __root = path.resolve(__dirname, "cache", "canvas");
-    const backgroundPath = __root + "/arrest_bg.png";
+    const backgroundPath = __root + "/batgiam.png";
     const avatarOnePath = __root + `/avatar_${userOne}.png`;
     const avatarTwoPath = __root + `/avatar_${userTwo}.png`;
     const outputPath = __root + `/arrest_${userOne}_${userTwo}_${Date.now()}.png`;
