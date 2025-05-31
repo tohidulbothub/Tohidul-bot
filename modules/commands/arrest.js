@@ -1,4 +1,6 @@
 
+const Jimp = require("jimp");
+
 module.exports.config = {
   name: "arrest",
   version: "3.0.0",
@@ -73,7 +75,6 @@ module.exports.onLoad = async () => {
           console.log("[ARREST] All download attempts failed. Creating fallback background...");
           // Create a simple colored background as fallback
           try {
-            const Jimp = require("jimp");
             const fallbackImage = new Jimp(500, 500, '#1a1a1a');
             const buffer = await fallbackImage.getBufferAsync(Jimp.MIME_PNG);
             fs.writeFileSync(arrestImagePath, buffer);
@@ -105,8 +106,6 @@ async function downloadAvatar(userID, outputPath) {
 }
 
 async function createCircularAvatar(imagePath) {
-  const Jimp = require("jimp");
-  
   try {
     const image = await Jimp.read(imagePath);
     image.circle();
@@ -118,7 +117,6 @@ async function createCircularAvatar(imagePath) {
 }
 
 async function createArrestImage(userOne, userTwo) {
-  const Jimp = require("jimp");
   const fs = require("fs-extra");
   const path = require("path");
   
