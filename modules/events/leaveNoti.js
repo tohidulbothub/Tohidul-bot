@@ -2,9 +2,9 @@
 module.exports.config = {
   name: "leave",
   eventType: ["log:unsubscribe"],
-  version: "6.0.0",
-  credits: "TOHI-BOT-HUB (Anti-Out Integrated by TOHIDUL)",
-  description: "🎭 Enhanced leave notification with integrated Anti-Out system",
+  version: "7.0.0",
+  credits: "TOHI-BOT-HUB (Anti-Out Event Integrated by TOHIDUL)",
+  description: "🎭 Enhanced leave notification with integrated Anti-Out event system",
   dependencies: {
     "fs-extra": "",
     "path": ""
@@ -32,57 +32,161 @@ function stylishText(text, style = "default") {
   return styles[style] || styles.default;
 }
 
-// Handle anti-out commands
+// Handle anti-out event commands
 module.exports.handleEvent = async function({ api, event, Threads }) {
   const { body = "", threadID, senderID } = event;
   
-  // Check for anti-out toggle commands
-  if (body.toLowerCase() === "/antiout on" || body.toLowerCase() === "antiout on") {
-    const info = await api.getThreadInfo(threadID);
-    if (!info.adminIDs.some(item => item.id == api.getCurrentUserID())) {
-      return api.sendMessage('❌ বটকে গ্রুপ এডমিন বানান Anti-Out চালু করার জন্য।', threadID);
+  // Check for anti-out toggle commands (case insensitive)
+  const lowerBody = body.toLowerCase().trim();
+  
+  if (lowerBody === "/antiout on" || lowerBody === "antiout on") {
+    try {
+      // Check if user is bot admin
+      const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
+      
+      // Check if user is group admin
+      const info = await api.getThreadInfo(threadID);
+      const isGroupAdmin = info.adminIDs.some(item => item.id == senderID);
+      
+      // Permission check - only bot admin or group admin can use
+      if (!isBotAdmin && !isGroupAdmin) {
+        return api.sendMessage(
+          `${stylishText("Access Denied!", "error")}\n\n❌ শুধুমাত্র বট এডমিন বা গ্রুপ এডমিন Anti-Out চালু/বন্ধ করতে পারবেন।\n\n💡 পারমিশনের জন্য এডমিনের সাথে যোগাযোগ করুন।\n\n🚩 Made by TOHIDUL`, 
+          threadID
+        );
+      }
+
+      // Check if bot is group admin
+      if (!info.adminIDs.some(item => item.id == api.getCurrentUserID())) {
+        return api.sendMessage(
+          `${stylishText("Bot Admin Required!", "warning")}\n\n❌ বটকে গ্রুপ এডমিন বানান Anti-Out চালু করার জন্য।\n\n🤖 বট এডমিন না হলে সদস্যদের এড করতে পারবে না।\n\n🚩 Made by TOHIDUL`, 
+          threadID
+        );
+      }
+
+      // Enable anti-out
+      const data = (await Threads.getData(threadID)).data || {};
+      data["antiout"] = true;
+      await Threads.setData(threadID, { data });
+      global.data.threadData.set(parseInt(threadID), data);
+
+      const onMessage = `
+╔════════════════════════════╗
+  🛡️ 𝘼𝙉𝙏𝙄-𝙊𝙐𝙏 𝘼𝘾𝙏𝙄𝙑𝘼𝙏𝙀𝘿 🛡️
+╚════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  ✅ Anti-Out সফলভাবে চালু হয়েছে!
+┃
+┃  🔒 এখন কেউ গ্রুপ ছাড়লে আবার এড করা হবে
+┃  💪 পালানোর কোনো উপায় নেই!
+┃  🚫 Self-leave সম্পূর্ণ নিষিদ্ধ
+┃
+┃  ⚠️  **নোট:** বট অবশ্যই এডমিন থাকতে হবে
+┃  🛡️  **স্ট্যাটাস:** ACTIVE & MONITORING
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+🕒 **সময়:** ${new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka", hour12: false })}
+🚩 **Made by TOHIDUL**`;
+
+      return api.sendMessage(onMessage, threadID);
+      
+    } catch (error) {
+      console.error('AntiOut ON error:', error);
+      return api.sendMessage(
+        `${stylishText("System Error!", "error")}\n\n❌ Anti-Out চালু করতে সমস্যা হয়েছে।\n\n🚩 Made by TOHIDUL`, 
+        threadID
+      );
     }
-    
-    if (!info.adminIDs.some(item => item.id == senderID)) {
-      return api.sendMessage('❌ শুধুমাত্র গ্রুপ এডমিন Anti-Out চালু/বন্ধ করতে পারবেন।', threadID);
-    }
-
-    const data = (await Threads.getData(threadID)).data || {};
-    data["antiout"] = true;
-    await Threads.setData(threadID, { data });
-    global.data.threadData.set(parseInt(threadID), data);
-
-    const onMessage = `
-${stylishText("ANTI-OUT চালু হয়েছে!", "antiout")}
-
-🔒 এখন কেউ গ্রুপ ছাড়লে আবার এড করা হবে।
-💪 পালানোর উপায় নেই!
-
-🚩 Made by TOHIDUL`;
-
-    return api.sendMessage(onMessage, threadID);
   }
 
-  if (body.toLowerCase() === "/antiout off" || body.toLowerCase() === "antiout off") {
-    const info = await api.getThreadInfo(threadID);
-    if (!info.adminIDs.some(item => item.id == senderID)) {
-      return api.sendMessage('❌ শুধুমাত্র গ্রুপ এডমিন Anti-Out চালু/বন্ধ করতে পারবেন।', threadID);
+  if (lowerBody === "/antiout off" || lowerBody === "antiout off") {
+    try {
+      // Check if user is bot admin
+      const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
+      
+      // Check if user is group admin
+      const info = await api.getThreadInfo(threadID);
+      const isGroupAdmin = info.adminIDs.some(item => item.id == senderID);
+      
+      // Permission check - only bot admin or group admin can use
+      if (!isBotAdmin && !isGroupAdmin) {
+        return api.sendMessage(
+          `${stylishText("Access Denied!", "error")}\n\n❌ শুধুমাত্র বট এডমিন বা গ্রুপ এডমিন Anti-Out চালু/বন্ধ করতে পারবেন।\n\n💡 পারমিশনের জন্য এডমিনের সাথে যোগাযোগ করুন।\n\n🚩 Made by TOHIDUL`, 
+          threadID
+        );
+      }
+
+      // Disable anti-out
+      const data = (await Threads.getData(threadID)).data || {};
+      data["antiout"] = false;
+      await Threads.setData(threadID, { data });
+      global.data.threadData.set(parseInt(threadID), data);
+
+      const offMessage = `
+╔════════════════════════════╗
+  🔓 𝘼𝙉𝙏𝙄-𝙊𝙐𝙏 𝘿𝙀𝘼𝘾𝙏𝙄𝙑𝘼𝙏𝙀𝘿 🔓
+╚════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  ❌ Anti-Out সফলভাবে বন্ধ হয়েছে!
+┃
+┃  🔓 এখন কেউ চাইলে গ্রুপ ছেড়ে যেতে পারবে
+┃  😔 আর ফেরত আনা হবে না
+┃  🚪 Normal leave/exit অনুমতি আছে
+┃
+┃  💡 **পুনরায় চালু করতে:** /antiout on
+┃  🛡️ **স্ট্যাটাস:** DISABLED
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+🕒 **সময়:** ${new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka", hour12: false })}
+🚩 **Made by TOHIDUL**`;
+
+      return api.sendMessage(offMessage, threadID);
+      
+    } catch (error) {
+      console.error('AntiOut OFF error:', error);
+      return api.sendMessage(
+        `${stylishText("System Error!", "error")}\n\n❌ Anti-Out বন্ধ করতে সমস্যা হয়েছে।\n\n🚩 Made by TOHIDUL`, 
+        threadID
+      );
     }
+  }
 
-    const data = (await Threads.getData(threadID)).data || {};
-    data["antiout"] = false;
-    await Threads.setData(threadID, { data });
-    global.data.threadData.set(parseInt(threadID), data);
+  // Check for anti-out status command
+  if (lowerBody === "/antiout status" || lowerBody === "antiout status" || lowerBody === "/antiout" || lowerBody === "antiout") {
+    try {
+      const data = (await Threads.getData(threadID)).data || {};
+      const isAntiOutEnabled = data.antiout === true;
+      
+      const statusMessage = `
+╔════════════════════════════╗
+  🛡️ 𝘼𝙉𝙏𝙄-𝙊𝙐𝙏 𝙎𝙏𝘼𝙏𝙐𝙎 🛡️
+╚════════════════════════════╝
 
-    const offMessage = `
-${stylishText("ANTI-OUT বন্ধ হয়েছে!", "warning")}
+🔧 **ব্যবহার:**
+   • \`/antiout on\` - Anti-Out চালু করুন
+   • \`/antiout off\` - Anti-Out বন্ধ করুন
+   • \`/antiout status\` - বর্তমান অবস্থা দেখুন
 
-🔓 এখন কেউ চাইলে গ্রুপ ছেড়ে যেতে পারবে।
-😔 আর ফেরত আনা হবে না।
+📊 **বর্তমান অবস্থা:** ${isAntiOutEnabled ? '🟢 চালু' : '🔴 বন্ধ'}
 
-🚩 Made by TOHIDUL`;
+💡 **বৈশিষ্ট্য:**
+   • কেউ গ্রুপ ছাড়লে আবার এড করবে
+   • শুধু বট/গ্রুপ এডমিন ব্যবহার করতে পারবেন
+   • বট অবশ্যই গ্রুপ এডমিন হতে হবে
 
-    return api.sendMessage(offMessage, threadID);
+🚩 **Made by TOHIDUL**`;
+
+      return api.sendMessage(statusMessage, threadID);
+      
+    } catch (error) {
+      console.error('AntiOut STATUS error:', error);
+      return api.sendMessage(
+        `${stylishText("System Error!", "error")}\n\n❌ Anti-Out স্ট্যাটাস দেখতে সমস্যা হয়েছে।\n\n🚩 Made by TOHIDUL`, 
+        threadID
+      );
+    }
   }
 };
 
