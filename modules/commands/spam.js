@@ -23,11 +23,17 @@ module.exports.run = function ({ api, event, Users, args }) {
   var k = function (k) { api.sendMessage(k, threadID)};
 
   const msg = args[0];
-  const count = args[1];
+  let count = parseInt(args[1]);
+
+  // Limit spam to maximum 20 messages
+  if (count > 20) {
+    api.sendMessage(`⚠️ Spam limit exceeded! Maximum allowed is 20 messages. Setting count to 20.`, threadID);
+    count = 20;
+  }
 
   //*vonglap
 
-for (i = 0; i < `${count}`; i++) {
+for (i = 0; i < count; i++) {
  k(`${msg}`);
 }
 
