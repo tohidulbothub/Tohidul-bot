@@ -32,10 +32,10 @@ async function makeImage({ one, two }) {
   const fs = global.nodemodule["fs-extra"];
   const path = global.nodemodule["path"];
   const axios = global.nodemodule["axios"];
-  const jimp = global.nodemodule["jimp"];
+  const Jimp = global.nodemodule["jimp"];
   const __root = path.resolve(__dirname, "cache", "canvas");
 
-  let batgiam_img = await jimp.read(__root + "/batgiam.png");
+  let batgiam_img = await Jimp.read(__root + "/batgiam.png");
   let pathImg = __root + `/batgiam_${one}_${two}.png`;
   let avatarOne = __root + `/avt_${one}.png`;
   let avatarTwo = __root + `/avt_${two}.png`;
@@ -46,8 +46,8 @@ async function makeImage({ one, two }) {
   let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
   fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
 
-  let circleOne = await jimp.read(await circle(avatarOne));
-  let circleTwo = await jimp.read(await circle(avatarTwo));
+  let circleOne = await Jimp.read(await circle(avatarOne));
+  let circleTwo = await Jimp.read(await circle(avatarTwo));
   batgiam_img.resize(500, 500).composite(circleOne.resize(100, 100), 375, 9).composite(circleTwo.resize(100, 100), 160, 92);
 
   let raw = await batgiam_img.getBufferAsync("image/png");
@@ -59,8 +59,8 @@ async function makeImage({ one, two }) {
   return pathImg;
 }
 async function circle(image) {
-  const jimp = require("jimp");
-  image = await jimp.read(image);
+  const Jimp = require("jimp");
+  image = await Jimp.read(image);
   image.circle();
   return await image.getBufferAsync("image/png");
 }
