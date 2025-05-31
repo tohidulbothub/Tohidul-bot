@@ -32,20 +32,60 @@ module.exports.onLoad = async () => {
     mkdirSync(dirMaterial, { recursive: true });
   }
   
+  // Check if background image exists
   if (!existsSync(arrestImagePath)) {
-    try {
-      console.log("[ARREST] Downloading arrest background image...");
-      const response = await axios.get("https://i.imgur.com/ep1gG3r.png", { responseType: 'stream' });
-      const writer = fs.createWriteStream(arrestImagePath);
-      response.data.pipe(writer);
-      await new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-      });
-      console.log("[ARREST] Background image downloaded successfully");
-    } catch (error) {
-      console.log("[ARREST] Failed to download background image:", error.message);
+    console.log("[ARREST] Background image not found, attempting to download...");
+    
+    // Multiple fallback URLs
+    const backgroundUrls = [
+      "https://i.imgur.com/VQXViKI.png",
+      "https://i.imgur.com/ep1gG3r.png",
+      "https://i.ibb.co/9ZQX8Kp/arrest-bg.png"
+    ];
+    
+    let downloaded = false;
+    
+    for (let i = 0; i < backgroundUrls.length && !downloaded; i++) {
+      try {
+        console.log(`[ARREST] Trying URL ${i + 1}/${backgroundUrls.length}: ${backgroundUrls[i]}`);
+        const response = await axios.get(backgroundUrls[i], { 
+          responseType: 'stream',
+          timeout: 10000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        const writer = fs.createWriteStream(arrestImagePath);
+        response.data.pipe(writer);
+        
+        await new Promise((resolve, reject) => {
+          writer.on('finish', resolve);
+          writer.on('error', reject);
+        });
+        
+        console.log("[ARREST] Background image downloaded successfully from:", backgroundUrls[i]);
+        downloaded = true;
+        
+      } catch (error) {
+        console.log(`[ARREST] Failed to download from URL ${i + 1}:`, error.message);
+        if (i === backgroundUrls.length - 1) {
+          console.log("[ARREST] All download attempts failed. Creating fallback background...");
+          // Create a simple colored background as fallback
+          try {
+            const Jimp = require("jimp");
+            const fallbackImage = new Jimp(500, 500, '#1a1a1a');
+            const buffer = await fallbackImage.getBufferAsync(Jimp.MIME_PNG);
+            fs.writeFileSync(arrestImagePath, buffer);
+            console.log("[ARREST] Fallback background created successfully");
+          } catch (fallbackError) {
+            console.log("[ARREST] Failed to create fallback background:", fallbackError.message);
+          }
+        }
+      }
     }
+  } else {
+    console.log("[ARREST] Background image already exists");
   }
 };
 
