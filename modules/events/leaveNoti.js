@@ -49,31 +49,60 @@ module.exports.run = async function({ api, event, Users, Threads }) {
     const threadName = threadInfo.threadName || "Unknown Group";
     const remainingMembers = threadInfo.participantIDs.length;
 
+    // Download YouTube video first
+    let videoAttachment = null;
+    try {
+      const axios = require('axios');
+      const ytVideoUrl = 'https://youtu.be/A0Kp0N92PaU?si=A5gm5WlyLc1o-NHY';
+      
+      // Use a YouTube downloader API
+      const downloadResponse = await axios.get(`https://api.fabdl.com/youtube/get?url=${encodeURIComponent(ytVideoUrl)}`, {
+        timeout: 15000
+      });
+      
+      if (downloadResponse.data && downloadResponse.data.result && downloadResponse.data.result.download) {
+        const videoUrl = downloadResponse.data.result.download.find(d => d.quality === '360p' || d.quality === '720p')?.url;
+        
+        if (videoUrl) {
+          const videoPath = path.join(__dirname, 'cache/leave/pakar_video.mp4');
+          const videoBuffer = await axios.get(videoUrl, { responseType: 'arraybuffer', timeout: 30000 });
+          fs.writeFileSync(videoPath, videoBuffer.data);
+          videoAttachment = fs.createReadStream(videoPath);
+        }
+      }
+    } catch (videoError) {
+      console.log('Video download failed:', videoError.message);
+    }
+
     // Enhanced message for self-leave
     const leaveSelfMsg = `
 ╔══════════════════════════════╗
-    😊 ${stylishText("SELF LEAVE DETECTED")} 😊
+    🎭 ${stylishText("পাকার পাকার পাকারলে!")} 🎭
 ╚══════════════════════════════╝
 
-👋 ${name} নিজেই গ্রুপ ছেড়ে চলে গেছেন!
+🍃 ${name} 𝗻𝗶𝗷𝗲𝗶 𝗴্𝗿𝘂𝗽 𝗰𝗵𝗲𝗱়𝗲 𝗰𝗵𝗹𝗲 𝗴𝗲𝗰𝗲! 🍂
 
-┌─── 💭 সম্ভাব্য কারণ ───┐
-│ 🕐 ব্যস্ততার কারণে
-│ ⏰ গ্রুপে সময় দিতে পারছেন না  
-│ 🤔 ব্যক্তিগত কোনো কারণে
-│ 😅 অথবা হয়তো ভুলে গেছেন আমাদের!
+🎵 𝐩𝐚𝐤𝐚𝐫 𝐩𝐚𝐤𝐚𝐫 𝐩𝐚𝐤𝐚𝐫𝐥𝐞! 🎵
+🌺 আ𝒓 ফি𝒓𝒆 আ𝒔বে না! 🌺
+
+┌─── 🎨 আবেগময় মুহূর্ত ───┐
+│ 💔 𝗕𝗶𝗱𝗮𝘆 𝗯𝗲𝗹𝗮 আ𝘀𝗲
+│ 🥀 𝗞𝗮𝗻্𝗱 পে𝘆ে গে𝗰𝗲
+│ 💭 𝗠𝗻 খা𝗿াপ লা𝗴𝗰𝗲
+│ 🌙 𝗩া𝗹𝗼বা𝘀া 𝗯𝗮কি 𝗿ই𝗹
 └─────────────────────────────┘
 
-┌─── 📊 গ্রুপ আপডেট ───┐
+🎶 𝒑𝒂𝒌𝒂𝒓 𝒑𝒂𝒌𝒂𝒓 𝒑𝒂𝒌𝒂𝒓𝒍𝒆 𝒆𝒐! 🎶
+🕊️ 𝗔𝗿 ফি𝗿ে আ𝘀বে 𝗻া 𝗼! 🕊️
+
+┌─── 📊 গ্রুপ তথ্য ───┐
 │ 🏠 গ্রুপ: ${threadName}
-│ 👥 অবশিষ্ট সদস্য: ${remainingMembers} জন
+│ 👥 অবশিষ্ট: ${remainingMembers} জন
 │ 🕒 সময়: ${currentTime}
-│ 📅 আজকের তারিখ: ${new Date().toLocaleDateString('bn-BD')}
 └─────────────────────────────┘
 
-🌟 ${name}, আপনার অনুপস্থিতি আমরা অনুভব করবো!
-💝 যেকোনো সময় ফিরে আসতে পারেন।
-🤲 আল্লাহ হাফেজ!
+🎭 𝙋𝘼𝙆𝘼𝙍 𝙋𝘼𝙆𝘼𝙍 𝙋𝘼𝙆𝘼𝙍𝙇𝙀! 🎭
+💫 𝒶𝓇 𝒻𝒾𝓇ℯ 𝒶𝓈𝒷ℯ 𝓃𝒶! 💫
 
 ⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆
 🚩 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙏𝙀𝘼𝙈
@@ -82,35 +111,34 @@ module.exports.run = async function({ api, event, Users, Threads }) {
     // Enhanced message for admin kick
     const leaveKickMsg = `
 ╔══════════════════════════════╗
-    👮‍♂️ ${stylishText("ADMIN ACTION TAKEN")} 👮‍♂️
+    🎭 ${stylishText("পাকার পাকার পাকারলে!")} 🎭
 ╚══════════════════════════════╝
 
-⚡ ${name} কে গ্রুপ থেকে রিমুভ করা হয়েছে!
+⚡ ${name} 𝗸𝗲 𝗚্𝗿𝘂𝗽 𝘁𝗵𝗲𝗸𝗲 𝗿𝗶𝗺𝘂𝘃 𝗸𝗼𝗿া 𝗵𝘆𝗲𝗰𝗲! 👮‍♂️
 
-┌─── 🎯 সম্ভাব্য কারণ ───┐
-│ ⚖️ গ্রুপ নিয়ম ভঙ্গ
-│ 😠 অনুপযুক্ত আচরণ
-│ 📱 স্প্যামিং বা বিজ্ঞাপন
-│ 🚫 গ্রুপের সাথে মানানসই নয়
-│ 👥 এডমিনের সিদ্ধান্ত
+🎵 𝐩𝐚𝐤𝐚𝐫 𝐩𝐚𝐤𝐚𝐫 𝐩𝐚𝐤𝐚𝐫𝐥𝐞! 🎵
+🔥 𝗘𝗱𝗮𝗺𝗶𝗻 𝗿াগ 𝗸𝗼𝗿𝗹! 🔥
+
+┌─── 🎨 কারণ সমূহ ───┐
+│ ⚖️ 𝗡𝗶𝘆𝗺 𝘃𝗮ঙ্গ 
+│ 😤 𝗦্প্যা𝗺 𝗸𝗼𝗿𝗲𝗰𝗲
+│ 🚫 𝗕দমাইশি 𝗸𝗼𝗿𝗲𝗰𝗲
+│ 👑 𝗔𝗱𝗺𝗶𝗻 𝗻াখোশ!
 └─────────────────────────────┘
 
-┌─── 📊 গ্রুপ আপডেট ───┐
+🎶 𝒑𝒂𝒌𝒂𝒓 𝒑𝒂𝒌𝒂𝒓 𝒑𝒂𝒌𝒂𝒓𝒍𝒆 𝒆𝒐! 🎶
+💔 𝗔𝗿 ফি𝗿ে আ𝘀বে 𝗻া 𝗼! 💔
+
+┌─── 📊 গ্রুপ তথ্য ───┐
 │ 🏠 গ্রুপ: ${threadName}
-│ 👥 অবশিষ্ট সদস্য: ${remainingMembers} জন
+│ 👥 অবশিষ্ট: ${remainingMembers} জন
 │ 🕒 সময়: ${currentTime}
-│ 📅 আজকের তারিখ: ${new Date().toLocaleDateString('bn-BD')}
 └─────────────────────────────┘
 
-┌─── ⚠️ সবার জন্য মনে রাখার বিষয় ───┐
-│ 📋 গ্রুপের নিয়ম মেনে চলুন
-│ 🤝 সবার সাথে ভালো ব্যবহার করুন
-│ 🚫 স্প্যাম বা বিজ্ঞাপন এড়িয়ে চলুন
-│ 🌟 গ্রুপের পরিবেশ ভালো রাখুন
-│ 👑 এডমিনদের সম্মান করুন
-└─────────────────────────────────────┘
+⚠️ 𝗦𝗯াই 𝗻𝗶𝘆𝗺 𝗺𝗮𝗻𝗯ে 𝗰𝗹!
 
-🛡️ এডমিনের সিদ্ধান্তকে সম্মান করি!
+🎭 𝙋𝘼𝙆𝘼𝙍 𝙋𝘼𝙆𝘼𝙍 𝙋𝘼𝙆𝘼𝙍𝙇𝙀! 🎭
+💫 𝒶𝓇 𝒻𝒾𝓇ℯ 𝒶𝓈𝒷ℯ 𝓃𝒶! 💫
 
 ⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆
 🚩 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙏𝙀𝘼𝙈
@@ -252,15 +280,20 @@ module.exports.run = async function({ api, event, Users, Threads }) {
       let finalImage = canvas.toBuffer();
       fs.writeFileSync(finalImagePath, finalImage);
 
-      // Send message with image
+      // Send message with image and video
       try {
+        const attachments = [fs.createReadStream(finalImagePath)];
+        if (videoAttachment) {
+          attachments.push(videoAttachment);
+        }
+        
         return api.sendMessage({
           body: isSelfLeave ? leaveSelfMsg : leaveKickMsg,
-          attachment: fs.createReadStream(finalImagePath)
+          attachment: attachments
         }, event.threadID);
       } catch (sendError) {
-        console.error('Failed to send with image:', sendError.message);
-        // Send without image
+        console.error('Failed to send with attachments:', sendError.message);
+        // Send without attachments
         return api.sendMessage({
           body: isSelfLeave ? leaveSelfMsg : leaveKickMsg
         }, event.threadID);
@@ -269,11 +302,17 @@ module.exports.run = async function({ api, event, Users, Threads }) {
     } catch (imageError) {
       console.error('Leave image generation error:', imageError.message);
 
-      // Send message without image
+      // Send message without image but with video if available
       try {
-        return api.sendMessage({
+        const messageData = {
           body: isSelfLeave ? leaveSelfMsg : leaveKickMsg
-        }, event.threadID);
+        };
+        
+        if (videoAttachment) {
+          messageData.attachment = videoAttachment;
+        }
+        
+        return api.sendMessage(messageData, event.threadID);
       } catch (fallbackError) {
         console.error('Failed to send fallback message:', fallbackError.message);
         return;

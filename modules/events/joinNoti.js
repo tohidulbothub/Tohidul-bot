@@ -26,6 +26,34 @@ module.exports.run = async function({ api, event, Users }) {
     try {
         const { threadID } = event;
 
+        // Check if group is approved before sending any notifications
+        const configPath = require('path').join(__dirname, '../../config.json');
+        let config;
+        try {
+            delete require.cache[require.resolve(configPath)];
+            config = require(configPath);
+        } catch (error) {
+            config = {};
+        }
+
+        // Initialize approval system if not exists
+        if (!config.APPROVAL) {
+            config.APPROVAL = {
+                approvedGroups: [],
+                pendingGroups: [],
+                rejectedGroups: []
+            };
+        }
+
+        // Check if group is approved
+        const isApproved = config.APPROVAL.approvedGroups.includes(String(threadID));
+        
+        // If group is not approved, don't send any join notifications
+        if (!isApproved) {
+            console.log(`⏳ Join notification blocked for unapproved group: ${threadID}`);
+            return; // Exit early without sending notifications
+        }
+
         // If bot is added
         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
             try {
