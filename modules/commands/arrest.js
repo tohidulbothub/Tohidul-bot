@@ -1,6 +1,4 @@
 
-const Jimp = require("jimp");
-
 module.exports.config = {
   name: "arrest",
   version: "3.0.0",
@@ -15,7 +13,7 @@ module.exports.config = {
     "axios": "",
     "fs-extra": "",
     "path": "",
-    "jimp": ""
+    "canvas": ""
   }
 };
 
@@ -75,8 +73,12 @@ module.exports.onLoad = async () => {
           console.log("[ARREST] All download attempts failed. Creating fallback background...");
           // Create a simple colored background as fallback
           try {
-            const fallbackImage = new Jimp(500, 500, '#1a1a1a');
-            const buffer = await fallbackImage.getBufferAsync(Jimp.MIME_PNG);
+            const { createCanvas } = require("canvas");
+            const canvas = createCanvas(500, 500);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, 500, 500);
+            const buffer = canvas.toBuffer('image/png');
             fs.writeFileSync(arrestImagePath, buffer);
             console.log("[ARREST] Fallback background created successfully");
           } catch (fallbackError) {
@@ -105,20 +107,10 @@ async function downloadAvatar(userID, outputPath) {
   }
 }
 
-async function createCircularAvatar(imagePath) {
-  try {
-    const image = await Jimp.read(imagePath);
-    image.circle();
-    return await image.getBufferAsync(Jimp.MIME_PNG);
-  } catch (error) {
-    console.log("[ARREST] Error creating circular avatar:", error.message);
-    throw error;
-  }
-}
-
 async function createArrestImage(userOne, userTwo) {
   const fs = require("fs-extra");
   const path = require("path");
+  const { loadImage, createCanvas } = require("canvas");
   
   try {
     const __root = path.resolve(__dirname, "cache", "canvas");
@@ -141,26 +133,35 @@ async function createArrestImage(userOne, userTwo) {
       throw new Error("Failed to download one or both avatars");
     }
 
-    // Load background image
+    // Load images using Canvas
     console.log("[ARREST] Creating composite image...");
-    const backgroundImage = await Jimp.read(backgroundPath);
+    const backgroundImage = await loadImage(backgroundPath);
+    const avatar1Image = await loadImage(avatarOnePath);
+    const avatar2Image = await loadImage(avatarTwoPath);
 
-    // Create circular avatars
-    const circularAvatar1 = await createCircularAvatar(avatarOnePath);
-    const circularAvatar2 = await createCircularAvatar(avatarTwoPath);
+    // Create canvas
+    const canvas = createCanvas(500, 500);
+    const ctx = canvas.getContext("2d");
 
-    // Load circular avatars as Jimp objects
-    const avatar1Jimp = await Jimp.read(circularAvatar1);
-    const avatar2Jimp = await Jimp.read(circularAvatar2);
+    // Draw background
+    ctx.drawImage(backgroundImage, 0, 0, 500, 500);
 
-    // Composite the images (adjust positions based on your background)
-    backgroundImage
-      .resize(500, 500)
-      .composite(avatar1Jimp.resize(100, 100), 375, 9)  // Arrester position
-      .composite(avatar2Jimp.resize(100, 100), 160, 92); // Arrested position
+    // Function to draw circular avatar
+    function drawCircularAvatar(image, x, y, size) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(image, x, y, size, size);
+      ctx.restore();
+    }
+
+    // Draw avatars (adjust positions based on your background)
+    drawCircularAvatar(avatar1Image, 375, 9, 100);   // Arrester position
+    drawCircularAvatar(avatar2Image, 160, 92, 100);  // Arrested position
 
     // Save the final image
-    const buffer = await backgroundImage.getBufferAsync(Jimp.MIME_PNG);
+    const buffer = canvas.toBuffer('image/png');
     fs.writeFileSync(outputPath, buffer);
 
     // Clean up avatar files
