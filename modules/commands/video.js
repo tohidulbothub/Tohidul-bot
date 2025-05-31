@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "video3",
+  name: "video",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "TOHI-BOT-HUB",
