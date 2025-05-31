@@ -19,12 +19,36 @@ module.exports.config = {
 
 const OWNER_UIDS = ["100092006324917"];
 
-// Circle crop function using jimp
+// Circle crop function using jimp with error handling
 module.exports.circle = async (image) => {
-  const jimp = global.nodemodule['jimp'];
-  image = await jimp.read(image);
-  image.circle();
-  return await image.getBufferAsync("image/png");
+  try {
+    const jimp = global.nodemodule['jimp'];
+    if (!jimp) {
+      throw new Error('Jimp module not available');
+    }
+    
+    const processedImage = await jimp.read(image);
+    processedImage.circle();
+    return await processedImage.getBufferAsync("image/png");
+  } catch (error) {
+    // If jimp fails, use Canvas to create circular image
+    const Canvas = global.nodemodule['canvas'];
+    const tempCanvas = Canvas.createCanvas(512, 512);
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Load the image
+    const img = await Canvas.loadImage(image);
+    
+    // Create circular clip
+    tempCtx.beginPath();
+    tempCtx.arc(256, 256, 256, 0, Math.PI * 2);
+    tempCtx.clip();
+    
+    // Draw image
+    tempCtx.drawImage(img, 0, 0, 512, 512);
+    
+    return tempCanvas.toBuffer('image/png');
+  }
 };
 
 module.exports.run = async function ({ event, api, args, Users }) {
@@ -104,36 +128,64 @@ module.exports.run = async function ({ event, api, args, Users }) {
       ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     }
 
-    // Download and process avatar
-    try {
-      const avatarUrl = `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-      const avatarResponse = await axios.get(avatarUrl, { 
-        responseType: 'arraybuffer',
-        timeout: 10000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-      });
-      
-      // Create circular avatar
-      const circularAvatar = await this.circle(avatarResponse.data);
-      const avatarImage = await Canvas.loadImage(circularAvatar);
-      
-      // Draw avatar on canvas (position it in toilet area)
-      ctx.drawImage(avatarImage, 135, 350, 205, 205);
-      
-    } catch (avatarError) {
-      // If avatar fails, draw a placeholder
-      ctx.fillStyle = '#FF6B6B';
+    // Download and process avatar with multiple fallback methods
+    let avatarDrawn = false;
+    
+    // Try multiple avatar URLs
+    const avatarUrls = [
+      `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
+      `https://graph.facebook.com/${targetID}/picture?width=512&height=512`,
+      `https://graph.facebook.com/${targetID}/picture?type=large`
+    ];
+    
+    for (let i = 0; i < avatarUrls.length && !avatarDrawn; i++) {
+      try {
+        const avatarResponse = await axios.get(avatarUrls[i], { 
+          responseType: 'arraybuffer',
+          timeout: 8000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'image/*,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5'
+          }
+        });
+        
+        // Create circular avatar
+        const circularAvatar = await this.circle(avatarResponse.data);
+        const avatarImage = await Canvas.loadImage(circularAvatar);
+        
+        // Draw avatar on canvas (position it in toilet area)
+        ctx.drawImage(avatarImage, 135, 350, 205, 205);
+        avatarDrawn = true;
+        
+      } catch (avatarError) {
+        // Continue to next URL or fallback
+        continue;
+      }
+    }
+    
+    // If all avatar attempts failed, draw a styled placeholder
+    if (!avatarDrawn) {
+      // Draw circular background
+      ctx.fillStyle = '#4A90E2';
       ctx.beginPath();
       ctx.arc(237.5, 452.5, 102.5, 0, Math.PI * 2);
       ctx.fill();
       
+      // Draw border
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      
+      // Draw user icon or initials
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 16px Arial';
+      ctx.font = 'bold 60px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('Avatar', 237.5, 452.5);
-      ctx.fillText('Failed', 237.5, 472.5);
+      ctx.textBaseline = 'middle';
+      
+      // Try to get first letter of name
+      const firstLetter = targetName.charAt(0).toUpperCase() || '?';
+      ctx.fillText(firstLetter, 237.5, 452.5);
     }
 
     // Save the final image
