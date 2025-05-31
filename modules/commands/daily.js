@@ -37,7 +37,7 @@ module.exports.run = async ({ event, api, Currencies }) => {
     }
     
     // Give daily bonus
-    const dailyAmount = 50000;
+    const dailyAmount = 500;
     await Currencies.increaseMoney(senderID, dailyAmount);
     
     // Get random image
