@@ -135,6 +135,7 @@ module.exports.run = async ({ api, event, args }) => {
       attachment: attachment
     }, threadID, () => {
       // Clean up image file if it exists
+      const fs = require("fs-extra");
       const pathImg = __dirname + "/tohibot_fonts/uptime_simple.png";
       if (attachment && fs.existsSync(pathImg)) {
         try {
