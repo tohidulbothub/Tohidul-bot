@@ -1,11 +1,12 @@
+
 const fs = require("fs-extra");
 const path = require("path");
 const { apiCallWithRetry } = require("../../utils/apiHelper");
 
 module.exports.config = {
     name: "joinNoti",
-    eventType: [], // Disabled - conflicts with manual approval system
-    version: "1.2.0",
+    eventType: ["log:subscribe"],
+    version: "2.0.0",
     credits: "TOHIDUL (Enhanced by TOHI-BOT-HUB)",
     description: "Enhanced notification system for bot and user joins with random media support",
     dependencies: {
@@ -28,7 +29,7 @@ module.exports.run = async function({ api, event, Users }) {
         // If bot is added
         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
             try {
-                // Set nickname for bot
+                // Set bot nickname
                 const botname = global.config.BOTNAME || "TOHI-BOT";
                 await api.changeNickname(`[ ${global.config.PREFIX} ] • ${botname}`, threadID, api.getCurrentUserID());
 
@@ -36,38 +37,53 @@ module.exports.run = async function({ api, event, Users }) {
                 const threadInfo = await api.getThreadInfo(threadID);
                 const threadName = threadInfo.threadName || "Unknown Group";
                 const memberCount = threadInfo.participantIDs.length;
+                const adminCount = threadInfo.adminIDs.length;
 
-                // Enhanced welcome message for bot
+                // Current time
                 const currentTime = new Date().toLocaleString("bn-BD", {
                     timeZone: "Asia/Dhaka",
                     hour12: false
                 });
 
-                const msg = `
-╔════════════════════════════╗
-  🤖 𝗕𝗢𝗧 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 🤖
-╚════════════════════════════╝
+                // Enhanced bot welcome message
+                const botWelcomeMsg = `
+╔══════════════════════════════╗
+    🤖 ${stylishText("BOT ACTIVATION COMPLETE")} 🤖
+╚══════════════════════════════╝
 
 আসসালামু আলাইকুম সবাই! 🌟
 
-🎉 আমি ${botname} এই গ্রুপে যুক্ত হয়েছি!
+🎉 আমি ${botname} এই গ্রুপে সফলভাবে যুক্ত হয়েছি!
 
-📊 গ্রুপ তথ্য:
-┣━ গ্রুপ: ${threadName}
-┣━ সদস্য সংখ্যা: ${memberCount} জন
-┣━ আমার প্রিফিক্স: ${global.config.PREFIX}
-┗━ মোট কমান্ড: ${global.client.commands.size}+
+┌─── 📊 গ্রুপ তথ্য ───┐
+│ 🏠 গ্রুপ: ${threadName}
+│ 👥 মোট সদস্য: ${memberCount} জন
+│ 👑 এডমিন: ${adminCount} জন
+│ ⚡ আমার প্রিফিক্স: ${global.config.PREFIX}
+│ 🎯 মোট কমান্ড: ${global.client.commands.size}+
+└─────────────────────────────┘
 
-🚀 শুরু করতে:
-┣━ ${global.config.PREFIX}help - সব কমান্ড দেখুন
-┣━ ${global.config.PREFIX}menu - ক্যাটাগরি ভিত্তিক মেনু
-┗━ ${global.config.PREFIX}info - বট সম্পর্কে জানুন
+┌─── 🚀 শুরু করুন ───┐
+│ ${global.config.PREFIX}help - সব কমান্ড দেখুন
+│ ${global.config.PREFIX}menu - ক্যাটাগরি মেনু
+│ ${global.config.PREFIX}info - বট তথ্য
+│ ${global.config.PREFIX}admin - এডমিন কমান্ড
+└─────────────────────────────┘
 
-⭐ বিশেষ সুবিধা:
-┣━ AI চ্যাট ও ইমেজ জেনারেশন
-┣━ সোশ্যাল মিডিয়া ডাউনলোডার
-┣━ গ্রুপ ম্যানেজমেন্ট টুলস
-┗━ গেমস ও এন্টারটেইনমেন্ট
+┌─── ⭐ বিশেষ ফিচার ───┐
+│ 🤖 AI চ্যাট ও ইমেজ জেনারেশন
+│ 📱 সোশ্যাল মিডিয়া ডাউনলোডার
+│ 🛡️ গ্রুপ ম্যানেজমেন্ট টুলস
+│ 🎮 গেমস ও এন্টারটেইনমেন্ট
+│ 🎵 মিউজিক ও ভিডিও প্লেয়ার
+│ 🌐 ওয়েব সার্চ ও ট্রান্সলেট
+└─────────────────────────────┘
+
+⚠️ গুরুত্বপূর্ণ নোট:
+┣━ গ্রুপের নিয়ম মেনে চলুন
+┣━ স্প্যাম এড়িয়ে চলুন  
+┣━ সবার সাথে ভালো ব্যবহার করুন
+┗━ যেকোনো সমস্যায় এডমিনদের জানান
 
 🕒 যুক্ত হওয়ার সময়: ${currentTime}
 
@@ -75,20 +91,30 @@ module.exports.run = async function({ api, event, Users }) {
 🚩 Made by TOHIDUL
 ⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆`;
 
-                // Try to send with video attachment
-                const videoPath = path.join(__dirname, "cache", "ullash.mp4");
-                if (fs.existsSync(videoPath)) {
-                    return api.sendMessage({ 
-                        body: msg, 
-                        attachment: fs.createReadStream(videoPath) 
-                    }, threadID);
-                } else {
-                    return api.sendMessage(msg, threadID);
+                // Try to send with welcome video/GIF
+                const welcomeMediaPaths = [
+                    path.join(__dirname, "cache", "ullash.mp4"),
+                    path.join(__dirname, "cache", "join", "join.gif"),
+                    path.join(__dirname, "cache", "welcome.mp4")
+                ];
+
+                let attachment = null;
+                for (const mediaPath of welcomeMediaPaths) {
+                    if (fs.existsSync(mediaPath)) {
+                        attachment = fs.createReadStream(mediaPath);
+                        break;
+                    }
                 }
+
+                return api.sendMessage({ 
+                    body: botWelcomeMsg, 
+                    attachment: attachment
+                }, threadID);
+
             } catch (botJoinError) {
                 console.error('Bot join notification error:', botJoinError);
 
-                // Fallback simple message
+                // Fallback message
                 const fallbackMsg = `🤖 ${global.config.BOTNAME || "TOHI-BOT"} সফলভাবে গ্রুপে যুক্ত হয়েছে!\n\n${global.config.PREFIX}help লিখে কমান্ড দেখুন।\n\n🚩 Made by TOHIDUL`;
                 return api.sendMessage(fallbackMsg, threadID);
             }
@@ -99,30 +125,40 @@ module.exports.run = async function({ api, event, Users }) {
             const { threadName, participantIDs } = await api.getThreadInfo(threadID);
             const threadData = global.data.threadData.get(parseInt(threadID)) || {};
 
-            // Enhanced default join message template
-            const joinMsgTemplate = (typeof threadData.customJoin == "undefined")
+            // Enhanced member welcome template
+            const memberWelcomeTemplate = (typeof threadData.customJoin == "undefined")
                 ? `
-╔════════════════════════════╗
-  🎊 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗡𝗘𝗪 𝗠𝗘𝗠𝗕𝗘𝗥 🎊
-╚════════════════════════════╝
+╔══════════════════════════════╗
+    🎊 ${stylishText("WELCOME NEW MEMBER")} 🎊
+╚══════════════════════════════╝
 
 আসসালামু আলাইকুম! 🌟
 
 🎉 স্বাগতম {name}!
-
 🏠 আপনি এখন "{threadName}" গ্রুপের সদস্য!
 
-📊 গ্রুপ তথ্য:
-┣━ আপনি {memberNumber} নং সদস্য
-┣━ গ্রুপে বট সুবিধা আছে
-┣━ প্রিফিক্স: ${global.config.PREFIX}
-┗━ ${global.config.PREFIX}help দিয়ে কমান্ড দেখুন
+┌─── 📊 আপনার তথ্য ───┐
+│ 🆔 আপনি {memberNumber} নং সদস্য
+│ 👥 গ্রুপে মোট: ${participantIDs.length} জন
+│ 🤖 বট সুবিধা: ✅ উপলব্ধ
+│ ⚡ প্রিফিক্স: ${global.config.PREFIX}
+└─────────────────────────────┘
 
-🎯 গ্রুপ নিয়মাবলী মেনে চলুন
-💬 সবার সাথে ভালো ব্যবহার করুন
-🤝 একসাথে মজা করুন!
+┌─── 🎯 গ্রুপ গাইড ───┐
+│ ${global.config.PREFIX}help - কমান্ড তালিকা
+│ ${global.config.PREFIX}rules - গ্রুপ নিয়ম
+│ ${global.config.PREFIX}info - বট তথ্য
+│ ${global.config.PREFIX}menu - ক্যাটাগরি মেনু
+└─────────────────────────────┘
 
-আপনাকে আবারও স্বাগতম! ❤️
+⚠️ গুরুত্বপূর্ণ নির্দেশনা:
+┣━ গ্রুপের নিয়মাবলী মেনে চলুন
+┣━ সবার সাথে ভালো ব্যবহার করুন
+┣━ স্প্যাম বা বিজ্ঞাপন এড়িয়ে চলুন
+┣━ এডমিনদের সম্মান করুন
+┗━ একসাথে মজা করুন! 🎉
+
+আপনাকে আবারও হার্দিক স্বাগতম! ❤️
 
 ────────────✦────────────
 🚩 TOHI-BOT TEAM
@@ -137,40 +173,44 @@ module.exports.run = async function({ api, event, Users }) {
                 const user = memJoin[i];
                 nameArray.push(user.fullName);
                 mentions.push({ tag: user.fullName, id: user.userFbId });
-                memberNumberArray.push(participantIDs.length - i);
+                memberNumberArray.push(participantIDs.length - memJoin.length + i + 1);
             }
 
-            // Replace variables in template
-            let msg = joinMsgTemplate
+            // Replace template variables
+            let welcomeMessage = memberWelcomeTemplate
                 .replace(/\{name}/g, nameArray.join(", "))
                 .replace(/\{memberNumber}/g, memberNumberArray.join(", "))
                 .replace(/\{threadName}/g, threadName);
 
-            // Select random gif/video/image if exists
+            // Select random media
             const gifDir = path.join(__dirname, "cache", "joinvideo", "randomgif");
-            let files = [];
+            let welcomeAttachment;
+            
             if (fs.existsSync(gifDir)) {
-                files = fs.readdirSync(gifDir).filter(file => {
+                const files = fs.readdirSync(gifDir).filter(file => {
                     const ext = path.extname(file).toLowerCase();
                     return ['.gif', '.mp4', '.jpg', '.jpeg', '.png'].includes(ext);
                 });
-            }
 
-            let attachment;
-            if (files.length > 0) {
-                const randomFile = files[Math.floor(Math.random() * files.length)];
-                const filePath = path.join(gifDir, randomFile);
-                if (fs.existsSync(filePath)) {
-                    attachment = fs.createReadStream(filePath);
+                if (files.length > 0) {
+                    const randomFile = files[Math.floor(Math.random() * files.length)];
+                    const filePath = path.join(gifDir, randomFile);
+                    if (fs.existsSync(filePath)) {
+                        welcomeAttachment = fs.createReadStream(filePath);
+                    }
                 }
             }
 
-            return api.sendMessage({ body: msg, attachment, mentions }, threadID);
+            return api.sendMessage({ 
+                body: welcomeMessage, 
+                attachment: welcomeAttachment, 
+                mentions 
+            }, threadID);
 
         } catch (memberJoinError) {
             console.error('Member join notification error:', memberJoinError);
 
-            // Fallback notification for new members
+            // Fallback for new members
             const memJoin = event.logMessageData.addedParticipants;
             const nameArray = memJoin.map(user => user.fullName);
 
@@ -178,7 +218,13 @@ module.exports.run = async function({ api, event, Users }) {
 
             return api.sendMessage(fallbackMsg, threadID);
         }
+
     } catch (error) {
         console.error('JoinNoti main error:', error);
     }
 };
+
+// Helper function for styling text
+function stylishText(text) {
+    return `✨ ${text} ✨`;
+}
