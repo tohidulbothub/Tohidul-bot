@@ -238,6 +238,8 @@ module.exports.run = async function ({ api, event, args, Users }) {
             await api.unsendMessage(processingMsg.messageID);
 
             if (err) {
+                console.log('AddUser Error Details:', err);
+                
                 let errorMsg = 'Unknown error occurred';
                 let troubleshootingTip = 'Please try again later.';
 
@@ -265,7 +267,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
                             troubleshootingTip = 'User needs to adjust their messenger privacy settings.';
                             break;
                         default:
-                            errorMsg = err.message || err.errorDescription || 'Facebook API error occurred';
+                            errorMsg = err.errorSummary || err.message || err.errorDescription || 'Facebook API error occurred';
                             troubleshootingTip = 'This appears to be a Facebook restriction. Try again later.';
                     }
                 } else if (typeof err === 'string') {
@@ -277,8 +279,8 @@ module.exports.run = async function ({ api, event, args, Users }) {
                         'Permission denied': 'Bot lacks permission to add users'
                     };
                     errorMsg = errorMessages[err] || err;
-                } else if (err.message) {
-                    errorMsg = err.message;
+                } else if (err.message || err.errorSummary) {
+                    errorMsg = err.errorSummary || err.message;
                 }
 
                 return api.sendMessage(

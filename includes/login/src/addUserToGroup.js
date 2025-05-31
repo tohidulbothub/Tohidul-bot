@@ -125,9 +125,9 @@ module.exports = function (defaultFuncs, api, ctx) {
 					
 					throw new utils.CustomError({ 
 						error: errorCode,
-						message: errorMessage,
-						errorSummary: resData.errorSummary,
-						errorDescription: resData.errorDescription
+						errorSummary: errorMessage,
+						errorDescription: resData.errorDescription,
+						message: errorMessage
 					});
 				}
 
