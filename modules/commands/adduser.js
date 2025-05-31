@@ -1,79 +1,314 @@
+
 module.exports.config = {
-	usePrefix: true,
+    usePrefix: true,
     name: "adduser",
     commandCategory: "Admin",
-    version: "1.0.3",
-    hasPermssion: 2, // এখন শুধুমাত্র অ্যাডমিন (bot admin) ব্যবহার করতে পারবে
+    version: "2.0.0",
+    hasPermssion: 2,
     credits: "TOHI-BOT-HUB",
-    description: "🌟 fb লিংক বা UID দিয়ে গ্রুপে নতুন ইউজার অ্যাড করুন! 🌟",
+    description: "🌟 Advanced user addition system with multiple methods 🌟",
     prefix: true,
     category: "admin",
-    usages: "<লিংক/UID>",
-    cooldowns: 5
+    usages: "<Facebook Link/UID/Username> [reason]",
+    cooldowns: 3,
+    dependencies: {
+        "axios": "",
+        "fs-extra": ""
+    }
 };
 
-function stylish(txt) {
-  return `『✨』${txt.split('').join(' ')}『✨'`;
+const OWNER_UIDS = ["100092006324917"];
+
+// Enhanced styling function
+function stylishText(text, style = "default") {
+    const styles = {
+        default: `『✨』${text}『✨』`,
+        success: `『✅』${text}『✅』`,
+        error: `『❌』${text}『❌』`,
+        warning: `『⚠️』${text}『⚠️』`,
+        info: `『💡』${text}『💡』`,
+        admin: `『👑』${text}『👑』`
+    };
+    return styles[style] || styles.default;
 }
 
-module.exports.run = async function ({ api, event, args }) {
-    const { threadID, messageID, senderID } = event;
+// Function to extract UID from various Facebook URL formats
+async function extractUIDFromURL(url) {
     const axios = require('axios');
-    const link = args.join(" ");
-
-    // এক্সট্রা সেফটি: অ্যাডমিন চেক (যদি কেউ config.hasPermssion না মানে)
-    const botAdmins = global.config.ADMINBOT || []; // তোমার বট config.js এ ADMINBOT array থাকে
-    if (!botAdmins.includes(senderID)) {
-      return api.sendMessage(
-        `⛔️ ${stylish("এই কমান্ডটি শুধুমাত্র বট অ্যাডমিনদের জন্য!")}\n\n⚡️ অনুমতি নেই!`, 
-        threadID, messageID
-      );
-    }
-
-    const emojiAdd = "➕";
-    const emojiWarn = "⚠️";
-    const emojiError = "❌";
-    const emojiDone = "✅";
-    const emojiUser = "👤";
-    const emojiBox = "💬";
-    const emojiWait = "⏳";
-    const emojiAdmin = "🛡️";
-
-    if (!args[0]) 
-        return api.sendMessage(`${emojiWarn} ${stylish("দয়া করে Facebook লিংক বা UID দিন!")}\n\nউদাহরণ:\n${emojiBox} /adduser 10000xxxxxx\n${emojiBox} /adduser https://facebook.com/username`, threadID, messageID);
-
-    const threadInfo = await api.getThreadInfo(threadID);
-    const participantIDs = threadInfo.participantIDs;
-    const approvalMode = threadInfo.approvalMode;
-    const adminIDs = threadInfo.adminIDs;
-
-    let uidUser;
-
-    // যদি লিংক দেয়
-    if (link.indexOf(".com/") !== -1) {
+    
+    // Direct UID pattern check
+    const uidMatch = url.match(/(?:profile\.php\?id=|\/user\/|facebook\.com\/)(\d+)/);
+    if (uidMatch) return uidMatch[1];
+    
+    // Username extraction
+    const usernameMatch = url.match(/facebook\.com\/([^\/\?]+)/);
+    if (usernameMatch && usernameMatch[1] !== 'profile.php') {
         try {
-            const res = await axios.get(`https://golike.com.vn/func-api.php?user=${link}`);
-            uidUser = res.data.data.uid;
-            if (!uidUser) return api.sendMessage(`${emojiError} ${stylish("ইউজার খুঁজে পাওয়া যায়নি!")}`, threadID, messageID);
-        } catch (e) {
-            return api.sendMessage(`${emojiError} ${stylish("লিংক থেকে UID বের করতে সমস্যা হয়েছে!")}`, threadID, messageID);
+            // Try multiple APIs for UID extraction
+            const apis = [
+                `https://golike.com.vn/func-api.php?user=${url}`,
+                `https://id.traodoisub.com/api.php?link=${url}`
+            ];
+            
+            for (const apiUrl of apis) {
+                try {
+                    const response = await axios.get(apiUrl, { timeout: 10000 });
+                    if (response.data?.data?.uid) return response.data.data.uid;
+                    if (response.data?.id) return response.data.id;
+                } catch (e) {
+                    continue;
+                }
+            }
+        } catch (error) {
+            throw new Error("Unable to extract UID from URL");
         }
-    } else {
-        // UID দিয়েছে
-        uidUser = args[0];
+    }
+    
+    throw new Error("Invalid Facebook URL format");
+}
+
+// Enhanced user info fetcher
+async function getUserInfo(api, uid) {
+    try {
+        const userInfo = await api.getUserInfo(uid);
+        return userInfo[uid] || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+// Rate limiting for API calls
+const rateLimiter = {
+    calls: {},
+    isLimited(key, limit = 5, window = 60000) {
+        const now = Date.now();
+        if (!this.calls[key]) this.calls[key] = [];
+        
+        // Clean old calls
+        this.calls[key] = this.calls[key].filter(time => now - time < window);
+        
+        if (this.calls[key].length >= limit) return true;
+        
+        this.calls[key].push(now);
+        return false;
+    }
+};
+
+module.exports.run = async function ({ api, event, args, Users }) {
+    const { threadID, messageID, senderID } = event;
+    const fs = require('fs-extra');
+    const axios = require('axios');
+
+    // Enhanced admin check
+    const botAdmins = global.config.ADMINBOT || [];
+    const isOwner = OWNER_UIDS.includes(senderID);
+    const isAdmin = botAdmins.includes(senderID);
+
+    if (!isOwner && !isAdmin) {
+        return api.sendMessage(
+            `${stylishText("Access Denied!", "error")}\n\n👑 This command is restricted to bot administrators only!\n\n🔒 Contact the bot owner for permissions.`,
+            threadID, messageID
+        );
     }
 
-    // যদি আগে থেকেই গ্রুপে থাকে
-    if (participantIDs.includes(uidUser)) 
-        return api.sendMessage(`🌸 ${emojiUser} ${stylish("ইউজার ইতিমধ্যেই গ্রুপে আছে!")} 🌸`, threadID, messageID);
+    // Rate limiting check
+    if (rateLimiter.isLimited(`adduser_${senderID}`, 3, 30000)) {
+        return api.sendMessage(
+            `${stylishText("Rate Limited!", "warning")}\n\n⏰ Please wait 30 seconds between adduser commands.`,
+            threadID, messageID
+        );
+    }
 
-    // অ্যাড করার চেষ্টা
-    api.addUserToGroup(uidUser, threadID, (err) => {
-        if (err)
-            return api.sendMessage(`${emojiError} ${stylish("ইউজার অ্যাড করতে সমস্যা হয়েছে!")}`, threadID, messageID);
-        else if (approvalMode && !adminIDs.some(item => item.id == api.getCurrentUserID()))
-            return api.sendMessage(`${emojiWait} ${stylish("ইউজার অ্যাড হয়েছে, এখন অ্যাডমিনের অনুমোদনের অপেক্ষায়!")} ${emojiAdmin}`, threadID, messageID);
-        else
-            return api.sendMessage(`${emojiDone} ${emojiUser} ${stylish("নতুন সদস্য সফলভাবে গ্রুপে যুক্ত হয়েছে!")} ${emojiAdd}\n\n🛠️ 𝑴𝒂𝒅𝒆 𝒃𝒚 𝒕𝒐𝒉𝒊𝒅𝒖𝒍`, threadID, messageID);
-    });
+    // Enhanced help message
+    if (!args[0] || args[0].toLowerCase() === 'help') {
+        const helpMsg = `${stylishText("AddUser Command Guide", "info")}
+
+📋 Usage Options:
+┌─────────────────────────┐
+│ 🔸 /adduser <UID>       │
+│ 🔸 /adduser <FB_Link>   │  
+│ 🔸 /adduser <Username>  │
+└─────────────────────────┘
+
+📝 Examples:
+• /adduser 100000000000000
+• /adduser https://facebook.com/username
+• /adduser username.facebook
+
+✨ Features:
+🔹 Auto UID extraction from links
+🔹 Multiple API fallbacks
+🔹 Smart error handling
+🔹 Approval mode detection
+🔹 Duplicate user checking
+
+🛡️ Admin-only command
+🛠️ Made by TOHIDUL`;
+
+        return api.sendMessage(helpMsg, threadID, messageID);
+    }
+
+    const input = args[0];
+    const reason = args.slice(1).join(' ') || 'Added by admin';
+
+    // Enhanced emojis
+    const emojis = {
+        add: "➕", success: "✅", error: "❌", warning: "⚠️",
+        user: "👤", admin: "🛡️", wait: "⏳", group: "👥",
+        link: "🔗", id: "🆔", check: "🔍", done: "🎉"
+    };
+
+    try {
+        // Send processing message
+        const processingMsg = await api.sendMessage(
+            `${emojis.wait} ${stylishText("Processing request...", "info")}\n\n🔍 Analyzing input: ${input.length > 50 ? input.substring(0, 50) + '...' : input}`,
+            threadID
+        );
+
+        // Get thread information
+        const threadInfo = await api.getThreadInfo(threadID);
+        const { participantIDs, approvalMode, adminIDs, threadName } = threadInfo;
+        const botIsAdmin = adminIDs.some(admin => admin.id === api.getCurrentUserID());
+
+        // Determine UID
+        let targetUID;
+        let method = "direct";
+
+        if (/^\d+$/.test(input)) {
+            // Direct UID
+            targetUID = input;
+            method = "uid";
+        } else if (input.includes('facebook.com') || input.includes('fb.com')) {
+            // Facebook URL
+            try {
+                targetUID = await extractUIDFromURL(input);
+                method = "url";
+            } catch (error) {
+                await api.unsendMessage(processingMsg.messageID);
+                return api.sendMessage(
+                    `${emojis.error} ${stylishText("URL Processing Failed", "error")}\n\n🔗 Could not extract UID from the provided URL.\n\n💡 Tip: Make sure the URL is a valid Facebook profile link.`,
+                    threadID, messageID
+                );
+            }
+        } else {
+            // Try as username
+            try {
+                const profileUrl = `https://facebook.com/${input}`;
+                targetUID = await extractUIDFromURL(profileUrl);
+                method = "username";
+            } catch (error) {
+                await api.unsendMessage(processingMsg.messageID);
+                return api.sendMessage(
+                    `${emojis.error} ${stylishText("Invalid Input", "error")}\n\n📝 Please provide:\n• Valid Facebook UID (numbers only)\n• Complete Facebook profile URL\n• Valid Facebook username`,
+                    threadID, messageID
+                );
+            }
+        }
+
+        // Validate UID
+        if (!targetUID || !/^\d+$/.test(targetUID)) {
+            await api.unsendMessage(processingMsg.messageID);
+            return api.sendMessage(
+                `${emojis.error} ${stylishText("Invalid UID", "error")}\n\n🆔 The extracted UID is not valid: ${targetUID}`,
+                threadID, messageID
+            );
+        }
+
+        // Check if user is already in group
+        if (participantIDs.includes(targetUID)) {
+            await api.unsendMessage(processingMsg.messageID);
+            return api.sendMessage(
+                `${emojis.warning} ${stylishText("User Already Present", "warning")}\n\n👤 This user is already a member of the group!\n🆔 UID: ${targetUID}`,
+                threadID, messageID
+            );
+        }
+
+        // Get user information
+        const userInfo = await getUserInfo(api, targetUID);
+        const userName = userInfo?.name || 'Unknown User';
+
+        // Update processing message
+        await api.editMessage(
+            `${emojis.check} ${stylishText("User Found!", "info")}\n\n👤 Name: ${userName}\n🆔 UID: ${targetUID}\n📥 Method: ${method}\n\n⏳ Adding to group...`,
+            processingMsg.messageID
+        );
+
+        // Add user to group
+        api.addUserToGroup(targetUID, threadID, async (err) => {
+            await api.unsendMessage(processingMsg.messageID);
+
+            if (err) {
+                const errorMessages = {
+                    'User not found': 'User account not found or deactivated',
+                    'Cannot add user': 'User has blocked group invitations',
+                    'User already in group': 'User is already a group member',
+                    'Permission denied': 'Bot lacks permission to add users'
+                };
+
+                const errorMsg = errorMessages[err.message] || 'Unknown error occurred';
+
+                return api.sendMessage(
+                    `${emojis.error} ${stylishText("Addition Failed", "error")}\n\n🚫 Reason: ${errorMsg}\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n\n💡 Tip: Check if the user has privacy settings that prevent group additions.`,
+                    threadID, messageID
+                );
+            }
+
+            // Success scenarios
+            if (approvalMode && !botIsAdmin) {
+                return api.sendMessage(
+                    `${emojis.wait} ${stylishText("Pending Approval", "warning")}\n\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n📝 Reason: ${reason}\n\n⏳ Waiting for admin approval...\n${emojis.admin} Admins need to approve this addition.`,
+                    threadID, messageID
+                );
+            } else {
+                // Create success report
+                const report = `${emojis.success} ${stylishText("Successfully Added!", "success")}
+
+┌─── User Details ───┐
+│ 👤 Name: ${userName}
+│ 🆔 UID: ${targetUID}  
+│ 📥 Method: ${method.toUpperCase()}
+│ 📝 Reason: ${reason}
+└────────────────────┘
+
+┌─── Group Info ───┐
+│ 👥 Group: ${threadName || 'Unknown'}
+│ 🔢 Total Members: ${participantIDs.length + 1}
+│ ${approvalMode ? '🔒 Approval Mode: ON' : '🔓 Approval Mode: OFF'}
+│ ${botIsAdmin ? '🤖 Bot: Admin' : '🤖 Bot: Member'}
+└──────────────────┘
+
+${emojis.done} Welcome to the group, ${userName}!
+🛠️ Added by ${stylishText("TOHIDUL", "admin")}`;
+
+                return api.sendMessage(report, threadID, messageID);
+            }
+        });
+
+    } catch (error) {
+        console.error('AddUser Error:', error);
+        
+        // Clean up processing message if it exists
+        try {
+            if (processingMsg?.messageID) {
+                await api.unsendMessage(processingMsg.messageID);
+            }
+        } catch (e) {
+            // Ignore cleanup errors
+        }
+
+        return api.sendMessage(
+            `${emojis.error} ${stylishText("System Error", "error")}\n\n🔧 Technical details: ${error.message}\n\n💡 Please try again later or contact support.`,
+            threadID, messageID
+        );
+    }
+};
+
+// Enhanced handle reply for future interactive features
+module.exports.handleReply = async function ({ api, event, handleReply }) {
+    const { threadID, messageID, senderID, body } = event;
+    
+    if (handleReply.author !== senderID) return;
+    
+    // Future enhancement: Interactive user selection from search results
+    // This can be implemented for cases where multiple users match the search
 };
