@@ -1,82 +1,133 @@
-if (!global.client.busyList)
-  global.client.busyList = {};
 
 module.exports = {
   config: {
     name: "busy",
+    version: "2.0.0",
+    hasPermssion: 0,
     usePrefix: true,
-    hasPermssion: 0
-    commandCategory: "box chat",
-    version: "1.6",
-    author: "NTKhang",
-    countDown: 5,
-    role: 0,
-    description: {
-      vi: "bật chế độ không làm phiền, khi bạn được tag bot sẽ thông báo",
-      en: "turn on do not disturb mode, when you are tagged bot will notify"
-    },
-    category: "box chat",
-    guide: {
-      vi: "   {pn} [để trống | <lý do>]: bật chế độ không làm phiền"
-        + "\n   {pn} off: tắt chế độ không làm phiền",
-      en: "   {pn} [empty | <reason>]: turn on do not disturb mode"
-        + "\n   {pn} off: turn off do not disturb mode"
-    }
+    credits: "TOHI-BOT-HUB",
+    description: "🚫 Do not disturb mode - Bot will notify when you're tagged",
+    commandCategory: "utility",
+    cooldowns: 3,
+    usages: "[reason] or off"
   },
 
-  langs: {
-    vi: {
-      turnedOff: "✅ | Đã tắt chế độ không làm phiền",
-      turnedOn: "✅ | Đã bật chế độ không làm phiền",
-      turnedOnWithReason: "✅ | Đã bật chế độ không làm phiền với lý do: %1",
-      turnedOnWithoutReason: "✅ | Đã bật chế độ không làm phiền",
-      alreadyOn: "Hiện tại người dùng %1 đang bận",
-      alreadyOnWithReason: "Hiện tại người dùng %1 đang bận với lý do: %2"
-    },
-    en: {
-      turnedOff: "✅ | Do not disturb mode has been turned off",
-      turnedOn: "✅ | Do not disturb mode has been turned on",
-      turnedOnWithReason: "✅ | Do not disturb mode has been turned on with reason: %1",
-      turnedOnWithoutReason: "✅ | Do not disturb mode has been turned on",
-      alreadyOn: "User %1 is currently busy",
-      alreadyOnWithReason: "User %1 is currently busy with reason: %2"
-    }
-  },
-
-  onStart: async function ({ args, message, event, getLang, usersData }) {
-    const { senderID } = event;
-
-    if (args[0] == "off") {
-      const { data } = await usersData.get(senderID);
-      delete data.busy;
-      await usersData.set(senderID, data, "data");
-      return message.reply(getLang("turnedOff"));
-    }
-
-    const reason = args.join(" ") || "";
-    await usersData.set(senderID, reason, "data.busy");
-    return message.reply(
-      reason ?
-        getLang("turnedOnWithReason", reason) :
-        getLang("turnedOnWithoutReason")
-    );
-  },
-
-  onChat: async ({ event, message, getLang }) => {
-    const { mentions } = event;
-
-    if (!mentions || Object.keys(mentions).length == 0)
-      return;
-    const arrayMentions = Object.keys(mentions);
-
-    for (const userID of arrayMentions) {
-      const reasonBusy = global.db.allUserData.find(item => item.userID == userID)?.data.busy || false;
-      if (reasonBusy !== false) {
-        return message.reply(
-          reasonBusy ?
-            getLang("alreadyOnWithReason", mentions[userID].replace("@", ""), reasonBusy) :
-            getLang("alreadyOn", mentions[userID].replace("@", "")));
+  run: async function ({ api, event, args, Users, getLang }) {
+    const { senderID, threadID, messageID } = event;
+    
+    try {
+      // Check if user wants to turn off busy mode
+      if (args[0] && args[0].toLowerCase() === "off") {
+        const userData = await Users.getData(senderID);
+        if (userData.data && userData.data.busy !== undefined) {
+          delete userData.data.busy;
+          await Users.setData(senderID, userData);
+          
+          return api.sendMessage(
+            `✅ **Busy Mode Disabled**\n\n` +
+            `🔓 ব্যস্ততার মোড বন্ধ করা হয়েছে!\n` +
+            `📢 এখন কেউ আপনাকে ট্যাগ করলে কোনো বার্তা পাঠানো হবে না।\n\n` +
+            `🚩 Made by TOHIDUL`,
+            threadID, messageID
+          );
+        } else {
+          return api.sendMessage(
+            `❌ **Already Disabled**\n\n` +
+            `📝 আপনার Busy Mode আগে থেকেই বন্ধ আছে।\n\n` +
+            `💡 চালু করতে: \`/busy [কারণ]\`\n` +
+            `🚩 Made by TOHIDUL`,
+            threadID, messageID
+          );
+        }
       }
+
+      // Get the reason for being busy
+      const reason = args.join(" ") || "";
+      
+      // Set busy mode
+      const userData = await Users.getData(senderID);
+      if (!userData.data) userData.data = {};
+      userData.data.busy = reason || true;
+      await Users.setData(senderID, userData);
+
+      // Get user info for response
+      const userInfo = await api.getUserInfo(senderID);
+      const userName = userInfo[senderID].name;
+
+      const successMessage = reason ? 
+        `✅ **Busy Mode Activated**\n\n` +
+        `🚫 ${userName} এখন ব্যস্ত!\n` +
+        `📝 **কারণ:** ${reason}\n\n` +
+        `💬 কেউ আপনাকে ট্যাগ করলে এই বার্তা দেখানো হবে।\n` +
+        `🔓 বন্ধ করতে: \`/busy off\`\n\n` +
+        `🚩 Made by TOHIDUL`
+        :
+        `✅ **Busy Mode Activated**\n\n` +
+        `🚫 ${userName} এখন ব্যস্ত!\n` +
+        `📝 **কারণ:** কোনো কারণ উল্লেখ করা হয়নি\n\n` +
+        `💬 কেউ আপনাকে ট্যাগ করলে এই বার্তা দেখানো হবে।\n` +
+        `🔓 বন্ধ করতে: \`/busy off\`\n\n` +
+        `🚩 Made by TOHIDUL`;
+
+      return api.sendMessage(successMessage, threadID, messageID);
+
+    } catch (error) {
+      console.error('[BUSY] Command error:', error);
+      return api.sendMessage(
+        `❌ **System Error**\n\n` +
+        `🔧 Busy মোড সেট করতে সমস্যা হয়েছে।\n` +
+        `💡 আবার চেষ্টা করুন।\n\n` +
+        `🚩 Made by TOHIDUL`,
+        threadID, messageID
+      );
+    }
+  },
+
+  // Handle when someone mentions a busy user
+  onChat: async function ({ api, event, Users }) {
+    const { mentions, threadID, messageID } = event;
+
+    // Check if there are any mentions
+    if (!mentions || Object.keys(mentions).length === 0) return;
+
+    try {
+      // Check each mentioned user
+      for (const [userID, mentionText] of Object.entries(mentions)) {
+        const userData = await Users.getData(userID);
+        
+        // Check if user is in busy mode
+        if (userData.data && userData.data.busy !== undefined) {
+          const userInfo = await api.getUserInfo(userID);
+          const userName = userInfo[userID].name;
+          const busyReason = userData.data.busy;
+
+          // Create busy notification message
+          let busyMessage;
+          if (typeof busyReason === 'string' && busyReason.trim()) {
+            busyMessage = 
+              `🚫 **User is Busy** 🚫\n\n` +
+              `👤 **${userName}** এখন ব্যস্ত আছেন\n` +
+              `📝 **কারণ:** ${busyReason}\n\n` +
+              `⏰ তিনি ফ্রি হলে উত্তর দেবেন\n` +
+              `🙏 দয়া করে অপেক্ষা করুন\n\n` +
+              `🚩 Made by TOHIDUL`;
+          } else {
+            busyMessage = 
+              `🚫 **User is Busy** 🚫\n\n` +
+              `👤 **${userName}** এখন ব্যস্ত আছেন\n` +
+              `📝 **কারণ:** তিনি কোনো কারণ উল্লেখ করেননি\n\n` +
+              `⏰ তিনি ফ্রি হলে উত্তর দেবেন\n` +
+              `🙏 দয়া করে অপেক্ষা করুন\n\n` +
+              `🚩 Made by TOHIDUL`;
+          }
+
+          // Send the busy notification
+          return api.sendMessage(busyMessage, threadID, messageID);
+        }
+      }
+    } catch (error) {
+      console.error('[BUSY] OnChat error:', error);
+      // Don't send error message for onChat to avoid spam
     }
   }
 };
