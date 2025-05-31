@@ -1,0 +1,36 @@
+⫸ TBH ➤ [ DEV MODE ] [ 13:05:32 31/05/2025 ] Command used: /uptime by user: 100092006324917 at thread: 29215999454712506 | Args included:  | Processing time: 665ms
+ERR! sendMessage ReferenceError: fs is not defined
+ERR! sendMessage     at /home/runner/workspace/modules/commands/uptime.js:139:25
+ERR! sendMessage     at /home/runner/workspace/includes/login/src/sendMessage.js:170:12
+ERR! sendMessage     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+ERR! sendMessage  ReferenceError: fs is not defined
+ERR! sendMessage     at /home/runner/workspace/modules/commands/uptime.js:139:25
+ERR! sendMessage     at /home/runner/workspace/includes/login/src/sendMessage.js:170:12
+ERR! sendMessage     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+UnhandledRejection at: Promise {
+  <rejected> ReferenceError: fs is not defined
+      at /home/runner/workspace/modules/commands/uptime.js:139:25
+      at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+} reason: ReferenceError: fs is not defined
+    at /home/runner/workspace/modules/commands/uptime.js:139:25
+    at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Unhandled Rejection at: Promise {
+  <rejected> ReferenceError: fs is not defined
+      at /home/runner/workspace/modules/commands/uptime.js:139:25
+      at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+} reason: ReferenceError: fs is not defined
+    at /home/runner/workspace/modules/commands/uptime.js:139:25
+    at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Unhandled Rejection at: Promise {
+  <rejected> ReferenceError: fs is not defined
+      at /home/runner/workspace/modules/commands/uptime.js:139:25
+      at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+} reason: ReferenceError: fs is not defined
+    at /home/runner/workspace/modules/commands/uptime.js:139:25
+    at /home/runner/workspace/includes/login/src/sendMessage.js:177:12
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
