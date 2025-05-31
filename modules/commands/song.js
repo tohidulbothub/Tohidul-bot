@@ -7,7 +7,7 @@ const { resolve } = require('path');
 const API_ENDPOINTS = [
   "https://apis.shresthatamang.com.np/ytdl?url=",
   "https://youtube-scraper-2023.p.rapidapi.com/video/",
-  "https://ytdl-api.vercel.app/api/download?url="
+  "https://api.cobalt.tools/api/json"
 ];
 
 // Enhanced download function with multiple API fallbacks
@@ -43,12 +43,22 @@ async function downloadMusicFromYoutube(link, path) {
         audioUrl = response.data.audio_formats?.[0]?.url;
         title = response.data.title;
       } else {
-        // Fallback API
-        const response = await axios.get(`${API_ENDPOINTS[i]}${encodeURIComponent(link)}`, {
-          timeout: 15000
+        // Cobalt API
+        const response = await axios.post(API_ENDPOINTS[i], {
+          url: link,
+          vCodec: "h264",
+          vQuality: "720",
+          aFormat: "mp3",
+          isAudioOnly: true
+        }, {
+          timeout: 15000,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
         });
-        audioUrl = response.data.audioUrl || response.data.url;
-        title = response.data.title;
+        audioUrl = response.data.url;
+        title = response.data.filename || 'Unknown Title';
       }
 
       if (!audioUrl) continue;
@@ -61,8 +71,11 @@ async function downloadMusicFromYoutube(link, path) {
           method: 'get',
           url: audioUrl,
           responseType: 'stream',
-          timeout: 30000,
-          maxRedirects: 5
+          timeout: 45000,
+          maxRedirects: 10,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
         }).then(response => {
           const totalLength = response.headers['content-length'];
           let downloadedLength = 0;
@@ -92,10 +105,12 @@ async function downloadMusicFromYoutube(link, path) {
       });
       
     } catch (error) {
-      console.log(`[SONG] API ${i + 1} failed:`, error.message);
+      console.log(`[SONG] API ${i + 1} failed:`, error.response?.status || error.message);
       if (i === API_ENDPOINTS.length - 1) {
-        return Promise.reject(error);
+        return Promise.reject(new Error('All download APIs failed. Please try again later.'));
       }
+      // Add delay between API attempts
+      await new Promise(resolve => setTimeout(resolve, 1000));
       continue;
     }
   }
@@ -117,13 +132,30 @@ async function searchYouTube(query, maxResults = 6) {
       thumbnail: item.thumbnail?.thumbnails?.[0]?.url
     }));
   } catch (error) {
-    // Fallback to alternative search method
-    try {
-      const response = await axios.get(`https://youtube-search-api.vercel.app/api/search?q=${encodeURIComponent(query)}&maxResults=${maxResults}`);
-      return response.data.items || [];
-    } catch (fallbackError) {
-      throw new Error('Search functionality unavailable');
+    // Fallback to alternative search methods
+    const fallbackAPIs = [
+      `https://youtube-search-api.vercel.app/api/search?q=${encodeURIComponent(query)}&maxResults=${maxResults}`,
+      `https://api.popcat.xyz/youtube?q=${encodeURIComponent(query)}`
+    ];
+    
+    for (const api of fallbackAPIs) {
+      try {
+        const response = await axios.get(api, { timeout: 10000 });
+        const items = response.data.items || response.data || [];
+        if (items.length > 0) {
+          return items.slice(0, maxResults).map(item => ({
+            id: item.id || item.videoId,
+            title: item.title,
+            duration: item.duration || 'Unknown',
+            channel: item.channel || item.channelTitle || 'Unknown Channel',
+            thumbnail: item.thumbnail
+          }));
+        }
+      } catch (fallbackError) {
+        continue;
+      }
     }
+    throw new Error('Search functionality unavailable');
   }
 }
 
