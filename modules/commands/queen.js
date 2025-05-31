@@ -20,7 +20,7 @@ module.exports.config = {
   }
 };
 
-const QUEEN_BG_URL = "https://i.postimg.cc/bvQj9y1R/queen2.jpg"; // তোমার কুইন ব্যাকগ্রাউন্ড লিংক এখানে দাও
+const QUEEN_BG_URL = "https://i.imgur.com/VQXViKI.png";
 
 module.exports.onLoad = async () => {
   const dirMaterial = __dirname + `/cache/canvas/`;
@@ -31,22 +31,58 @@ module.exports.onLoad = async () => {
   // Download queen background image if not exists
   const queenBgPath = dirMaterial + "queen_propose.png";
   if (!fs.existsSync(queenBgPath)) {
-    try {
-      console.log("[QUEEN] Downloading queen background image...");
-      const response = await axios.get(QUEEN_BG_URL, { 
-        responseType: 'stream',
-        timeout: 20000,
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      const writer = fs.createWriteStream(queenBgPath);
-      response.data.pipe(writer);
-      await new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-      });
-      console.log("[QUEEN] Queen background image downloaded successfully");
-    } catch (error) {
-      console.log(`[QUEEN] Failed to download queen image: ${error.message}`);
+    console.log("[QUEEN] Downloading queen background image...");
+    
+    // Multiple fallback URLs
+    const backgroundUrls = [
+      "https://i.imgur.com/VQXViKI.png",
+      "https://i.imgur.com/ep1gG3r.png",
+      "https://i.ibb.co/9ZQX8Kp/queen-bg.png"
+    ];
+    
+    let downloaded = false;
+    
+    for (let i = 0; i < backgroundUrls.length && !downloaded; i++) {
+      try {
+        console.log(`[QUEEN] Trying URL ${i + 1}/${backgroundUrls.length}: ${backgroundUrls[i]}`);
+        const response = await axios.get(backgroundUrls[i], { 
+          responseType: 'stream',
+          timeout: 10000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        const writer = fs.createWriteStream(queenBgPath);
+        response.data.pipe(writer);
+        
+        await new Promise((resolve, reject) => {
+          writer.on('finish', resolve);
+          writer.on('error', reject);
+        });
+        
+        console.log("[QUEEN] Queen background image downloaded successfully from:", backgroundUrls[i]);
+        downloaded = true;
+        
+      } catch (error) {
+        console.log(`[QUEEN] Failed to download from URL ${i + 1}:`, error.message);
+        if (i === backgroundUrls.length - 1) {
+          console.log("[QUEEN] All download attempts failed. Creating fallback background...");
+          // Create a simple colored background as fallback
+          try {
+            const { createCanvas } = require("canvas");
+            const canvas = createCanvas(1023, 1024);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = '#ff69b4';
+            ctx.fillRect(0, 0, 1023, 1024);
+            const buffer = canvas.toBuffer('image/png');
+            fs.writeFileSync(queenBgPath, buffer);
+            console.log("[QUEEN] Fallback background created successfully");
+          } catch (fallbackError) {
+            console.log("[QUEEN] Failed to create fallback background:", fallbackError.message);
+          }
+        }
+      }
     }
   }
 };
