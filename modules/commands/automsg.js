@@ -5,8 +5,8 @@ module.exports.config = {
   credits: "TOHI-BOT-HUB", // 💎 Credit: TOHIDUL (Legendary) 💎
   description: "Legendary stylish Bangla auto time messages by TOHIDUL",
   usePrefix: true,
-  commandCategory: "System",
-  usages: "",
+  commandCategory: "automsg",
+  usages: "none",
   cooldowns: 5,
   dependencies: {}
 };
