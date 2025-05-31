@@ -9,7 +9,8 @@ module.exports = {
     description: "🚫 Do not disturb mode - Bot will notify when you're tagged",
     commandCategory: "utility",
     cooldowns: 3,
-    usages: "[reason] or off"
+    usages: "[reason] or off",
+    handleEvent: true
   },
 
   run: async function ({ api, event, args, Users, getLang }) {
@@ -84,15 +85,18 @@ module.exports = {
   },
 
   // Handle when someone mentions a busy user
-  onChat: async function ({ api, event, Users }) {
-    const { mentions, threadID, messageID } = event;
+  handleEvent: async function ({ api, event, Users }) {
+    const { mentions, threadID, messageID, senderID } = event;
 
-    // Check if there are any mentions
-    if (!mentions || Object.keys(mentions).length === 0) return;
+    // Only process message events with mentions
+    if (event.type !== "message" || !mentions || Object.keys(mentions).length === 0) return;
 
     try {
       // Check each mentioned user
       for (const [userID, mentionText] of Object.entries(mentions)) {
+        // Skip if mentioning themselves
+        if (userID === senderID) continue;
+        
         const userData = await Users.getData(userID);
         
         // Check if user is in busy mode
@@ -105,29 +109,42 @@ module.exports = {
           let busyMessage;
           if (typeof busyReason === 'string' && busyReason.trim()) {
             busyMessage = 
-              `🚫 **User is Busy** 🚫\n\n` +
-              `👤 **${userName}** এখন ব্যস্ত আছেন\n` +
+              `🚫 **${userName} ব্যস্ত আছেন** 🚫\n\n` +
+              `👤 **নাম:** ${userName}\n` +
               `📝 **কারণ:** ${busyReason}\n\n` +
               `⏰ তিনি ফ্রি হলে উত্তর দেবেন\n` +
               `🙏 দয়া করে অপেক্ষা করুন\n\n` +
+              `💡 **নোট:** Busy mode বন্ধ করতে \`/busy off\`\n` +
               `🚩 Made by TOHIDUL`;
           } else {
             busyMessage = 
-              `🚫 **User is Busy** 🚫\n\n` +
-              `👤 **${userName}** এখন ব্যস্ত আছেন\n` +
-              `📝 **কারণ:** তিনি কোনো কারণ উল্লেখ করেননি\n\n` +
+              `🚫 **${userName} ব্যস্ত আছেন** 🚫\n\n` +
+              `👤 **নাম:** ${userName}\n` +
+              `📝 **কারণ:** কোনো কারণ উল্লেখ করা হয়নি\n\n` +
               `⏰ তিনি ফ্রি হলে উত্তর দেবেন\n` +
               `🙏 দয়া করে অপেক্ষা করুন\n\n` +
+              `💡 **নোট:** Busy mode বন্ধ করতে \`/busy off\`\n` +
               `🚩 Made by TOHIDUL`;
           }
 
-          // Send the busy notification
-          return api.sendMessage(busyMessage, threadID, messageID);
+          // Send the busy notification with mention
+          await api.sendMessage({
+            body: busyMessage,
+            mentions: [{
+              tag: userName,
+              id: userID
+            }]
+          }, threadID, messageID);
+          
+          console.log(`[BUSY] Busy notification sent for ${userName} (${userID}) in thread ${threadID}`);
+          
+          // Only send one notification per message even if multiple busy users are mentioned
+          break;
         }
       }
     } catch (error) {
-      console.error('[BUSY] OnChat error:', error);
-      // Don't send error message for onChat to avoid spam
+      console.error('[BUSY] HandleEvent error:', error);
+      // Don't send error message for handleEvent to avoid spam
     }
   }
 };
