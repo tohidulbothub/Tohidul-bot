@@ -1,13 +1,14 @@
+
 module.exports.config = {
   name: "arrest",
-  version: "2.1.0",
+  version: "3.0.0",
   hasPermssion: 0,
   usePrefix: true,
-  credits: "MAHBUB SHAON | Modified: TOHIDUL",
-  description: "Arrest a friend you mention",
+  credits: "TOHI-BOT-HUB | Rewritten by TOHIDUL",
+  description: "Arrest a friend you mention with a stylish image",
   commandCategory: "tagfun",
   usages: "[mention]",
-  cooldowns: 2,
+  cooldowns: 3,
   dependencies: {
     "axios": "",
     "fs-extra": "",
@@ -16,108 +17,195 @@ module.exports.config = {
   }
 };
 
-const OWNER_UIDS = ["100092006324917"]; // Owner UID(s) here
+const OWNER_UIDS = ["100092006324917"];
 
 module.exports.onLoad = async () => {
-  const { resolve } = global.nodemodule["path"];
-  const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-  const { downloadFile } = global.utils;
+  const { resolve } = require("path");
+  const { existsSync, mkdirSync } = require("fs-extra");
+  const axios = require("axios");
+  const fs = require("fs-extra");
+  
   const dirMaterial = __dirname + `/cache/canvas/`;
-  const path = resolve(__dirname, 'cache/canvas', 'batgiam.png');
-  if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
-  if (!existsSync(path)) await downloadFile("https://i.imgur.com/ep1gG3r.png", path);
+  const arrestImagePath = resolve(__dirname, 'cache/canvas', 'arrest_bg.png');
+  
+  if (!existsSync(dirMaterial)) {
+    mkdirSync(dirMaterial, { recursive: true });
+  }
+  
+  if (!existsSync(arrestImagePath)) {
+    try {
+      console.log("[ARREST] Downloading arrest background image...");
+      const response = await axios.get("https://i.imgur.com/ep1gG3r.png", { responseType: 'stream' });
+      const writer = fs.createWriteStream(arrestImagePath);
+      response.data.pipe(writer);
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+      console.log("[ARREST] Background image downloaded successfully");
+    } catch (error) {
+      console.log("[ARREST] Failed to download background image:", error.message);
+    }
+  }
+};
+
+async function downloadAvatar(userID, outputPath) {
+  const axios = require("axios");
+  const fs = require("fs-extra");
+  
+  try {
+    const avatarUrl = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+    const response = await axios.get(avatarUrl, { responseType: 'arraybuffer' });
+    fs.writeFileSync(outputPath, Buffer.from(response.data));
+    return true;
+  } catch (error) {
+    console.log(`[ARREST] Failed to download avatar for ${userID}:`, error.message);
+    return false;
+  }
 }
 
-async function makeImage({ one, two }) {
-  const fs = global.nodemodule["fs-extra"];
-  const path = global.nodemodule["path"];
-  const axios = global.nodemodule["axios"];
+async function createCircularAvatar(imagePath) {
   const Jimp = require("jimp");
-  const __root = path.resolve(__dirname, "cache", "canvas");
-
-  let batgiam_img = await Jimp.read(__root + "/batgiam.png");
-  let pathImg = __root + `/batgiam_${one}_${two}.png`;
-  let avatarOne = __root + `/avt_${one}.png`;
-  let avatarTwo = __root + `/avt_${two}.png`;
-
-  let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-  fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
-
-  let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-  fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
-
-  let circleOne = await Jimp.read(await circle(avatarOne));
-  let circleTwo = await Jimp.read(await circle(avatarTwo));
-  batgiam_img.resize(500, 500).composite(circleOne.resize(100, 100), 375, 9).composite(circleTwo.resize(100, 100), 160, 92);
-
-  let raw = await batgiam_img.getBufferAsync("image/png");
-
-  fs.writeFileSync(pathImg, raw);
-  fs.unlinkSync(avatarOne);
-  fs.unlinkSync(avatarTwo);
-
-  return pathImg;
+  
+  try {
+    const image = await Jimp.read(imagePath);
+    image.circle();
+    return await image.getBufferAsync(Jimp.MIME_PNG);
+  } catch (error) {
+    console.log("[ARREST] Error creating circular avatar:", error.message);
+    throw error;
+  }
 }
-async function circle(image) {
+
+async function createArrestImage(userOne, userTwo) {
   const Jimp = require("jimp");
-  image = await Jimp.read(image);
-  image.circle();
-  return await image.getBufferAsync("image/png");
+  const fs = require("fs-extra");
+  const path = require("path");
+  
+  try {
+    const __root = path.resolve(__dirname, "cache", "canvas");
+    const backgroundPath = __root + "/arrest_bg.png";
+    const avatarOnePath = __root + `/avatar_${userOne}.png`;
+    const avatarTwoPath = __root + `/avatar_${userTwo}.png`;
+    const outputPath = __root + `/arrest_${userOne}_${userTwo}_${Date.now()}.png`;
+
+    // Check if background exists
+    if (!fs.existsSync(backgroundPath)) {
+      throw new Error("Background image not found");
+    }
+
+    // Download avatars
+    console.log("[ARREST] Downloading avatars...");
+    const avatar1Success = await downloadAvatar(userOne, avatarOnePath);
+    const avatar2Success = await downloadAvatar(userTwo, avatarTwoPath);
+
+    if (!avatar1Success || !avatar2Success) {
+      throw new Error("Failed to download one or both avatars");
+    }
+
+    // Load background image
+    console.log("[ARREST] Creating composite image...");
+    const backgroundImage = await Jimp.read(backgroundPath);
+
+    // Create circular avatars
+    const circularAvatar1 = await createCircularAvatar(avatarOnePath);
+    const circularAvatar2 = await createCircularAvatar(avatarTwoPath);
+
+    // Load circular avatars as Jimp objects
+    const avatar1Jimp = await Jimp.read(circularAvatar1);
+    const avatar2Jimp = await Jimp.read(circularAvatar2);
+
+    // Composite the images (adjust positions based on your background)
+    backgroundImage
+      .resize(500, 500)
+      .composite(avatar1Jimp.resize(100, 100), 375, 9)  // Arrester position
+      .composite(avatar2Jimp.resize(100, 100), 160, 92); // Arrested position
+
+    // Save the final image
+    const buffer = await backgroundImage.getBufferAsync(Jimp.MIME_PNG);
+    fs.writeFileSync(outputPath, buffer);
+
+    // Clean up avatar files
+    if (fs.existsSync(avatarOnePath)) fs.unlinkSync(avatarOnePath);
+    if (fs.existsSync(avatarTwoPath)) fs.unlinkSync(avatarTwoPath);
+
+    console.log("[ARREST] Image created successfully at:", outputPath);
+    return outputPath;
+
+  } catch (error) {
+    console.log("[ARREST] Error in createArrestImage:", error.message);
+    throw error;
+  }
 }
 
-module.exports.run = async function ({ event, api }) {
-  const fs = global.nodemodule["fs-extra"];
+module.exports.run = async function ({ event, api, Users }) {
+  const fs = require("fs-extra");
   const { threadID, messageID, senderID } = event;
 
   try {
-    var mention = Object.keys(event.mentions)[0];
-    let tag = event.mentions[mention]?.replace("@", "");
-
+    // Check if someone is mentioned
+    const mention = Object.keys(event.mentions)[0];
     if (!mention) {
-      return api.sendMessage("⚠️ দয়া করে কাউকে ট্যাগ করুন!", threadID, messageID);
+      return api.sendMessage("⚠️ দয়া করে কাউকে ট্যাগ করুন যাকে গ্রেফতার করতে চান!", threadID, messageID);
     }
 
-    // If owner is tagged
+    // Get mentioned user's name
+    const mentionedName = await Users.getNameUser(mention) || event.mentions[mention]?.replace("@", "");
+
+    // Check if owner is tagged
     if (OWNER_UIDS.includes(mention)) {
       return api.sendMessage(
-        `😹👑 হালা tui baap re arrest korbi!`,
+        `😹👑 হালা tui baap re arrest korbi! Boss কে গ্রেফতার করা যায় না!`,
         threadID,
         messageID
       );
     }
 
-    console.log(`[ARREST] Starting arrest command for ${mention} by ${senderID}`);
+    // Send processing message
+    const processingMsg = await api.sendMessage(
+      "🚔 গ্রেফতারি অভিযান শুরু হয়েছে... অপেক্ষা করুন! ⏳",
+      threadID
+    );
 
-    var one = senderID, two = mention;
+    console.log(`[ARREST] Creating arrest image for ${mention} by ${senderID}`);
 
-    const path = await makeImage({ one, two });
-    console.log(`[ARREST] Image created successfully at: ${path}`);
+    // Create the arrest image
+    const imagePath = await createArrestImage(senderID, mention);
 
-    // Check if file exists before sending
-    if (!fs.existsSync(path)) {
-      throw new Error("Generated image file not found");
+    // Check if image was created successfully
+    if (!fs.existsSync(imagePath)) {
+      throw new Error("Failed to create arrest image");
     }
 
+    // Unsend processing message
+    await api.unsendMessage(processingMsg.messageID);
+
+    // Send the arrest message with image
     return api.sendMessage({
-      body: `╭── 👮‍♂️ 𝐀𝐑𝐑𝐄𝐒𝐓 𝐌𝐎𝐃𝐄 👮‍♂️ ──╮
-🔒 ${tag}, তোমাকে গ্রেফতার করা হয়েছে!
-তুমি এখন আইনের হাতে বন্দী! 🚔😹
+      body: `╭──🚔 𝐀𝐑𝐑𝐄𝐒𝐓 𝐎𝐏𝐄𝐑𝐀𝐓𝐈𝐎𝐍 🚔──╮
+│
+│ 🔒 ${mentionedName}, তোমাকে গ্রেফতার করা হয়েছে!
+│ 
+│ 👮‍♂️ অভিযোগ: সাধারণ মানুষের হৃদয় চুরি!
+│ 🏛️ আদালত: TOHI-BOT আদালত
+│ ⚖️ বিচারক: বট জাস্টিস সিস্টেম
+│
+│ 🔐 জামিন পেতে তহিদুল boss এর সাথে যোগাযোগ করো!
+│
+╰────────────────────────╯
 
-⏳ মুক্তি পেতে হলে তহিদুল boss এর সাথে যোগাযোগ করো!
-
-🤖 Ｍａｄｅ ｂｙ ＴＯＨＩＤＵＬ
-╰──────────────╯`,
+🤖 Powered by TOHI-BOT-HUB`,
       mentions: [{
-        tag: tag,
+        tag: mentionedName,
         id: mention
       }],
-      attachment: fs.createReadStream(path)
+      attachment: fs.createReadStream(imagePath)
     }, threadID, () => {
-      // Clean up file after sending
+      // Clean up the image file after sending
       try {
-        if (fs.existsSync(path)) {
-          fs.unlinkSync(path);
-          console.log(`[ARREST] Cleaned up file: ${path}`);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`[ARREST] Cleaned up image file: ${imagePath}`);
         }
       } catch (cleanupError) {
         console.log(`[ARREST] Cleanup error: ${cleanupError.message}`);
@@ -126,10 +214,20 @@ module.exports.run = async function ({ event, api }) {
 
   } catch (error) {
     console.log(`[ARREST] Command error: ${error.message}`);
+    
+    // Try to unsend processing message if it exists
+    try {
+      if (processingMsg && processingMsg.messageID) {
+        await api.unsendMessage(processingMsg.messageID);
+      }
+    } catch (e) {
+      // Ignore unsend errors
+    }
+    
     return api.sendMessage(
-      "❌ গ্রেফতার করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।",
+      "❌ গ্রেফতার করতে সমস্যা হয়েছে! দয়া করে আবার চেষ্টা করুন।\n\n🔧 সমস্যা: " + error.message,
       threadID,
       messageID
     );
   }
-}
+};
