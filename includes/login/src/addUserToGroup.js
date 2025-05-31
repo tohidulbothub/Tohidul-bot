@@ -98,7 +98,37 @@ module.exports = function (defaultFuncs, api, ctx) {
 					throw new utils.CustomError({ error: "Add to group failed." });
 				}
 				if (resData.error) {
-					throw new utils.CustomError(resData);
+					// Handle specific Facebook error codes
+					const errorCode = resData.error;
+					let errorMessage = resData.errorDescription || resData.errorSummary || "Unknown error";
+					
+					switch (errorCode) {
+						case 1545052:
+							errorMessage = "User cannot be added to this conversation. They may have blocked group invitations or have privacy restrictions.";
+							break;
+						case 1545012:
+							errorMessage = "User not found or account may be deactivated.";
+							break;
+						case 1545010:
+							errorMessage = "User is already in this conversation.";
+							break;
+						case 1545004:
+							errorMessage = "You don't have permission to add users to this conversation.";
+							break;
+						case 1545001:
+							errorMessage = "Cannot add user due to privacy settings or restrictions.";
+							break;
+						default:
+							// Keep original error message for unknown codes
+							break;
+					}
+					
+					throw new utils.CustomError({ 
+						error: errorCode,
+						message: errorMessage,
+						errorSummary: resData.errorSummary,
+						errorDescription: resData.errorDescription
+					});
 				}
 
 				return callback();

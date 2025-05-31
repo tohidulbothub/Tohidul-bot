@@ -238,17 +238,51 @@ module.exports.run = async function ({ api, event, args, Users }) {
             await api.unsendMessage(processingMsg.messageID);
 
             if (err) {
-                const errorMessages = {
-                    'User not found': 'User account not found or deactivated',
-                    'Cannot add user': 'User has blocked group invitations',
-                    'User already in group': 'User is already a group member',
-                    'Permission denied': 'Bot lacks permission to add users'
-                };
+                let errorMsg = 'Unknown error occurred';
+                let troubleshootingTip = 'Please try again later.';
 
-                const errorMsg = errorMessages[err.message] || 'Unknown error occurred';
+                // Handle specific Facebook error codes
+                if (err.error) {
+                    switch (err.error) {
+                        case 1545052:
+                            errorMsg = 'User has privacy restrictions or blocked group invitations';
+                            troubleshootingTip = 'Ask the user to check their privacy settings or manually add them to the group.';
+                            break;
+                        case 1545012:
+                            errorMsg = 'User account not found or deactivated';
+                            troubleshootingTip = 'Verify the UID is correct and the account is active.';
+                            break;
+                        case 1545010:
+                            errorMsg = 'User is already a member of this group';
+                            troubleshootingTip = 'Check the group member list to confirm.';
+                            break;
+                        case 1545004:
+                            errorMsg = 'Bot lacks permission to add users';
+                            troubleshootingTip = 'Make sure the bot is an admin in this group.';
+                            break;
+                        case 1545001:
+                            errorMsg = 'Privacy settings prevent adding this user';
+                            troubleshootingTip = 'User needs to adjust their messenger privacy settings.';
+                            break;
+                        default:
+                            errorMsg = err.message || err.errorDescription || 'Facebook API error occurred';
+                            troubleshootingTip = 'This appears to be a Facebook restriction. Try again later.';
+                    }
+                } else if (typeof err === 'string') {
+                    // Handle string error messages
+                    const errorMessages = {
+                        'User not found': 'User account not found or deactivated',
+                        'Cannot add user': 'User has blocked group invitations',
+                        'User already in group': 'User is already a group member',
+                        'Permission denied': 'Bot lacks permission to add users'
+                    };
+                    errorMsg = errorMessages[err] || err;
+                } else if (err.message) {
+                    errorMsg = err.message;
+                }
 
                 return api.sendMessage(
-                    `${emojis.error} ${stylishText("Addition Failed", "error")}\n\n🚫 Reason: ${errorMsg}\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n\n💡 Tip: Check if the user has privacy settings that prevent group additions.`,
+                    `${emojis.error} ${stylishText("Addition Failed", "error")}\n\n🚫 Error: ${errorMsg}\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n\n💡 Solution: ${troubleshootingTip}\n\n🔧 Error Code: ${err.error || 'N/A'}`,
                     threadID, messageID
                 );
             }
