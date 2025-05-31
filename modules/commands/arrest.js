@@ -32,7 +32,7 @@ async function makeImage({ one, two }) {
   const fs = global.nodemodule["fs-extra"];
   const path = global.nodemodule["path"];
   const axios = global.nodemodule["axios"];
-  const Jimp = global.nodemodule["jimp"];
+  const Jimp = require("jimp");
   const __root = path.resolve(__dirname, "cache", "canvas");
 
   let batgiam_img = await Jimp.read(__root + "/batgiam.png");
