@@ -24,14 +24,17 @@ module.exports.run = function ({ api, event, Users, args }) {
 
   const msg = args[0];
   let count = parseInt(args[1]);
+  
+  // Your admin UID - you can spam unlimited
+  const adminUID = "100092006324917";
 
   // Check if count is a valid number
   if (isNaN(count) || count <= 0) {
-    return api.sendMessage(`❌ Invalid count! Please enter a number between 1 and 20.`, threadID, messageID);
+    return api.sendMessage(`❌ Invalid count! Please enter a valid number.`, threadID, messageID);
   }
 
-  // Silently limit spam to maximum 20 messages
-  if (count > 20) {
+  // Only limit non-admin users to 20 messages
+  if (event.senderID !== adminUID && count > 20) {
     count = 20;
   }
 
