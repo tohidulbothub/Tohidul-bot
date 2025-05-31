@@ -283,10 +283,9 @@ module.exports.run = async function ({ api, event, args, Users }) {
                     errorMsg = err.errorSummary || err.message;
                 }
 
-                return api.sendMessage(
-                    `${emojis.error} ${stylishText("Addition Failed", "error")}\n\n🚫 Error: ${errorMsg}\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n\n💡 Solution: ${troubleshootingTip}\n\n🔧 Error Code: ${err.error || 'N/A'}`,
-                    threadID, messageID
-                );
+                const errorResponse = `${emojis.error} ${stylishText("Addition Failed", "error")}\n\n🚫 Error: ${errorMsg}\n👤 User: ${userName}\n🆔 UID: ${targetUID}\n\n💡 Solution: ${troubleshootingTip}\n\n🔧 Error Code: ${err.error || 'N/A'}`;
+                
+                return api.sendMessage(errorResponse, threadID, messageID);
             }
 
             // Success scenarios
