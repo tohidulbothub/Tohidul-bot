@@ -1,5 +1,5 @@
 const axios = require('axios');
-const jimp = require("jimp");
+const { loadImage, createCanvas } = require('canvas');
 const fs = require("fs");
 
 module.exports.config = {

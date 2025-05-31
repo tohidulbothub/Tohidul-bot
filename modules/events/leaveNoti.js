@@ -8,7 +8,6 @@ module.exports.config = {
     "fs-extra": "",
     "path": "",
     "canvas": "",
-    "jimp": "",
     "axios": ""
   }
 };

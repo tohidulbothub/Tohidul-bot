@@ -13,7 +13,6 @@ const FB_LINK = 'https://web.facebook.com/mdtohidulislam063';
 const fs = require('fs-extra');
 const { loadImage, createCanvas, registerFont } = require("canvas");
 const { apiCallWithRetry } = require("../../utils/apiHelper");
-const Jimp = require("jimp");
 const moment = require("moment-timezone");
 
 const fontlink = 'https://drive.google.com/u/0/uc?id=1ZwFqYB-x6S9MjPfYm3t3SP1joohGl4iw&export=download'

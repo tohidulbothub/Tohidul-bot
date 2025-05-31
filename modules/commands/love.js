@@ -17,13 +17,14 @@ module.exports.config = {
     "axios": "",
     "fs-extra": "",
     "path": "",
-    "jimp": ""
+    "canvas": ""
   }
 };
 
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
+const { loadImage, createCanvas } = require('canvas');
 const Jimp = require("jimp");
 
 module.exports.onLoad = async () => {

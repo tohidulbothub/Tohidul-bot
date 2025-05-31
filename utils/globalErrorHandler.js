@@ -27,8 +27,8 @@ class GlobalErrorHandler {
     const ignoredErrors = [
       'Rate limited',
       'Request failed with status code 429',
-      'Jimp.read is not a function',
-      'jimp.read is not a function',
+      'Canvas context error',
+      'loadImage error',
       'not part of the conversation',
       'Max retries reached for API call',
       'Background download error',
