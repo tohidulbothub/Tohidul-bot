@@ -25,9 +25,14 @@ module.exports.run = function ({ api, event, Users, args }) {
   const msg = args[0];
   let count = parseInt(args[1]);
 
+  // Check if count is a valid number
+  if (isNaN(count) || count <= 0) {
+    return api.sendMessage(`❌ Invalid count! Please enter a number between 1 and 20.`, threadID, messageID);
+  }
+
   // Limit spam to maximum 20 messages
   if (count > 20) {
-    api.sendMessage(`⚠️ Spam limit exceeded! Maximum allowed is 20 messages. Setting count to 20.`, threadID);
+    api.sendMessage(`⚠️ Spam limit exceeded! Maximum allowed is 20 messages. Setting count to 20.`, threadID, messageID);
     count = 20;
   }
 
