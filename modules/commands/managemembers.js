@@ -9,7 +9,7 @@ module.exports.config = {
     description: "🛡️ গ্রুপ মেম্বার ম্যানেজমেন্ট সিস্টেম - দেখুন এবং কিক করুন!",
     prefix: true,
     category: "admin",
-    usages: "[list/kick] [number/uid]",
+    usages: "[list/kick]",
     cooldowns: 5,
     dependencies: {
         "fs-extra": ""
