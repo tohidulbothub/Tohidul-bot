@@ -55,7 +55,6 @@ async function downloadWithRetry(url, path, axios, fs, maxRetries = 5) {
       const delay = Math.min(2000 * Math.pow(2, attempt - 1), 32000);
       
       if (attempt > 1) {
-        console.log(`[HACK] Retrying download attempt ${attempt}/${maxRetries} after ${delay}ms delay...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
 
@@ -72,11 +71,9 @@ async function downloadWithRetry(url, path, axios, fs, maxRetries = 5) {
       });
 
       fs.writeFileSync(path, Buffer.from(response.data));
-      console.log(`[HACK] Download successful for ${url} on attempt ${attempt}`);
       return true;
       
     } catch (error) {
-      console.log(`[HACK] Download attempt ${attempt}/${maxRetries} failed for ${url}:`, error.response?.status || error.message);
       
       // If it's a 429 error and we have retries left, continue
       if (error.response?.status === 429 && attempt < maxRetries) {
@@ -132,7 +129,6 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
         throw new Error("Avatar download failed after retries");
       }
     } catch (error) {
-      console.log('[HACK] Avatar download failed:', error.message);
       api.unsendMessage(processingMsg.messageID);
       return api.sendMessage("❌ Failed to download user avatar. Please try again later.", event.threadID, event.messageID);
     }
@@ -141,14 +137,12 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
     let backgroundSuccess = false;
     for (let i = 0; i < backgrounds.length; i++) {
       try {
-        console.log(`[HACK] Trying background URL ${i + 1}/${backgrounds.length}`);
         backgroundSuccess = await downloadWithRetry(backgrounds[i], pathImg, axios, fs, 3);
         
         if (backgroundSuccess) {
           break;
         }
       } catch (error) {
-        console.log(`[HACK] Background ${i + 1} failed:`, error.message);
         if (i === backgrounds.length - 1) {
           // Clean up avatar file
           if (fs.existsSync(pathAvt1)) fs.unlinkSync(pathAvt1);
@@ -218,7 +212,6 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
       }, event.messageID);
       
     } catch (canvasError) {
-      console.log('[HACK] Canvas error:', canvasError.message);
       // Clean up files
       if (fs.existsSync(pathImg)) fs.unlinkSync(pathImg);
       if (fs.existsSync(pathAvt1)) fs.unlinkSync(pathAvt1);
@@ -227,7 +220,6 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
     }
     
   } catch (error) {
-    console.log('[HACK] General error:', error.message);
     return api.sendMessage("❌ Hack command failed. Please try again later.", event.threadID, event.messageID);
   }
 }

@@ -87,8 +87,6 @@ module.exports.onLoad = async () => {
         }
       }
     }
-  } else {
-    console.log("[ARREST] Background image already exists");
   }
 };
 
