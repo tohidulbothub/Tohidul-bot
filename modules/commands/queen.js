@@ -4,12 +4,12 @@ const axios = require('axios');
 const path = require('path');
 
 module.exports.config = {
-  name: "king",
+  name: "queen",
   version: "1.0.0",
   hasPermssion: 0,
   usePrefix: true,
   credits: "TOHI-BOT-HUB",
-  description: "Make a king proposal image with avatars",
+  description: "Make a queen proposal image with avatars",
   commandCategory: "love",
   usages: "[tag]",
   cooldowns: 5,
@@ -20,7 +20,7 @@ module.exports.config = {
   }
 };
 
-const KING_BG_URL = "https://i.postimg.cc/vB55tT9V/king2.jpg";
+const QUEEN_BG_URL = "https://i.postimg.cc/bvQj9y1R/queen2.jpg"; // তোমার কুইন ব্যাকগ্রাউন্ড লিংক এখানে দাও
 
 module.exports.onLoad = async () => {
   const dirMaterial = __dirname + `/cache/canvas/`;
@@ -28,25 +28,25 @@ module.exports.onLoad = async () => {
     fs.mkdirSync(dirMaterial, { recursive: true });
   }
 
-  // Download king background image if not exists
-  const kingBgPath = dirMaterial + "king_propose.png";
-  if (!fs.existsSync(kingBgPath)) {
+  // Download queen background image if not exists
+  const queenBgPath = dirMaterial + "queen_propose.png";
+  if (!fs.existsSync(queenBgPath)) {
     try {
-      console.log("[KING] Downloading king background image...");
-      const response = await axios.get(KING_BG_URL, { 
+      console.log("[QUEEN] Downloading queen background image...");
+      const response = await axios.get(QUEEN_BG_URL, { 
         responseType: 'stream',
         timeout: 20000,
         headers: { 'User-Agent': 'Mozilla/5.0' }
       });
-      const writer = fs.createWriteStream(kingBgPath);
+      const writer = fs.createWriteStream(queenBgPath);
       response.data.pipe(writer);
       await new Promise((resolve, reject) => {
         writer.on('finish', resolve);
         writer.on('error', reject);
       });
-      console.log("[KING] King background image downloaded successfully");
+      console.log("[QUEEN] Queen background image downloaded successfully");
     } catch (error) {
-      console.log(`[KING] Failed to download king image: ${error.message}`);
+      console.log(`[QUEEN] Failed to download queen image: ${error.message}`);
     }
   }
 };
@@ -62,7 +62,7 @@ async function downloadAvatar(userID, outputPath) {
     fs.writeFileSync(outputPath, Buffer.from(response.data));
     return true;
   } catch (error) {
-    console.log(`[KING] Failed to download avatar for ${userID}:`, error.message);
+    console.log(`[QUEEN] Failed to download avatar for ${userID}:`, error.message);
     return false;
   }
 }
@@ -79,18 +79,18 @@ function drawCircularImage(ctx, image, x, y, size) {
 async function makeImage({ one, two }) {
   try {
     const __root = path.resolve(__dirname, "cache", "canvas");
-    const backgroundPath = __root + "/king_propose.png";
-    const pathImg = __root + `/king_${one}_${two}_${Date.now()}.png`;
+    const backgroundPath = __root + "/queen_propose.png";
+    const pathImg = __root + `/queen_${one}_${two}_${Date.now()}.png`;
     const avatarOnePath = __root + `/avt_${one}.png`;
     const avatarTwoPath = __root + `/avt_${two}.png`;
 
     // Check if background exists
     if (!fs.existsSync(backgroundPath)) {
-      throw new Error("King background image not found. Please restart the bot to download it.");
+      throw new Error("Queen background image not found. Please restart the bot to download it.");
     }
 
     // Download avatars
-    console.log("[KING] Downloading avatars...");
+    console.log("[QUEEN] Downloading avatars...");
     const avatar1Success = await downloadAvatar(one, avatarOnePath);
     const avatar2Success = await downloadAvatar(two, avatarTwoPath);
 
@@ -126,7 +126,7 @@ async function makeImage({ one, two }) {
 
     return pathImg;
   } catch (error) {
-    console.error("[KING] Error creating image:", error.message);
+    console.error("[QUEEN] Error creating image:", error.message);
     throw error;
   }
 }
@@ -134,33 +134,33 @@ async function makeImage({ one, two }) {
 module.exports.run = async function ({ event, api, args }) {
   try {
     const { threadID, messageID, senderID } = event;
-    
+
     // Get mentioned user
     const mention = Object.keys(event.mentions)[0];
     if (!mention) {
-      return api.sendMessage("❌ Please tag someone to make the king image with!\nExample: /king @username", threadID, messageID);
+      return api.sendMessage("❌ Please tag someone to make the queen image with!\nExample: /queen @username", threadID, messageID);
     }
 
     const taggedName = event.mentions[mention].replace("@", "");
-    
-    // Check if user is trying to king themselves
+
+    // Check if user is trying to queen themselves
     if (mention === senderID) {
-      return api.sendMessage("😅 You can't make yourself the king! Tag someone else.", threadID, messageID);
+      return api.sendMessage("😅 You can't make yourself the queen! Tag someone else.", threadID, messageID);
     }
 
     // Send processing message
-    const processingMsg = await api.sendMessage("👑 Creating your KING image... Please wait!", threadID);
+    const processingMsg = await api.sendMessage("👑 Creating your QUEEN image... Please wait!", threadID);
 
     try {
-      // Create the king image
+      // Create the queen image
       const imagePath = await makeImage({ one: senderID, two: mention });
-      
+
       // Remove processing message
       await api.unsendMessage(processingMsg.messageID);
-      
-      // Send the king proposal
+
+      // Send the queen proposal
       return api.sendMessage({
-        body: `👑 ${taggedName}, you have been crowned by someone! 👑\n\n🌹 Made with love by TOHI-BOT-HUB 🌹`,
+        body: `👑 ${taggedName}, you have been crowned as QUEEN by someone! 👑\n\n🌹 Made with love by TOHI-BOT-HUB 🌹`,
         mentions: [{
           tag: taggedName,
           id: mention
@@ -175,20 +175,20 @@ module.exports.run = async function ({ event, api, args }) {
     } catch (imageError) {
       // Remove processing message
       await api.unsendMessage(processingMsg.messageID);
-      
-      console.error("[KING] Image creation failed:", imageError.message);
+
+      console.error("[QUEEN] Image creation failed:", imageError.message);
       return api.sendMessage(
-        "❌ **KING Image Failed**\n\n" +
-        "• Failed to create king image\n" +
+        "❌ **QUEEN Image Failed**\n\n" +
+        "• Failed to create queen image\n" +
         "• Please try again later\n\n" +
         `🔧 **Error:** ${imageError.message}\n\n` +
         "🚩 **Made by TOHI-BOT-HUB**",
         threadID, messageID
       );
     }
-    
+
   } catch (error) {
-    console.error("[KING] Main error:", error.message);
+    console.error("[QUEEN] Main error:", error.message);
     return api.sendMessage(
       "❌ **System Error**\n\n" +
       "• An unexpected error occurred\n" +
