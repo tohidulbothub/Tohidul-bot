@@ -182,10 +182,12 @@ module.exports.run = async function ({ api, event, args, Users }) {
                 );
             }
 
-            // Prevent kicking owner or admins
-            if (OWNER_UIDS.includes(targetUID)) {
+            // Prevent kicking owner or admins - Multiple Owner Protection
+            const PROTECTED_UIDS = ["100092006324917", "61576508582003"]; // Add your UID here
+            
+            if (PROTECTED_UIDS.includes(targetUID)) {
                 return api.sendMessage(
-                    `${stylishText("Cannot Kick Owner", "error")}\n\n👑 Boss কে কিক করা যাবে না! 😎`,
+                    `${stylishText("Cannot Kick Protected User", "error")}\n\n👑 এই ইউজারকে কিক করা যাবে না! 😎\n\n🛡️ **Protected UID:** ${targetUID}\n\n🔒 **Boss Level Protection Activated!** 💪`,
                     threadID, messageID
                 );
             }
