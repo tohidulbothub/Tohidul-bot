@@ -2,13 +2,14 @@
     "100092006324917": {
         "userID": "100092006324917",
         "money": 1e+96,
-        "exp": 720,
+        "exp": 726,
         "createTime": {
             "timestamp": 1748273172692
         },
         "data": {
             "timestamp": 1748273172692,
-            "busy": "suiiiiiiiii"
+            "busy": "suiiiiiiiii",
+            "workTime": 1748691039584
         },
         "lastUpdate": 1748273172692
     },
@@ -27,7 +28,7 @@
     "61576508582003": {
         "userID": "61576508582003",
         "money": 0,
-        "exp": 72,
+        "exp": 74,
         "createTime": {
             "timestamp": 1748273173037
         },

@@ -52,8 +52,7 @@
         "emitReady": true
     },
     "daily": {
-        "cooldownTime": 43200000,
-        "rewardCoin": 500
+        "cooldownTime": 43200000
     },
     "work": {
         "cooldownTime": 1200000

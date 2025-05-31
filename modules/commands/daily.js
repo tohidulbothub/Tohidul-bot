@@ -6,6 +6,7 @@ module.exports.config = {
   name: "daily",
   version: "1.0.0",
   hasPermssion: 0,
+  usePrefix: true,
   credits: "TOHI-BOT-HUB",
   description: "দৈনিক বোনাস নিন",
   commandCategory: "Economy",
