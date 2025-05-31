@@ -1,128 +1,101 @@
-
-const { join } = require("path");
-const { loadImage, createCanvas } = require("canvas");
-const fs = require("fs-extra");
-
 module.exports.config = {
-    name: "arrest",
-    version: "0.0.1-xaviabot-port-refactor",
-    hasPermssion: 0,
-    usePrefix: true,
-    commandCategory: "FUN",
-    credits: "Joshua Sy",
-    description: "Arrest a friend you mention",
-    usages: "[tag]",
-    cooldowns: 5
+  name: "arrest",
+  version: "2.1.0",
+  hasPermssion: 0,
+  usePrefix: true,
+  credits: "MAHBUB SHAON | Modified: TOHIDUL",
+  description: "Arrest a friend you mention",
+  commandCategory: "tagfun",
+  usages: "[mention]",
+  cooldowns: 2,
+  dependencies: {
+    "axios": "",
+    "fs-extra": "",
+    "path": "",
+    "jimp": ""
+  }
 };
 
-const arrestPath = join(__dirname, "cache", "arrest-template.png");
+const OWNER_UIDS = ["100092006324917"]; // Owner UID(s) here
 
-module.exports.onLoad = async function() {
-    const axios = global.nodemodule["axios"];
-    if (!fs.existsSync(arrestPath)) {
-        try {
-            const response = await axios.get("https://i.imgur.com/ep1gG3r.png", {
-                responseType: 'arraybuffer'
-            });
-            fs.writeFileSync(arrestPath, Buffer.from(response.data));
-        } catch (error) {
-            console.log('[ARREST] Failed to download template:', error.message);
-        }
-    }
-};
+module.exports.onLoad = async () => {
+  const { resolve } = global.nodemodule["path"];
+  const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
+  const { downloadFile } = global.utils;
+  const dirMaterial = __dirname + `/cache/canvas/`;
+  const path = resolve(__dirname, 'cache/canvas', 'batgiam.png');
+  if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
+  if (!existsSync(path)) await downloadFile("https://i.imgur.com/ep1gG3r.png", path);
+}
 
 async function makeImage({ one, two }) {
-    const axios = global.nodemodule["axios"];
-    
-    const template = await loadImage(arrestPath);
+  const fs = global.nodemodule["fs-extra"];
+  const path = global.nodemodule["path"];
+  const axios = global.nodemodule["axios"];
+  const jimp = global.nodemodule["jimp"];
+  const __root = path.resolve(__dirname, "cache", "canvas");
 
-    let avatarPathOne = join(__dirname, "cache", `avt_arr_${one}.png`);
-    let avatarPathTwo = join(__dirname, "cache", `avt_arr_${two}.png`);
+  let batgiam_img = await jimp.read(__root + "/batgiam.png");
+  let pathImg = __root + `/batgiam_${one}_${two}.png`;
+  let avatarOne = __root + `/avt_${one}.png`;
+  let avatarTwo = __root + `/avt_${two}.png`;
 
-    // Download avatars
-    try {
-        const avatarOneUrl = `https://graph.facebook.com/${one}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-        const avatarTwoUrl = `https://graph.facebook.com/${two}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-        
-        const avatarOneResponse = await axios.get(avatarOneUrl, { responseType: 'arraybuffer' });
-        const avatarTwoResponse = await axios.get(avatarTwoUrl, { responseType: 'arraybuffer' });
-        
-        fs.writeFileSync(avatarPathOne, Buffer.from(avatarOneResponse.data));
-        fs.writeFileSync(avatarPathTwo, Buffer.from(avatarTwoResponse.data));
-    } catch (error) {
-        throw new Error('Failed to download avatars');
-    }
+  let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+  fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
 
-    const avatarOne = await loadImage(avatarPathOne);
-    const avatarTwo = await loadImage(avatarPathTwo);
+  let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+  fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
 
-    // Create circular avatars
-    const avatarOneCircle = await createCircleAvatar(avatarOne);
-    const avatarTwoCircle = await createCircleAvatar(avatarTwo);
+  let circleOne = await jimp.read(await circle(avatarOne));
+  let circleTwo = await jimp.read(await circle(avatarTwo));
+  batgiam_img.resize(500, 500).composite(circleOne.resize(100, 100), 375, 9).composite(circleTwo.resize(100, 100), 160, 92);
 
-    const canvas = createCanvas(template.width, template.height);
-    const ctx = canvas.getContext("2d");
+  let raw = await batgiam_img.getBufferAsync("image/png");
 
-    ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
-    ctx.drawImage(avatarOneCircle, 375, 9, 100, 100);
-    ctx.drawImage(avatarTwoCircle, 160, 92, 100, 100);
+  fs.writeFileSync(pathImg, raw);
+  fs.unlinkSync(avatarOne);
+  fs.unlinkSync(avatarTwo);
 
-    const pathImg = join(__dirname, "cache", `arrest_${one}_${two}.png`);
-    const imageBuffer = canvas.toBuffer();
-
-    // Clean up avatar files
-    if (fs.existsSync(avatarPathOne)) fs.unlinkSync(avatarPathOne);
-    if (fs.existsSync(avatarPathTwo)) fs.unlinkSync(avatarPathTwo);
-
-    fs.writeFileSync(pathImg, imageBuffer);
-    return pathImg;
+  return pathImg;
+}
+async function circle(image) {
+  const jimp = require("jimp");
+  image = await jimp.read(image);
+  image.circle();
+  return await image.getBufferAsync("image/png");
 }
 
-async function createCircleAvatar(avatar) {
-    const canvas = createCanvas(avatar.width, avatar.height);
-    const ctx = canvas.getContext("2d");
-    
-    ctx.beginPath();
-    ctx.arc(avatar.width / 2, avatar.height / 2, avatar.width / 2, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-    
-    ctx.drawImage(avatar, 0, 0, avatar.width, avatar.height);
-    
-    return canvas;
-}
+module.exports.run = async function ({ event, api }) {
+  const fs = global.nodemodule["fs-extra"];
+  const { threadID, messageID, senderID } = event;
+  var mention = Object.keys(event.mentions)[0];
+  let tag = event.mentions[mention]?.replace("@", "");
+  if (!mention)
+    return api.sendMessage("⚠️ দয়া করে কাউকে ট্যাগ করুন!", threadID, messageID);
 
-module.exports.run = async function({ api, event, Users }) {
-    const { senderID, mentions } = event;
-    const mention = Object.keys(mentions);
-    
-    if (!mention[0]) {
-        return api.sendMessage("Please tag a person.", event.threadID, event.messageID);
-    }
-    
-    const one = senderID;
-    const two = mention[0];
-    const nameTarget = await Users.getNameUser(two);
-    
-    try {
-        const path = await makeImage({ one, two });
-        
-        return api.sendMessage({
-            body: `Congratulations on entering the state payroll ${nameTarget}\nWish you happy`,
-            mentions: [
-                {
-                    tag: nameTarget,
-                    id: two
-                }
-            ],
-            attachment: fs.createReadStream(path)
-        }, event.threadID, () => {
-            // Clean up file after sending
-            if (fs.existsSync(path)) fs.unlinkSync(path);
-        }, event.messageID);
-        
-    } catch (error) {
-        console.error('[ARREST] Error:', error);
-        return api.sendMessage("An error occurred, please try again.", event.threadID, event.messageID);
-    }
-};
+  // If owner is tagged
+  if (OWNER_UIDS.includes(mention)) {
+    return api.sendMessage(
+      `😹👑 হালা tui baap re arrest korbi!`,
+      threadID,
+      messageID
+    );
+  }
+
+  var one = senderID, two = mention;
+  return makeImage({ one, two }).then(path => api.sendMessage({
+    body: `╭── 👮‍♂️ 𝐀𝐑𝐑𝐄𝐒𝐓 𝐌𝐎𝐃𝐄 👮‍♂️ ──╮
+🔒 ${tag}, তোমাকে গ্রেফতার করা হয়েছে!
+তুমি এখন আইনের হাতে বন্দী! 🚔😹
+
+⏳ মুক্তি পেতে হলে তোহিদুল boss এর সাথে যোগাযোগ করো!
+      
+🤖 Ｍａｄｅ ｂｙ ＴＯＨＩＤＵＬ
+╰──────────────╯`,
+    mentions: [{
+      tag: tag,
+      id: mention
+    }],
+    attachment: fs.createReadStream(path)
+  }, threadID, () => fs.unlinkSync(path), messageID));
+}
