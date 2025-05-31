@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { loadImage, createCanvas } = require('canvas');
 const fs = require("fs");
+const jimp = require('jimp');
 
 module.exports.config = {
   name: "fbcover",
@@ -37,16 +38,21 @@ module.exports.config = {
       const img = `${n}/fbcover/v1?name=${encodeURIComponent(name)}&uid=${id}&address=${encodeURIComponent(address)}&email=${encodeURIComponent(email)}&subname=${encodeURIComponent(subname)}&sdt=${encodeURIComponent(phone)}&color=${encodeURIComponent(color)}`;
 
       try {
-        const response = await axios.get(img, { responseType: 'arraybuffer' });
-        const image = await jimp.read(response.data);
-        const outputPath = `./fbcover_${uid}.png`;
-        await image.writeAsync(outputPath);
-
-        const attachment = fs.createReadStream(outputPath);
-        api.sendMessage({ 
-          body: `◆━━━━━━━━◆◆━━━━━━━━◆\n🔴INPUT NAME: ${name}\n🔵INPUT SUBNAME:${subname}\n📊ADDRESS: ${address}\n✉️EMAIL: ${email}\n☎️PHON NO.: ${phone}\n🎇COLOUR: ${color}\n🆔ID: ${nam}\n◆━━━━━━━━◆◆━━━━━━━━◆`,
-          attachment
-        }, event.threadID, () => fs.unlinkSync(outputPath));
+        const response = await axios.get(img, { responseType: 'stream' });
+        const outputPath = `./modules/commands/cache/fbcover_${uid}.png`;
+        
+        response.data.pipe(fs.createWriteStream(outputPath))
+          .on('close', () => {
+            const attachment = fs.createReadStream(outputPath);
+            api.sendMessage({ 
+              body: `◆━━━━━━━━◆◆━━━━━━━━◆\n🔴INPUT NAME: ${name}\n🔵INPUT SUBNAME: ${subname}\n📊ADDRESS: ${address}\n✉️EMAIL: ${email}\n☎️PHON NO.: ${phone}\n🎇COLOUR: ${color}\n🆔ID: ${nam}\n◆━━━━━━━━◆◆━━━━━━━━◆`,
+              attachment
+            }, event.threadID, () => fs.unlinkSync(outputPath));
+          })
+          .on('error', (error) => {
+            console.error('Download error:', error);
+            api.sendMessage("An error occurred while generating the FB cover.", event.threadID);
+          });
       } catch (error) {
         console.error(error);
         api.sendMessage("An error occurred while generating the FB cover.", event.threadID);
