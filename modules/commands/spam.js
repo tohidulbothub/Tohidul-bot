@@ -30,9 +30,8 @@ module.exports.run = function ({ api, event, Users, args }) {
     return api.sendMessage(`❌ Invalid count! Please enter a number between 1 and 20.`, threadID, messageID);
   }
 
-  // Limit spam to maximum 20 messages
+  // Silently limit spam to maximum 20 messages
   if (count > 20) {
-    api.sendMessage(`⚠️ Spam limit exceeded! Maximum allowed is 20 messages. Setting count to 20.`, threadID, messageID);
     count = 20;
   }
 
