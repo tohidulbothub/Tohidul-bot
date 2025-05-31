@@ -1,7 +1,7 @@
 
 module.exports.config = {
   name: "leave",
-  eventType: ["log:unsubscribe"],
+  eventType: ["log:unsubscribe", "message", "message_reply"],
   version: "7.0.0",
   credits: "TOHI-BOT-HUB (Anti-Out Event Integrated by TOHIDUL)",
   description: "🎭 Enhanced leave notification with integrated Anti-Out event system",
@@ -34,7 +34,10 @@ function stylishText(text, style = "default") {
 
 // Handle anti-out event commands
 module.exports.handleEvent = async function({ api, event, Threads }) {
-  const { body = "", threadID, senderID } = event;
+  const { body, threadID, senderID } = event;
+  
+  // Only process message events
+  if (!body || typeof body !== 'string') return;
   
   // Check for anti-out toggle commands (case insensitive)
   const lowerBody = body.toLowerCase().trim();
