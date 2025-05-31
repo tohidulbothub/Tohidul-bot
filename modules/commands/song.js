@@ -3,10 +3,10 @@ const fs = require('fs');
 const axios = require("axios");
 const { resolve } = require('path');
 
-// Multiple API endpoints for better reliability and speed
+// Updated API endpoints with working alternatives
 const API_ENDPOINTS = [
-  "https://apis.shresthatamang.com.np/ytdl?url=",
-  "https://youtube-scraper-2023.p.rapidapi.com/video/",
+  "https://api.popcat.xyz/youtube/download?url=",
+  "https://youtube-dl-api.herokuapp.com/api/download?url=",
   "https://api.cobalt.tools/api/json"
 ];
 
@@ -24,26 +24,27 @@ async function downloadMusicFromYoutube(link, path) {
       let audioUrl, title;
       
       if (i === 0) {
-        // Primary fast API
+        // PopCat API
         const response = await axios.get(`${API_ENDPOINTS[i]}${encodeURIComponent(link)}`, {
-          timeout: 15000
+          timeout: 20000
         });
-        audioUrl = response.data.audio?.url || response.data.downloadUrl;
+        audioUrl = response.data.download_url || response.data.audio;
         title = response.data.title;
       } else if (i === 1) {
-        // Secondary API
-        const videoId = link.split('v=')[1]?.split('&')[0] || link.split('/').pop();
-        const response = await axios.get(`${API_ENDPOINTS[i]}${videoId}`, {
+        // YouTube DL API
+        const response = await axios.post(API_ENDPOINTS[i], {
+          url: link,
+          format: "mp3"
+        }, {
+          timeout: 20000,
           headers: {
-            'X-RapidAPI-Key': 'your-rapidapi-key', // You can add your key here
-            'X-RapidAPI-Host': 'youtube-scraper-2023.p.rapidapi.com'
-          },
-          timeout: 15000
+            'Content-Type': 'application/json'
+          }
         });
-        audioUrl = response.data.audio_formats?.[0]?.url;
+        audioUrl = response.data.download_url;
         title = response.data.title;
       } else {
-        // Cobalt API
+        // Cobalt API (fallback)
         const response = await axios.post(API_ENDPOINTS[i], {
           url: link,
           vCodec: "h264",
@@ -51,7 +52,7 @@ async function downloadMusicFromYoutube(link, path) {
           aFormat: "mp3",
           isAudioOnly: true
         }, {
-          timeout: 15000,
+          timeout: 20000,
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -61,7 +62,10 @@ async function downloadMusicFromYoutube(link, path) {
         title = response.data.filename || 'Unknown Title';
       }
 
-      if (!audioUrl) continue;
+      if (!audioUrl) {
+        console.log(`[SONG] API ${i + 1} returned no download URL`);
+        continue;
+      }
 
       // Download with progress tracking
       return new Promise((resolve, reject) => {
@@ -71,10 +75,10 @@ async function downloadMusicFromYoutube(link, path) {
           method: 'get',
           url: audioUrl,
           responseType: 'stream',
-          timeout: 45000,
+          timeout: 60000,
           maxRedirects: 10,
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
           }
         }).then(response => {
           const totalLength = response.headers['content-length'];
@@ -110,7 +114,7 @@ async function downloadMusicFromYoutube(link, path) {
         return Promise.reject(new Error('All download APIs failed. Please try again later.'));
       }
       // Add delay between API attempts
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       continue;
     }
   }
@@ -121,54 +125,60 @@ async function downloadMusicFromYoutube(link, path) {
 // Enhanced YouTube search with better results
 async function searchYouTube(query, maxResults = 6) {
   try {
-    const Youtube = require('youtube-search-api');
-    const searchResults = await Youtube.GetListByKeyword(query, false, maxResults);
+    // Try PopCat search first
+    const response = await axios.get(`https://api.popcat.xyz/youtube/search?q=${encodeURIComponent(query)}`, {
+      timeout: 15000
+    });
     
-    return searchResults.items.map(item => ({
-      id: item.id,
-      title: item.title,
-      duration: item.length?.simpleText || 'Unknown',
-      channel: item.channelTitle || 'Unknown Channel',
-      thumbnail: item.thumbnail?.thumbnails?.[0]?.url
-    }));
-  } catch (error) {
-    // Fallback to alternative search methods
-    const fallbackAPIs = [
-      `https://youtube-search-api.vercel.app/api/search?q=${encodeURIComponent(query)}&maxResults=${maxResults}`,
-      `https://api.popcat.xyz/youtube?q=${encodeURIComponent(query)}`
-    ];
-    
-    for (const api of fallbackAPIs) {
-      try {
-        const response = await axios.get(api, { timeout: 10000 });
-        const items = response.data.items || response.data || [];
-        if (items.length > 0) {
-          return items.slice(0, maxResults).map(item => ({
-            id: item.id || item.videoId,
-            title: item.title,
-            duration: item.duration || 'Unknown',
-            channel: item.channel || item.channelTitle || 'Unknown Channel',
-            thumbnail: item.thumbnail
-          }));
-        }
-      } catch (fallbackError) {
-        continue;
-      }
+    if (response.data && response.data.length > 0) {
+      return response.data.slice(0, maxResults).map(item => ({
+        id: item.id,
+        title: item.title,
+        duration: item.duration || 'Unknown',
+        channel: item.channel || 'Unknown Channel',
+        thumbnail: item.thumbnail
+      }));
     }
-    throw new Error('Search functionality unavailable');
+  } catch (error) {
+    console.log('[SONG] PopCat search failed, trying fallback...');
   }
+
+  // Fallback search methods
+  const fallbackAPIs = [
+    `https://youtube-search-api.vercel.app/api/search?q=${encodeURIComponent(query)}&maxResults=${maxResults}`,
+    `https://api.onlymp3.to/search/${encodeURIComponent(query)}`
+  ];
+  
+  for (const api of fallbackAPIs) {
+    try {
+      const response = await axios.get(api, { timeout: 15000 });
+      const items = response.data.items || response.data.results || response.data || [];
+      if (items.length > 0) {
+        return items.slice(0, maxResults).map(item => ({
+          id: item.id || item.videoId,
+          title: item.title,
+          duration: item.duration || 'Unknown',
+          channel: item.channel || item.channelTitle || 'Unknown Channel',
+          thumbnail: item.thumbnail
+        }));
+      }
+    } catch (fallbackError) {
+      continue;
+    }
+  }
+  throw new Error('Search functionality unavailable');
 }
 
 module.exports.config = {
   name: "song", 
-  version: "2.0.0", 
+  version: "2.1.0", 
   permission: 0,
   credits: "TOHI-BOT-HUB",
   description: "Advanced YouTube music downloader with multiple API support",
   usePrefix: true,
   commandCategory: "media", 
   usages: "[song name] or [youtube link]", 
-  cooldowns: 3 // Reduced cooldown for better UX
+  cooldowns: 3
 };
 
 module.exports.handleReply = async function ({ api, event, handleReply }) {
