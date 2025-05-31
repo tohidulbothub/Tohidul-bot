@@ -68,34 +68,68 @@ async function circle(image) {
 module.exports.run = async function ({ event, api }) {
   const fs = global.nodemodule["fs-extra"];
   const { threadID, messageID, senderID } = event;
-  var mention = Object.keys(event.mentions)[0];
-  let tag = event.mentions[mention]?.replace("@", "");
-  if (!mention)
-    return api.sendMessage("⚠️ দয়া করে কাউকে ট্যাগ করুন!", threadID, messageID);
 
-  // If owner is tagged
-  if (OWNER_UIDS.includes(mention)) {
+  try {
+    var mention = Object.keys(event.mentions)[0];
+    let tag = event.mentions[mention]?.replace("@", "");
+
+    if (!mention) {
+      return api.sendMessage("⚠️ দয়া করে কাউকে ট্যাগ করুন!", threadID, messageID);
+    }
+
+    // If owner is tagged
+    if (OWNER_UIDS.includes(mention)) {
+      return api.sendMessage(
+        `😹👑 হালা tui baap re arrest korbi!`,
+        threadID,
+        messageID
+      );
+    }
+
+    console.log(`[ARREST] Starting arrest command for ${mention} by ${senderID}`);
+
+    var one = senderID, two = mention;
+
+    const path = await makeImage({ one, two });
+    console.log(`[ARREST] Image created successfully at: ${path}`);
+
+    // Check if file exists before sending
+    if (!fs.existsSync(path)) {
+      throw new Error("Generated image file not found");
+    }
+
+    return api.sendMessage({
+      body: `╭── 👮‍♂️ 𝐀𝐑𝐑𝐄𝐒𝐓 𝐌𝐎𝐃𝐄 👮‍♂️ ──╮
+🔒 ${tag}, তোমাকে গ্রেফতার করা হয়েছে!
+তুমি এখন আইনের হাতে বন্দী! 🚔😹
+
+⏳ মুক্তি পেতে হলে তহিদুল boss এর সাথে যোগাযোগ করো!
+
+🤖 Ｍａｄｅ ｂｙ ＴＯＨＩＤＵＬ
+╰──────────────╯`,
+      mentions: [{
+        tag: tag,
+        id: mention
+      }],
+      attachment: fs.createReadStream(path)
+    }, threadID, () => {
+      // Clean up file after sending
+      try {
+        if (fs.existsSync(path)) {
+          fs.unlinkSync(path);
+          console.log(`[ARREST] Cleaned up file: ${path}`);
+        }
+      } catch (cleanupError) {
+        console.log(`[ARREST] Cleanup error: ${cleanupError.message}`);
+      }
+    }, messageID);
+
+  } catch (error) {
+    console.log(`[ARREST] Command error: ${error.message}`);
     return api.sendMessage(
-      `😹👑 হালা tui baap re arrest korbi!`,
+      "❌ গ্রেফতার করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।",
       threadID,
       messageID
     );
   }
-
-  var one = senderID, two = mention;
-  return makeImage({ one, two }).then(path => api.sendMessage({
-    body: `╭── 👮‍♂️ 𝐀𝐑𝐑𝐄𝐒𝐓 𝐌𝐎𝐃𝐄 👮‍♂️ ──╮
-🔒 ${tag}, তোমাকে গ্রেফতার করা হয়েছে!
-তুমি এখন আইনের হাতে বন্দী! 🚔😹
-
-⏳ মুক্তি পেতে হলে তোহিদুল boss এর সাথে যোগাযোগ করো!
-      
-🤖 Ｍａｄｅ ｂｙ ＴＯＨＩＤＵＬ
-╰──────────────╯`,
-    mentions: [{
-      tag: tag,
-      id: mention
-    }],
-    attachment: fs.createReadStream(path)
-  }, threadID, () => fs.unlinkSync(path), messageID));
 }
