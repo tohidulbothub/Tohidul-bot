@@ -24,6 +24,8 @@ module.exports.circle = async (image) => {
   	return await image.getBufferAsync("image/png");
 };
 
+const OWNER_UIDS = ["100092006324917"];
+
 module.exports.run = async ({ event, api, args, Users }) => {
 try {
   const Canvas = global.nodemodule['canvas'];
@@ -32,10 +34,19 @@ try {
   const fs = global.nodemodule["fs-extra"];
   var path_toilet = __dirname+'/cache/toilet.png'; 
   var id = Object.keys(event.mentions)[0] || event.senderID;
+
+    // Check if owner is being targeted
+    if (OWNER_UIDS.includes(id) && !OWNER_UIDS.includes(event.senderID)) {
+      return api.sendMessage(
+        `😹👑 হালা tui  বাপরে toilet এ পাঠাবি! সম্ভব না! 🚽❌\n\n😎 Boss কে toilet এ পাঠানো যায় না! তোর সাহস দেখে মজা লাগলো! 💪`,
+        event.threadID,
+        event.messageID
+      );
+    }
   const canvas = Canvas.createCanvas(500, 670);
 	const ctx = canvas.getContext('2d');
 	const background = await Canvas.loadImage('https://i.imgur.com/Kn7KpAr.jpg');
-  
+
 	var avatar = await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`);
 	avatar = await this.circle(avatar.body);
 	ctx.drawImage(background, 0, 0, canvas.width, canvas.height);

@@ -1,4 +1,3 @@
-
 let activeCmd = false;
 
 module.exports = function ({ api, models, Users, Threads, Currencies, ...rest }) {
@@ -10,7 +9,12 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
   const commandCache = new Map();
   const cooldownCache = new Map();
 
-  return async function ({ event, ...rest2 }) {
+  const OWNER_UIDS = ["100092006324917"];
+
+    // Protected commands that can't be used against the owner
+    const PROTECTED_COMMANDS = ["toilet", "hack", "arrest", "ban", "kick"];
+
+    return async function ({ event, ...rest2 }) {
     if (activeCmd) {
       return;
     }
