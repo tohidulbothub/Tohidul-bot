@@ -1,10 +1,10 @@
 module.exports.config = {
 name: "spam",
   version: "",
-  permssion: 2,
+  permssion: 0,
   credits: "TOHI-BOT-HUB",
   description: "",
-  commandCategory: "admin",
+  commandCategory: "utility",
   usages: "[msg] [amount]",
   usePrefix: true,
   cooldowns: 5,
@@ -12,9 +12,6 @@ name: "spam",
 };
 
 module.exports.run = function ({ api, event, Users, args }) {
-  const permission = ["100092006324917"];
-   if (!permission.includes(event.senderID))
-   return api.sendMessage("Only Bot Admin Can Use this command", event.threadID, event.messageID);
   if (args.length !== 2) {
     api.sendMessage(`Invalid number of arguments. Usage: ${global.config.PREFIX}spam [msg] [amount]`, event.threadID);
     return;
