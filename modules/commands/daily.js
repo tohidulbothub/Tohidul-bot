@@ -19,12 +19,15 @@ module.exports.run = async ({ event, api, Currencies }) => {
   const { threadID, messageID, senderID } = event;
   
   try {
-    const cooldown = global.configModule[this.config.name].cooldownTime;
-    let data = (await Currencies.getData(senderID)).data || {};
+    const cooldown = 43200000; // 12 hours in milliseconds
+    let userData = await Currencies.getData(senderID);
+    
+    // Check if user data exists
+    if (!userData.data) userData.data = {};
     
     // Check cooldown
-    if (typeof data !== "undefined" && cooldown - (Date.now() - data.workTime) > 0) {
-      const timeLeft = cooldown - (Date.now() - data.workTime);
+    if (userData.data.workTime && cooldown - (Date.now() - userData.data.workTime) > 0) {
+      const timeLeft = cooldown - (Date.now() - userData.data.workTime);
       const hours = Math.floor(timeLeft / (1000 * 60 * 60));
       const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
@@ -40,6 +43,10 @@ module.exports.run = async ({ event, api, Currencies }) => {
     const dailyAmount = 500;
     await Currencies.increaseMoney(senderID, dailyAmount);
     
+    // Update work time
+    userData.data.workTime = Date.now();
+    await Currencies.setData(senderID, userData);
+    
     // Get random image
     let attachment = null;
     try {
@@ -49,13 +56,14 @@ module.exports.run = async ({ event, api, Currencies }) => {
       attachment = download;
     } catch (error) {
       // If image fails, continue without image
+      console.log("Image loading failed:", error.message);
     }
     
     const successMessage = 
       `💰 Daily Bonus সংগ্রহ করা হয়েছে!\n` +
       `💵 পরিমাণ: ${dailyAmount.toLocaleString()}$\n` +
       `⏰ পরবর্তী bonus: 12 ঘন্টা পরে\n` +
-      `🎉 সুখী থাকুন!`;
+      `🎉 ধন্যবাদ!`;
     
     return api.sendMessage({
       body: successMessage,
