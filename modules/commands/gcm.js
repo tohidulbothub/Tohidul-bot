@@ -128,6 +128,17 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
         // Kick member
         if (command === "kick") {
+            // Check if bot is admin first
+            const botID = api.getCurrentUserID();
+            const isBotAdmin = adminIDs.some(admin => admin.id === botID);
+            
+            if (!isBotAdmin) {
+                return api.sendMessage(
+                    `${stylishText("কিরে হালা! 😂", "error")}\n\n🤖 **আগে আমাকে অ্যাডমিন দে তারপর না কিক দিবো বে!** 😎\n\n🛡️ **অ্যাডমিন ছাড়া কিভাবে কিক দিমু?** 🤔\n\n💡 **সমাধান:**\n• গ্রুপে আমাকে অ্যাডমিন বানাও\n• তারপর আবার কমান্ড দাও\n\n😏 **না দিলে আমি কিচ্ছু করতে পারবো না!** 🤷‍♂️`,
+                    threadID, messageID
+                );
+            }
+
             const target = args[1];
             
             if (!target) {
