@@ -11,7 +11,7 @@ const baseApiUrl = async () => {
   config: {
     name: "lyrics",
     version: "1.0",
-    credits: "TOHI-BOT-HUB",
+    credits: "Nazrul",
     cooldowns: 5,
     hasPermission: 0,
     usePrefix: true,
