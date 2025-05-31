@@ -3,6 +3,7 @@ module.exports.config = {
   name: "antiout",
   version: "2.0.0",
   hasPermssion: 0,
+  usePrefix: true,
   credits: "TOHI-BOT-HUB",
   description: "🛡️ Anti-Out system - Automatically re-add users who leave the group",
   commandCategory: "Group Management",
