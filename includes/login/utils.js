@@ -1556,6 +1556,23 @@ function getAccessFromBusiness(jar, Options) {
 }
 
 const meta = prop => new RegExp(`<meta property="${prop}" content="([^"]*)"`);
+// CustomError class for Facebook API errors
+class CustomError extends Error {
+  constructor(obj) {
+    if (typeof obj === 'string') {
+      super(obj);
+      this.error = obj;
+    } else if (obj && typeof obj === 'object') {
+      super(obj.error || obj.message || 'Unknown error');
+      Object.assign(this, obj);
+    } else {
+      super('Unknown error');
+      this.error = 'Unknown error';
+    }
+    this.name = 'CustomError';
+  }
+}
+
 module.exports = {
   //logs
   log(...args) {
@@ -1568,6 +1585,7 @@ module.exports = {
     console.warn(chalk.yellow.bold("[WARNING]"), ...args);
   },
   //end logs
+  CustomError,
   botLog,
   isReadableStream,
   cleanGet,
