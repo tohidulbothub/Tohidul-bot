@@ -41,20 +41,14 @@ module.exports.run = async function({ api, event, args, Threads }) {
   }
   const fancyBotName = toFancyFont(botName);
 
-  if (!args[0]) return api.sendMessage(
-    `╭─╼⃝⸙͎༄❀ 𝑨𝒗𝒂𝒕𝒂𝒓 𝑴𝒆𝒏𝒖 ❀༄⸙⃝╾─╮\n`
-    + `🤖 ${fancyBotName}\n\n`
-    + `💠  ${prefix}${mn} box\n    ┗━━━ Group avatar\n`
-    + `💠  ${prefix}${mn} box [GroupID]\n    ┗━━━ Any group's avatar\n`
-    + `💠  ${prefix}${mn} id [UID]\n    ┗━━━ Avatar by Facebook user ID\n`
-    + `💠  ${prefix}${mn} link [ProfileLink]\n    ┗━━━ Avatar by profile link\n`
-    + `💠  ${prefix}${mn} user\n    ┗━━━ Your avatar\n`
-    + `💠  ${prefix}${mn} user [@mention]\n    ┗━━━ Mentioned user's avatar\n`
-    + `╰─⃝⸙͎༄❀ ${fancyBotName} ❀༄⸙⃝─╯`,
-    event.threadID, event.messageID
-  );
+  // Check for mentions first
+  if (Object.keys(event.mentions).length > 0) {
+    let mentionID = Object.keys(event.mentions)[0];
+    let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_mention.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_mention.png"), event.messageID);
+    return request(encodeURI(`https://graph.facebook.com/${mentionID}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_mention.png")).on('close', callback);
+  }
 
-  // --- Group avatar
+  // Group avatar
   if (args[0] == "box") {
     let groupID = args[1] ? args[1] : event.threadID;
     let threadInfo = await api.getThreadInfo(groupID);
@@ -64,44 +58,36 @@ module.exports.run = async function({ api, event, args, Threads }) {
     return request(encodeURI(img)).pipe(fs.createWriteStream(__dirname + "/cache/avt_box.png")).on('close', callback);
   }
 
-  // --- Avatar by UID
-  if (args[0] == "id") {
-    let id = args[1];
-    if (!id) return api.sendMessage(`[🖼️] দয়া করে ইউজার আইডি দিন!`, event.threadID, event.messageID);
-    let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_uid.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_uid.png"), event.messageID);
-    return request(encodeURI(`https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_uid.png")).on('close', callback);
-  }
-
-  // --- Avatar by Profile link
-  if (args[0] == "link") {
-    let link = args[1];
-    if (!link) return api.sendMessage(`[🖼️] দয়া করে ফেসবুক প্রোফাইল লিংক দিন!`, event.threadID, event.messageID);
+  // Check if it's a Facebook link
+  if (args[0] && args[0].includes("facebook.com")) {
     try {
       const tool = require("fb-tools");
-      let id = await tool.findUid(link);
+      let id = await tool.findUid(args[0]);
       let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_link.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_link.png"), event.messageID);
       if (!id) return api.sendMessage(`[🖼️] ইউজার পাওয়া যায়নি!`, event.threadID, event.messageID);
       return request(encodeURI(`https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_link.png")).on('close', callback);
     } catch (e) {
-      return api.sendMessage(`[🖼️] ইউজার পাওয়া যায়নি!`, event.threadID, event.messageID);
+      return api.sendMessage(`[🖼️] ইউজার পাওয়া যায়নি!`, event.threadID, event.messageID);
     }
   }
 
-  // --- Avatar for User (self or mentioned)
-  if (args[0] == "user") {
-    if (!args[1]) {
-      let id = event.senderID;
-      let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_user.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_user.png"), event.messageID);
-      return request(encodeURI(`https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_user.png")).on('close', callback);
-    }
-    if (args.join().indexOf('@') !== -1) {
-      let mentions = Object.keys(event.mentions);
-      let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_mention.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_mention.png"), event.messageID);
-      return request(encodeURI(`https://graph.facebook.com/${mentions[0]}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_mention.png")).on('close', callback);
-    }
-    return api.sendMessage(`[🖼️]→ কমান্ড ভুল! সঠিকভাবে ব্যবহার করুন: ${prefix}${mn}\n`, event.threadID, event.messageID);
+  // Check if it's a User ID (numeric)
+  if (args[0] && /^\d+$/.test(args[0])) {
+    let id = args[0];
+    let callback = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/avt_uid.png")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/avt_uid.png"), event.messageID);
+    return request(encodeURI(`https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).pipe(fs.createWriteStream(__dirname + "/cache/avt_uid.png")).on('close', callback);
   }
 
-  // --- Fallback for wrong usage
-  return api.sendMessage(`[🖼️]→ কমান্ড ভুল! সঠিকভাবে ব্যবহার করুন: ${prefix}${mn}\n`, event.threadID, event.messageID);
+  // Show help if wrong usage
+  return api.sendMessage(
+    `╭─╼⃝⸙͎༄❀ 𝑨𝒗𝒂𝒕𝒂𝒓 𝑴𝒆𝒏𝒖 ❀༄⸙⃝╾─╮\n`
+    + `🤖 ${fancyBotName}\n\n`
+    + `💠  ${prefix}${mn} - Your avatar\n`
+    + `💠  ${prefix}${mn} @mention - Someone's avatar\n`
+    + `💠  ${prefix}${mn} [UserID] - Avatar by ID\n`
+    + `💠  ${prefix}${mn} [ProfileLink] - Avatar by link\n`
+    + `💠  ${prefix}${mn} box - Group avatar\n`
+    + `╰─⃝⸙͎༄❀ ${fancyBotName} ❀༄⸙⃝─╯`,
+    event.threadID, event.messageID
+  );
 }
