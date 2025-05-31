@@ -1,11 +1,13 @@
 
+const OWNER_UIDS = ["100092006324917"];
+
 module.exports.config = {
   name: "hack",
-  version: "1.0.2",
+  version: "1.0.3",
   hasPermssion: 0,
   usePrefix: true,
-  credits: "MrTomXxX",
-  description: "prank friends",
+  credits: "TOHI-BOT-HUB",
+  description: "prank friends with hack simulation",
   commandCategory: "Group",
   usages: "@tag",
   dependencies: {
@@ -102,6 +104,15 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
     var id = Object.keys(event.mentions)[0] || event.senderID;
     var name = await Users.getNameUser(id);
 
+    // Check if owner is being targeted
+    if (OWNER_UIDS.includes(id) && !OWNER_UIDS.includes(event.senderID)) {
+      return api.sendMessage(
+        `😹👑 হালা tui বাপরে hack করবি! সম্ভব না! 💻❌\n\n😎 Boss কে hack করা যায় না! তোর সাহস দেখে মজা লাগলো! 💪\n\n🔐 Admin level security activated!`,
+        event.threadID,
+        event.messageID
+      );
+    }
+
     // Multiple background options for better availability
     var backgrounds = [
       "https://i.imgur.com/VQXViKI.png",
@@ -147,7 +158,7 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
       }
     }
 
-    // Create canvas and draw
+    // Create canvas and draw with enhanced design
     try {
       let baseImage = await loadImage(pathImg);
       let baseAvt1 = await loadImage(pathAvt1);
@@ -155,23 +166,41 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
       let canvas = createCanvas(baseImage.width, baseImage.height);
       let ctx = canvas.getContext("2d");
       
+      // Draw background
       ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-      ctx.font = "400 23px Arial";
-      ctx.fillStyle = "#1878F3";
+      
+      // Enhanced text styling
+      ctx.font = "bold 28px Arial";
+      ctx.fillStyle = "#FF0000";
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 2;
       ctx.textAlign = "start";
 
+      // Draw text with stroke for better visibility
       const lines = await this.wrapText(ctx, name, 1160);
       if (lines) {
-        ctx.fillText(lines.join('\n'), 200, 497);
+        const text = lines.join('\n');
+        ctx.strokeText(text, 200, 497);
+        ctx.fillText(text, 200, 497);
       } else {
+        ctx.strokeText(name, 200, 497);
         ctx.fillText(name, 200, 497);
       }
-      ctx.beginPath();
 
-      // Draw avatar with proper positioning
-      ctx.drawImage(baseAvt1, 83, 437, 100, 101);
+      // Function to draw circular avatar
+      function drawCircularAvatar(image, x, y, size) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(image, x, y, size, size);
+        ctx.restore();
+      }
 
-      const imageBuffer = canvas.toBuffer();
+      // Draw circular avatar with proper positioning
+      drawCircularAvatar(baseAvt1, 83, 437, 100);
+
+      const imageBuffer = canvas.toBuffer('image/png');
       fs.writeFileSync(pathImg, imageBuffer);
       
       // Clean up avatar file
@@ -181,7 +210,7 @@ module.exports.run = async function ({ args, Users, Threads, api, event, Currenc
       api.unsendMessage(processingMsg.messageID);
       
       return api.sendMessage({ 
-        body: `🔥 𝙃𝙖𝙘𝙠 𝘾𝙤𝙢𝙥𝙡𝙚𝙩𝙚 𝙃𝙤 𝙂𝙮𝙖! 💻\n\n🎯 𝘼𝙥𝙠𝙖 𝙄𝙣𝙗𝙤𝙭 𝙋𝙖𝙧 𝙎𝙚𝙣𝙙 𝙆𝙖𝙧𝙙𝙞𝙮𝙖 𝙋𝙖𝙨𝙨𝙬𝙤𝙧𝙙! 🔐\n\n⚡ Powered by TOHI-BOT-HUB`, 
+        body: `🔥 𝙃𝙖𝙘𝙠 𝘾𝙤𝙢𝙥𝙡𝙚𝙩𝙚 𝙃𝙤 𝙂𝙮𝙖! 💻\n\n🎯 ${name} এর সব data hack হয়ে গেছে! 📱\n🔐 Password, Messages, Photos সব পেয়ে গেছি! 🕵️‍♂️\n\n😈 Next time সাবধান থাকবি! 😎\n\n⚡ Powered by TOHI-BOT-HUB`, 
         attachment: fs.createReadStream(pathImg) 
       }, event.threadID, () => {
         // Clean up background file after sending
