@@ -1,11 +1,5 @@
 
 const axios = require("axios");
-const baseApiUrl = async () => {
-    const base = await axios.get(
-        `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
-    );
-    return base.data.api;
-};
 
 module.exports = {
     config: {
@@ -28,7 +22,7 @@ module.exports = {
                 
                 api.sendMessage("🔄 Processing image, please wait...", event.threadID);
                 
-                const response = await axios.get(`${await baseApiUrl()}/dipto/rmbg?url=${encodeURIComponent(imageUrl)}`, {
+                const response = await axios.get(`https://smfahim.onrender.com/rmbg?url=${encodeURIComponent(imageUrl)}&key=ocQu4HPEgnhyf6QgzjEUqgT9`, {
                     responseType: 'stream'
                 });
                 
