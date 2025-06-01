@@ -2,9 +2,8 @@ module.exports.config = {
     name: "help",
     version: "1.0.6",
     hasPermssion: 0,
-    credits: "TOHI-BOT-HUB",
-    usePrefix: true,
-    description: "Get all command list or module info",
+    credits: "TOHI-BOT",
+    description: "Get all command list or module info in a stylish way",
     commandCategory: "system",
     usages: "[command name/page/all]",
     cooldowns: 5,
@@ -17,18 +16,19 @@ module.exports.config = {
 module.exports.languages = {
     "en": {
         "moduleInfo": `
-═══════════════════════════════════════
-        MODULE INFORMATION
-═══════════════════════════════════════
-Name: %1
-Usage: %3
-Description: %2
-Category: %4
-Cooldown: %5s
-Permission: %6
-Made by TOHIDUL`,
-        "helpList": `Total %1 commands available!
-TIP: Use %2help [command name] for details!`,
+╔═────── ★ ★ ─────═╗
+        💫 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙈𝙊𝘿𝙐𝙇𝙀 𝙄𝙉𝙁𝙊 💫
+╚═────── ★ ★ ─────═╝
+🔹 𝗡𝗮𝗺𝗲         : %1
+🔸 𝗨𝘀𝗮𝗴𝗲        : %3
+📝 𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻   : %2
+🌈 𝗖𝗮𝘁𝗲𝗴𝗼𝗿𝘆     : %4
+⏳ 𝗖𝗼𝗼𝗹𝗱𝗼𝘄𝗻     : %5s
+🔑 𝗣𝗲𝗿𝗺𝗶𝘀𝘀𝗶𝗼𝗻   : %6
+
+⚡️ 𝙈𝙖𝙙𝙚 𝙗𝙮 𝙏𝙊𝙃𝙄𝘿𝙐𝙇 | 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 ⚡️`,
+        "helpList": `✨ 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏-এ মোট %1টি কমান্ড আছে!
+🔍 𝙏𝙄𝙋: %2help [কমান্ডনাম] লিখে বিস্তারিত জানুন!`,
         "user": "User",
         "adminGroup": "Admin group",
         "adminBot": "Admin bot"
@@ -56,7 +56,7 @@ module.exports.run = function ({ api, event, args, getText }) {
     const { autoUnsend, delayUnsend } = global.configModule[this.config.name];
     const prefix = (threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : global.config.PREFIX;
 
-    // all command group view
+    // --------- all command group view ----------
     if (args[0] == "all") {
         const cmds = commands.values();
         var group = [], msg = "";
@@ -66,22 +66,20 @@ module.exports.run = function ({ api, event, args, getText }) {
             else
                 group.find(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase()).cmds.push(commandConfig.config.name);
         }
+        group.forEach(commandGroup =>
+            msg += `\n✦ 𝑪𝑨𝑻𝑬𝑮𝑶𝑹𝒀: 『 ${commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1)} 』\n${commandGroup.cmds.map(cmd=>`   ⫸ TBH ➤ 『 ${cmd.toUpperCase()} 』`).join('\n')}\n`
+        );
 
-        group.forEach(commandGroup => {
-            msg += `\n═════════════════════\n`;
-            msg += `【 ${commandGroup.group.toUpperCase()} 】\n`;
-            msg += `${commandGroup.cmds.join(', ')}\n`;
-        });
+        const fancy = `╔═━━━━━━ ◈ ━━━━━═╗
+    🪐 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙃𝙀𝙇𝙋 𝙈𝙀𝙉𝙐 🪐
+╚═━━━━━━ ◈ ━━━━━═╝\n`;
+        const info = `━━━━━━━━━━━━━━━━━━
+📝 মোট কমান্ড : ${commands.size}
+👑 𝙊𝙒𝙉𝙀𝙍: 𝙏𝙊𝙃𝙄𝘿𝙐𝙇
+ℹ️ ${prefix}help [নাম] লিখে কমান্ড ডিটেইল দেখুন!
+━━━━━━━━━━━━━━━━━━`;
 
-        const info = `═══════════════════════════════\n` +
-                    `TOHI-BOT COMMAND LIST\n` +
-                    `═══════════════════════════════${msg}\n` +
-                    `═══════════════════════════════\n` +
-                    `Total Commands: ${commands.size}\n` +
-                    `Use ${prefix}help [name] for details\n` +
-                    `Made by TOHIDUL`;
-
-        api.sendMessage(info, threadID, (err, info) => {
+        api.sendMessage(fancy + msg + info, threadID, (err, info) => {
             if (autoUnsend == false) {
                 setTimeout(() => {
                     return api.unsendMessage(info.messageID);
@@ -91,11 +89,11 @@ module.exports.run = function ({ api, event, args, getText }) {
         return;
     }
 
-    // list or module/page help view
+    // ---------- list or module/page help view ----------
     if (!command) {
         const arrayInfo = [];
         const page = parseInt(args[0]) || 1;
-        const numberOfOnePage = 20;
+        const numberOfOnePage = 15;
         let msg = "";
 
         for (var [name] of (commands)) {
@@ -106,21 +104,17 @@ module.exports.run = function ({ api, event, args, getText }) {
         const first = numberOfOnePage * page - numberOfOnePage;
         const helpView = arrayInfo.slice(first, first + numberOfOnePage);
 
-        for (let cmds of helpView) {
-            msg += `${cmds}\n`;
-        }
+        for (let cmds of helpView) msg += `⫸ TBH ➤ 『 ${cmds.toUpperCase()} 』\n`;
+        const fancy = `╔╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╗
+  ✨ 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝘾𝙊𝙈𝙈𝘼𝙉𝘿 𝙇𝙄𝙎𝙏 ✨
+╚╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╝\n`;
+        const info = `━━━━━━━━━━━━━━━━━━━
+📃 পেইজ : [${page}/${Math.ceil(arrayInfo.length / numberOfOnePage)}]
+📝 মোট কমান্ড : ${arrayInfo.length}
+ℹ️ ${prefix}help [নাম] লিখে কমান্ড ডিটেইল দেখুন!
+━━━━━━━━━━━━━━━━━━━`;
 
-        const info = `═══════════════════════════════\n` +
-                     `TOHI-BOT COMMAND LIST\n` +
-                     `═══════════════════════════════\n` +
-                     `${msg}` +
-                     `═══════════════════════════════\n` +
-                     `Page: [${page}/${Math.ceil(arrayInfo.length / numberOfOnePage)}]\n` +
-                     `Total Commands: ${arrayInfo.length}\n` +
-                     `Use ${prefix}help [name] for details\n` +
-                     `Made by TOHIDUL`;
-
-        api.sendMessage(info, threadID, (err, info) => {
+        api.sendMessage(fancy + msg + info, threadID, (err, info) => {
             if (autoUnsend == false) {
                 setTimeout(() => {
                     return api.unsendMessage(info.messageID);
@@ -130,20 +124,18 @@ module.exports.run = function ({ api, event, args, getText }) {
         return;
     }
 
-    // single module info
-    let moduleInfo = `═══════════════════════════════\n`;
-    moduleInfo += `COMMAND INFORMATION\n`;
-    moduleInfo += `═══════════════════════════════\n`;
-    moduleInfo += `Name: ${command.config.name}\n`;
-    moduleInfo += `Description: ${command.config.description || 'No description available'}\n`;
-    moduleInfo += `Usage: ${prefix}${command.config.name} ${(command.config.usages) ? command.config.usages : ""}\n`;
-    moduleInfo += `Category: ${command.config.commandCategory}\n`;
-    moduleInfo += `Cooldown: ${command.config.cooldowns}s\n`;
-    moduleInfo += `Permission: ${((command.config.hasPermssion == 0) ? getText("user") : (command.config.hasPermssion == 1) ? getText("adminGroup") : getText("adminBot"))}\n`;
-    moduleInfo += `Credits: ${command.config.credits}\n`;
-    moduleInfo += `Made by TOHIDUL`;
+    // ---------- single module info ----------
+    const leiamname = getText("moduleInfo",
+        command.config.name,
+        command.config.description || "𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙝𝙖𝙧 𝙘𝙤𝙢𝙢𝙖𝙣𝙙 𝙖𝙧𝙚 𝙢𝙖𝙜𝙞𝙘𝙖𝙡, 𝙚𝙖𝙨𝙮 𝙖𝙣𝙙 𝙨𝙢𝙖𝙧𝙩! 𝘾𝙝𝙖𝙩, 𝙛𝙪𝙣, 𝙪𝙩𝙞𝙡𝙞𝙩𝙮, 𝙖𝙣𝙙 𝙢𝙤𝙧𝙚 – 𝙖𝙡𝙬𝙖𝙮𝙨 𝙤𝙣 𝙮𝙤𝙪𝙧 𝙨𝙞𝙙𝙚. 💎",
+        `${prefix}${command.config.name} ${(command.config.usages) ? command.config.usages : ""}`,
+        command.config.commandCategory,
+        command.config.cooldowns,
+        ((command.config.hasPermssion == 0) ? getText("user") : (command.config.hasPermssion == 1) ? getText("adminGroup") : getText("adminBot")),
+        command.config.credits
+    );
 
-    api.sendMessage(moduleInfo, threadID, (err, info) => {
+    api.sendMessage(leiamname, threadID, (err, info) => {
         if (autoUnsend == false) {
             setTimeout(() => {
                 return api.unsendMessage(info.messageID);
