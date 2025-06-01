@@ -2,7 +2,7 @@ module.exports.config = {
     name: "alluser",
     version: "1.0.8",
     permission: 2, // Only admins can use this command
-    usePrefix: false,
+    usePrefix: true,
     credits: "TOHI-BOT-HUB",
     description: "Displays all group members with their IDs and names.",
     category: "admin",
