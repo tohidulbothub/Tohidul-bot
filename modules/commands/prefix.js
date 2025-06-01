@@ -12,7 +12,7 @@ module.exports.config = {
 
 const boxTop = "╔═══════════════════════════════╗";
 const boxBot = "╚═══════════════════════════════╝";
-const boxBar = "║";
+const boxBar = " ";
 const pad = (txt) => txt.padEnd(31, " ");
 const line = (txt) => `${boxBar} ${pad(txt)}${boxBar}`;
 
