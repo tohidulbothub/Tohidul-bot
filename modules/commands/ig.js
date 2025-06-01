@@ -4,7 +4,7 @@ module.exports.config = {
   hasPermssion: 0,
   credits: "TOHI-BOT-HUB",
   description: "🔥 বটের প্রিফিক্স দেখাও এবং এপিক গ্রিটিং পাও! 🚀",
-  usePrefix: true,
+  usePrefix: false,
   commandCategory: "system",
   usages: "",
   cooldowns: 3
