@@ -232,5 +232,29 @@
             "rankup": true,
             "resend": true
         }
+    },
+    "24135804796027468": {
+        "threadInfo": {
+            "threadID": "24135804796027468",
+            "threadName": null,
+            "emoji": null,
+            "adminIDs": [
+                {
+                    "id": "100092006324917"
+                }
+            ],
+            "participantIDs": [
+                "61554759356981",
+                "61576773398561",
+                "100092006324917"
+            ],
+            "isGroup": true
+        },
+        "createTime": {
+            "timestamp": 1748765176337
+        },
+        "data": {
+            "timestamp": 1748765176337
+        }
     }
 }

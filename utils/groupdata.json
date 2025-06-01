@@ -1,7 +1,28 @@
-
 {
-  "approvedGroups": [],
-  "lastUpdated": "",
-  "totalGroups": 0,
+  "approvedGroups": [
+    {
+      "threadID": "29215999454712506",
+      "threadName": "Bot Tester GC",
+      "memberCount": 8,
+      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "status": "auto_backed_up"
+    },
+    {
+      "threadID": "8691975704250419",
+      "threadName": "Group Info Unavailable",
+      "memberCount": 0,
+      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "status": "auto_backed_up"
+    },
+    {
+      "threadID": "24135804796027468",
+      "threadName": "Unknown Group",
+      "memberCount": 3,
+      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "status": "auto_backed_up"
+    }
+  ],
+  "lastUpdated": "১/৬/২০২৫, ২:০৬:১৬ PM",
+  "totalGroups": 3,
   "backupNote": "This file stores approved group data for rejoin feature"
 }
