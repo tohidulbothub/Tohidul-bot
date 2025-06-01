@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: "callad",
+	name: "report",
 	version: "1.0.1",
 	hasPermssion: 0,
 	credits: "TOHI-BOT-HUB",

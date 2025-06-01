@@ -8,7 +8,7 @@ module.exports = async ({ api }) => {
 
   const config = {
     autoRestart: {
-      status: true,
+      status: false,
       time: 60,
       note: 'To avoid problems, enable periodic bot restarts',
     },
