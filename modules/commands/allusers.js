@@ -11,9 +11,20 @@ module.exports.config = {
 };
 
 module.exports.run = async function ({ api, event, args, Users }) {
-    // Check if the user is an admin
-    if (!event.senderID || !(await api.getThreadInfo(event.threadID)).adminIDs.includes(event.senderID)) {
-        return api.sendMessage("🚫 **Access Denied!** Only group admins can use this command! 😎", event.threadID, event.messageID);
+    // Check if the user is a bot admin or group admin
+    const isBotAdmin = global.config.ADMINBOT.includes(event.senderID.toString());
+    
+    if (!isBotAdmin) {
+        try {
+            const threadInfo = await api.getThreadInfo(event.threadID);
+            const isGroupAdmin = threadInfo.adminIDs.some(admin => admin.id === event.senderID);
+            
+            if (!isGroupAdmin) {
+                return api.sendMessage("🚫 **Access Denied!** Only bot admins or group admins can use this command! 😎", event.threadID, event.messageID);
+            }
+        } catch (error) {
+            return api.sendMessage("❌ **Error checking admin status!** Please try again later. 🚨", event.threadID, event.messageID);
+        }
     }
 
     function reply(d) {
