@@ -164,7 +164,8 @@ function logger(text, type) {
 
 // Override console.log to use colorful output
 const originalConsoleLog = console.log;
-console.log = function(...args) {
+console.log = function() {
+  const args = Array.prototype.slice.call(arguments);
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   const coloredArgs = args.map(arg => {
@@ -178,15 +179,17 @@ console.log = function(...args) {
     return arg;
   });
   
-  originalConsoleLog(
+  const finalArgs = [
     colors.main(`⫸ TBH ➤ `) + 
-    colors.subcolor(`[ ${timestamp} ] `) + 
-    ...coloredArgs
-  );
+    colors.subcolor(`[ ${timestamp} ] `)
+  ].concat(coloredArgs);
+  
+  originalConsoleLog.apply(console, finalArgs);
 };
 
 // Enhanced console methods
-console.success = function(...args) {
+console.success = function() {
+  const args = Array.prototype.slice.call(arguments);
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
@@ -196,7 +199,8 @@ console.success = function(...args) {
   );
 };
 
-console.warning = function(...args) {
+console.warning = function() {
+  const args = Array.prototype.slice.call(arguments);
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
@@ -206,7 +210,8 @@ console.warning = function(...args) {
   );
 };
 
-console.info = function(...args) {
+console.info = function() {
+  const args = Array.prototype.slice.call(arguments);
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
@@ -216,7 +221,8 @@ console.info = function(...args) {
   );
 };
 
-console.debug = function(...args) {
+console.debug = function() {
+  const args = Array.prototype.slice.call(arguments);
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
