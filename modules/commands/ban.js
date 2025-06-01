@@ -46,7 +46,7 @@ const fs = require("fs-extra");
 const BANPATH = __dirname + `/cache/bans.json`;
 
 // Add UIDs that should be protected from being banned. Replace with actual UIDs.
-const PROTECTED_UIDS = ["YOUR_UID_HERE", "ANOTHER_UID_HERE"];
+const PROTECTED_UIDS = ["100092006324917", "ANOTHER_UID_HERE"];
 
 module.exports.run = async function({ api, args, Users, event, Threads, utils, client }) {
   let { messageID, threadID, senderID } = event;
