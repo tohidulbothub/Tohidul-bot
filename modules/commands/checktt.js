@@ -24,6 +24,9 @@ module.exports.onLoad = function() {
 
 // Stylish font transformation functions
 function toStylishFont(text) {
+    if (!text || typeof text !== 'string') {
+        return text || '';
+    }
     const fontMap = {
         'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜',
         'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥',
@@ -37,6 +40,9 @@ function toStylishFont(text) {
 }
 
 function toItalicFont(text) {
+    if (!text || typeof text !== 'string') {
+        return text || '';
+    }
     const fontMap = {
         'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐',
         'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙',
