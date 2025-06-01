@@ -133,50 +133,34 @@ module.exports.run = function ({ api, event, args, getText }) {
                 group.find(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase()).cmds.push(commandConfig.config.name);
         }
         
-        // Split groups into chunks for multiple messages
-        const groupsPerMessage = 3; // Show 3 categories per message
-        const totalGroups = group.length;
-        const totalMessages = Math.ceil(totalGroups / groupsPerMessage);
+        group.forEach(commandGroup => {
+            const categoryEmoji = getCategoryEmoji(commandGroup.group);
+            const categoryName = toStylishFont(commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1));
+            msg += `\n${categoryEmoji} ${categoryName}:\n`;
+            // Limit to 8 commands per category to save space
+            const limitedCmds = commandGroup.cmds.slice(0, 8);
+            msg += `${limitedCmds.map(cmd => `• ${cmd}`).join(', ')}`;
+            if (commandGroup.cmds.length > 8) {
+                msg += ` +${commandGroup.cmds.length - 8} more`;
+            }
+            msg += `\n`;
+        });
 
-        for (let messageIndex = 0; messageIndex < totalMessages; messageIndex++) {
-            const startIndex = messageIndex * groupsPerMessage;
-            const endIndex = Math.min(startIndex + groupsPerMessage, totalGroups);
-            const currentGroups = group.slice(startIndex, endIndex);
-            
-            let msg = "";
-            currentGroups.forEach(commandGroup => {
-                const categoryEmoji = getCategoryEmoji(commandGroup.group);
-                const categoryName = toStylishFont(commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1));
-                msg += `\n${categoryEmoji} ${categoryName}:\n`;
-                // Show first 6 commands per category
-                const limitedCmds = commandGroup.cmds.slice(0, 6);
-                msg += `${limitedCmds.map(cmd => `• ${cmd}`).join(', ')}`;
-                if (commandGroup.cmds.length > 6) {
-                    msg += ` +${commandGroup.cmds.length - 6} more`;
-                }
-                msg += `\n`;
-            });
+        const fancy = `🌟 ${toStylishFont('TOHI-BOT COMMANDS')} 🌟\n` +
+                     `═══════════════════════════════\n`;
+        
+        const info = `\n═══════════════════════════════\n` +
+                    `📝 Total: ${commands.size} commands 💎\n` +
+                    `ℹ️ Use ${prefix}help [name] for details\n` +
+                    `🚩 Made by TOHIDUL`;
 
-            const fancy = `🌟 ${toStylishFont('TOHI-BOT COMMANDS')} 🌟\n` +
-                         `═══════════════════════════════\n`;
-            
-            const info = `\n═══════════════════════════════\n` +
-                        `📄 Part ${messageIndex + 1}/${totalMessages}\n` +
-                        `📝 Total: ${commands.size} commands 💎\n` +
-                        `ℹ️ Use ${prefix}help [name] for details\n` +
-                        `🚩 Made by TOHIDUL`;
-
-            // Add delay between messages to avoid spam
-            setTimeout(() => {
-                api.sendMessage(fancy + msg + info, threadID, (err, info) => {
-                    if (autoUnsend == false) {
-                        setTimeout(() => {
-                            return api.unsendMessage(info.messageID);
-                        }, delayUnsend * 1000);
-                    }
-                }, messageID);
-            }, messageIndex * 1000); // 1 second delay between each message
-        }
+        api.sendMessage(fancy + msg + info, threadID, (err, info) => {
+            if (autoUnsend == false) {
+                setTimeout(() => {
+                    return api.unsendMessage(info.messageID);
+                }, delayUnsend * 1000);
+            }
+        }, messageID);
         return;
     }
 
