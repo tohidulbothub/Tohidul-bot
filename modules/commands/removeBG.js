@@ -22,14 +22,33 @@ module.exports = {
                 
                 api.sendMessage("🔄 Processing image, please wait...", event.threadID);
                 
-                const response = await axios.get(`https://smfahim.onrender.com/rmbg?url=${encodeURIComponent(imageUrl)}&key=ocQu4HPEgnhyf6QgzjEUqgT9`, {
-                    responseType: 'stream'
+                // Use Remove.bg official API
+                const FormData = require('form-data');
+                const form = new FormData();
+                form.append('image_url', imageUrl);
+                form.append('size', 'auto');
+                
+                const response = await axios.post('https://api.remove.bg/v1.0/removebg', form, {
+                    headers: {
+                        ...form.getHeaders(),
+                        'X-Api-Key': 'YOUR_REMOVE_BG_API_KEY_HERE' // Replace with your actual API key
+                    },
+                    responseType: 'arraybuffer'
                 });
+                
+                // Convert response to stream for sending
+                const fs = require('fs');
+                const path = require('path');
+                const tempPath = path.join(__dirname, 'cache', `removebg_${Date.now()}.png`);
+                fs.writeFileSync(tempPath, response.data);
                 
                 api.sendMessage({
                     body: "✅ Background removed successfully!",
-                    attachment: response.data
-                }, event.threadID, event.messageID);
+                    attachment: fs.createReadStream(tempPath)
+                }, event.threadID, event.messageID, () => {
+                    // Clean up temp file after sending
+                    fs.unlinkSync(tempPath);
+                });
                 
             } else {
                 api.sendMessage("❌ Please reply to an image to remove its background.", event.threadID, event.messageID);
