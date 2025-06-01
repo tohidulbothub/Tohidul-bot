@@ -1,4 +1,3 @@
-
 const fs = require("fs-extra");
 const path = require('path');
 const { join } = require('path');
@@ -17,7 +16,7 @@ const WebServer = require('./web-server.js');
  *                    TOHI-BOT-HUB v1.8.0
  *          Advanced Facebook Messenger Bot Framework
  *               Created by TOHI-BOT-HUB Team
- *        GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ *        GitHub: https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB
  * ═══════════════════════════════════════════════════════════
  */
 
@@ -89,11 +88,11 @@ process.on('uncaughtException', (error) => {
   if (!shouldIgnoreError(error)) {
     logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
   }
-  
+
   // Handle critical errors that need restart
   const criticalErrors = ['ECONNRESET', 'ENOTFOUND', 'socket hang up', 'Network Error'];
   const isCritical = criticalErrors.some(err => error.message && error.message.includes(err));
-  
+
   if (isCritical) {
     logger.log("Critical error detected, restarting...", "RESTART");
     setTimeout(() => process.exit(1), 3000);
@@ -104,7 +103,7 @@ process.on('uncaughtException', (error) => {
 function startProject() {
   try {
     logger.log("Starting TOHI-BOT-HUB main process...", "STARTUP");
-    
+
     const child = spawn("node", [
       "--trace-warnings", 
       "--async-stack-traces", 
@@ -146,7 +145,7 @@ global.client = {
   handleReply: new Array(),
   mainPath: process.cwd(),
   configPath: new String(),
-  
+
   // Enhanced time functions
   getTime: function(option) {
     const timezone = "Asia/Manila";
@@ -161,10 +160,10 @@ global.client = {
       "fullYear": "DD/MM/YYYY",
       "fullTime": "HH:mm:ss DD/MM/YYYY"
     };
-    
+
     return moment.tz(timezone).format(format[option] || "HH:mm:ss DD/MM/YYYY");
   },
-  
+
   timeStart: Date.now()
 };
 
@@ -195,7 +194,7 @@ try {
     try {
       const rawData = fs.readFileSync(themePath, 'utf8');
       themeData = rawData.trim() ? JSON.parse(rawData) : null;
-      
+
       if (!themeData || !themeData.THEME_COLOR) {
         themeData = null;
       }
@@ -218,12 +217,12 @@ try {
       text: "#ffffff",
       accent: "#1702CF"
     };
-    
+
     fs.ensureDirSync(path.dirname(themePath));
     fs.writeFileSync(themePath, JSON.stringify(defaultTheme, null, 2));
     logger.log("Theme configuration created successfully", "THEME");
   }
-  
+
 } catch (error) {
   logger.log(`Theme system error: ${error.message}`, "THEME");
 }
@@ -263,25 +262,25 @@ try {
     `${__dirname}/languages/${global.config.language || "en"}.lang`, 
     { encoding: 'utf-8' }
   ).split(/\r?\n|\r/);
-  
+
   const langData = langFile.filter(item => item.indexOf('#') !== 0 && item !== '');
-  
+
   for (const item of langData) {
     const getSeparator = item.indexOf('=');
     if (getSeparator === -1) continue;
-    
+
     const itemKey = item.slice(0, getSeparator);
     const itemValue = item.slice(getSeparator + 1);
     const head = itemKey.slice(0, itemKey.indexOf('.'));
     const key = itemKey.replace(head + '.', '');
     const value = itemValue.replace(/\\n/gi, '\n');
-    
+
     if (typeof global.language[head] === "undefined") {
       global.language[head] = {};
     }
     global.language[head][key] = value;
   }
-  
+
   logger.log(`Language pack loaded: ${global.config.language || "en"}`, "LANGUAGE");
 } catch (error) {
   logger.log(`Language loading failed: ${error.message}`, "LANGUAGE");
@@ -290,22 +289,22 @@ try {
 // Enhanced getText function
 global.getText = function(...args) {
   const langText = global.language;
-  
+
   if (!langText.hasOwnProperty(args[0])) {
     throw new Error(`Language key not found: ${args[0]}`);
   }
-  
+
   let text = langText[args[0]][args[1]];
   if (typeof text === 'undefined') {
     throw new Error(`Text key not found: ${args[1]}`);
   }
-  
+
   // Replace placeholders
   for (let i = args.length - 1; i > 0; i--) {
     const regEx = new RegExp(`%${i}`, 'g');
     text = text.replace(regEx, args[i + 1]);
   }
-  
+
   return text;
 };
 
@@ -313,7 +312,7 @@ global.getText = function(...args) {
 try {
   const appStateFile = path.resolve(path.join(global.client.mainPath, config.APPSTATEPATH || "appstate.json"));
   const isEncrypted = (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && config.encryptSt;
-  
+
   let appState;
   if (isEncrypted) {
     const encryptedData = fs.readFileSync(appStateFile, 'utf8');
@@ -325,7 +324,7 @@ try {
   } else {
     appState = require(appStateFile);
   }
-  
+
   logger.log("Bot appstate loaded successfully", "APPSTATE");
 } catch (e) {
   logger.log("Bot appstate not found or invalid", "APPSTATE");
@@ -335,7 +334,7 @@ try {
 // Enhanced bot initialization function
 function initializeBot() {
   const loginData = { appState: appState };
-  
+
   login(loginData, async (err, api) => {
     if (err) {
       if (err.error === 'Error retrieving userID. This can be caused by a lot of things, including getting blocked by Facebook for logging in from an unknown location. Try logging in with a browser to verify.') {
@@ -358,16 +357,16 @@ function initializeBot() {
 
     // Configure API options
     api.setOptions(global.config.FCAOption || {});
-    
+
     // Save appstate
     try {
       const currentState = api.getAppState();
       let stateData = JSON.stringify(currentState, null, 2);
-      
+
       if ((process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && global.config.encryptSt) {
         stateData = await global.utils.encryptState(stateData, process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER);
       }
-      
+
       fs.writeFileSync(appStateFile, stateData);
       logger.log("Appstate saved successfully", "APPSTATE");
     } catch (error) {
@@ -381,10 +380,10 @@ function initializeBot() {
 
     // Load commands
     await loadCommands();
-    
+
     // Load events  
     await loadEvents();
-    
+
     // Start listening
     startListening(api);
   });
@@ -399,7 +398,7 @@ async function loadCommands() {
             !global.config.commandDisabled.includes(command));
 
   console.log(tertiary(`\n──LOADING COMMANDS─●`));
-  
+
   let loadedCount = 0;
   let failedCount = 0;
 
@@ -412,11 +411,11 @@ async function loadCommands() {
       if (!config?.name) {
         throw new Error(`Command ${command} has no name property`);
       }
-      
+
       if (!config?.commandCategory) {
         throw new Error(`Command ${command} has no commandCategory`);
       }
-      
+
       if (!config.hasOwnProperty('usePrefix')) {
         throw new Error(`Command ${command} missing usePrefix property`);
       }
@@ -448,7 +447,7 @@ async function loadCommands() {
       if (module.handleEvent) {
         global.client.eventRegistered.push(config.name);
       }
-      
+
       global.client.commands.set(config.name, module);
       logger.log(`✓ ${config.name} loaded successfully`, "COMMAND");
       loadedCount++;
@@ -469,7 +468,7 @@ async function loadEvents() {
     .filter(ev => ev.endsWith('.js') && !global.config.eventDisabled.includes(ev));
 
   console.log(tertiary(`\n──LOADING EVENTS─●`));
-  
+
   let loadedCount = 0;
   let failedCount = 0;
 
@@ -522,7 +521,7 @@ async function loadEvents() {
 // Dependency handler
 async function handleDependencies(dependencies) {
   const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
-  
+
   for (const [reqDependency, version] of Object.entries(dependencies)) {
     if (listPackage[reqDependency] || builtinModules.includes(reqDependency)) continue;
 
@@ -534,10 +533,10 @@ async function handleDependencies(dependencies) {
         shell: true,
         cwd: join(__dirname, 'node_modules')
       });
-      
+
       // Clear require cache
       Object.keys(require.cache).forEach(key => delete require.cache[key]);
-      
+
     } catch (error) {
       logger.log(`Failed to install ${reqDependency}: ${error.message}`, "DEPENDENCY");
     }
@@ -548,12 +547,12 @@ async function handleDependencies(dependencies) {
 function handleEnvConfig(moduleName, envConfig) {
   global.configModule[moduleName] = global.configModule[moduleName] || {};
   global.config[moduleName] = global.config[moduleName] || {};
-  
+
   for (const [key, value] of Object.entries(envConfig)) {
     global.configModule[moduleName][key] = global.config[moduleName][key] ?? value;
     global.config[moduleName][key] = global.config[moduleName][key] ?? value;
   }
-  
+
   // Update config file
   try {
     const configPath = require('./config.json');
@@ -567,15 +566,15 @@ function handleEnvConfig(moduleName, envConfig) {
 // Enhanced listening function
 function startListening(api) {
   console.log(tertiary(`\n──BOT READY─●`));
-  
+
   // Display startup statistics
   const startupTime = ((Date.now() - global.client.timeStart) / 1000).toFixed(2);
   logger.log(`✓ System ready! Commands: ${global.client.commands.size}, Events: ${global.client.events.size}`, "READY");
   logger.log(`⏱️ Startup time: ${startupTime}s`, "READY");
-  
+
   // Load listener
   const listener = require('./includes/listen')({ api });
-  
+
   // Start listening with enhanced error handling
   global.handleListen = api.listenMqtt(async (error, event) => {
     if (error) {
@@ -606,10 +605,10 @@ function startListening(api) {
   try {
     console.log(tertiary(`\n──DATABASE─●`));
     logger.log("✓ Connected to JSON database successfully!", "DATABASE");
-    
+
     // Start bot initialization
     initializeBot();
-    
+
   } catch (error) {
     logger.log(`✗ Database connection failed: ${error.message}`, "DATABASE");
   }
@@ -619,7 +618,7 @@ function startListening(api) {
  * ═══════════════════════════════════════════════════════════
  *                     TOHI-BOT-HUB
  *              © 2024 TOHI-BOT-HUB Team
- *        GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ *        GitHub: https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB
  *              Do not remove credits
  * ═══════════════════════════════════════════════════════════
  */

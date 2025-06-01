@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.0",
 	permission: 2,
   usePrefix: false,
-	credits: "TOHI-BOT-HUB",
+	credits: "TOHI-BOT-HUB Team",
 	description: "config bot",
 	commandCategory: "operator",
 	cooldowns: 5

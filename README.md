@@ -1,4 +1,3 @@
-
 # 🤖 TOHI-BOT-HUB
 
 <p align="center">
@@ -208,11 +207,11 @@ Your bot will be automatically deployed and accessible 24/7 on Replit's infrastr
 
 ## 📚 Documentation
 
-For detailed documentation, visit our [Wiki](https://github.com/YANDEVA/TOHI-BOT-HUB/wiki) or join our community:
+For detailed documentation, visit our [Wiki](https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB/wiki) or join our community:
 
 - 💬 [Facebook Community](https://www.facebook.com/groups/178711334798450)
 - 📧 [Support Email](mailto:support@tohi-bot.com)
-- 🐛 [Report Issues](https://github.com/YANDEVA/TOHI-BOT-HUB/issues)
+- 🐛 [Report Issues](https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB/issues)
 
 ## 🤝 Contributing
 
@@ -227,10 +226,10 @@ We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING
 ## 📈 Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/YANDEVA/TOHI-BOT-HUB?style=social" alt="Stars">
-  <img src="https://img.shields.io/github/forks/YANDEVA/TOHI-BOT-HUB?style=social" alt="Forks">
-  <img src="https://img.shields.io/github/issues/YANDEVA/TOHI-BOT-HUB" alt="Issues">
-  <img src="https://img.shields.io/github/last-commit/YANDEVA/TOHI-BOT-HUB" alt="Last Commit">
+  <img src="https://img.shields.io/github/stars/TOHI-BOT-HUB/TOHI-BOT-HUB?style=social" alt="Stars">
+  <img src="https://img.shields.io/github/forks/TOHI-BOT-HUB/TOHI-BOT-HUB?style=social" alt="Forks">
+  <img src="https://img.shields.io/github/issues/TOHI-BOT-HUB/TOHI-BOT-HUB" alt="Issues">
+  <img src="https://img.shields.io/github/last-commit/TOHI-BOT-HUB/TOHI-BOT-HUB" alt="Last Commit">
 </p>
 
 ## ⚠️ Disclaimer
@@ -267,9 +266,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - 🌐 **Demo**: [Try TOHI-BOT-HUB](https://replit.com/@YanMaglinte/TOHI-BOT-HUB)
-- 📖 **Documentation**: [Wiki](https://github.com/YANDEVA/TOHI-BOT-HUB/wiki)
+- 📖 **Documentation**: [Wiki](https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB/wiki)
 - 💬 **Community**: [Facebook Group](https://www.facebook.com/groups/178711334798450)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/YANDEVA/TOHI-BOT-HUB/issues)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB/issues)
 
 ---
 

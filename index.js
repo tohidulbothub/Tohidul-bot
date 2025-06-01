@@ -11,7 +11,7 @@ global.loading = require("./utils/log.js");
 /**
  * TOHI-BOT-HUB - Advanced Bot System
  * Created by TOHI-BOT-HUB
- * https://github.com/YANDEVA/TOHI-BOT-HUB
+ * https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB
  */
 
 let configJson;
@@ -191,10 +191,10 @@ process.on('SIGTERM', () => {
 });
 
 console.log(chalk.green("🚀 TOHI-BOT-HUB initialization completed!"));
-console.log(chalk.blue("📝 Visit: https://github.com/YANDEVA/TOHI-BOT-HUB"));
+console.log(chalk.blue("📝 Visit: https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB"));
 
 /**
  * Credits: TOHI-BOT-HUB
- * GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ * GitHub: https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB
  * Do not remove credits - Respect the developers
  */
