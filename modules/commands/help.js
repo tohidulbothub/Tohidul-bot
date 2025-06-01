@@ -136,23 +136,22 @@ module.exports.run = function ({ api, event, args, getText }) {
         group.forEach(commandGroup => {
             const categoryEmoji = getCategoryEmoji(commandGroup.group);
             const categoryName = toStylishFont(commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1));
-            msg += `\n${categoryEmoji} ${categoryName}:\n`;
-            // Limit to 8 commands per category to save space
-            const limitedCmds = commandGroup.cmds.slice(0, 8);
-            msg += `${limitedCmds.map(cmd => `• ${cmd}`).join(', ')}`;
-            if (commandGroup.cmds.length > 8) {
-                msg += ` +${commandGroup.cmds.length - 8} more`;
-            }
-            msg += `\n`;
+            msg += `\n${createBorder('', 'diamond').substring(0, 30)}\n`;
+            msg += `${categoryEmoji} ${toItalicFont('Category')}: 『 ${categoryName} 』\n`;
+            msg += `${createBorder('', 'wave').substring(0, 25)}\n`;
+            msg += `${commandGroup.cmds.map(cmd => `   ⫸ ${toStylishFont('TBH')} ➤ 🔸 ${toItalicFont(cmd.toUpperCase())}`).join('\n')}\n`;
         });
 
-        const fancy = `🌟 ${toStylishFont('TOHI-BOT COMMANDS')} 🌟\n` +
-                     `═══════════════════════════════\n`;
+        const fancy = `${createBorder('', 'star')}\n` +
+                     `🌟 ${toStylishFont('TOHI-BOT HELP MENU')} 🌟\n` +
+                     `${createBorder('', 'star')}\n`;
         
-        const info = `\n═══════════════════════════════\n` +
-                    `📝 Total: ${commands.size} commands 💎\n` +
-                    `ℹ️ Use ${prefix}help [name] for details\n` +
-                    `🚩 Made by TOHIDUL`;
+        const info = `\n${createBorder('', 'fire').substring(0, 35)}\n` +
+                    `📝 ${toItalicFont('Total Commands')}: ${toStylishFont(commands.size.toString())} 💎\n` +
+                    `👑 ${toItalicFont('Owner')}: ${toStylishFont('TOHIDUL')} 🎯\n` +
+                    `ℹ️ ${toItalicFont(`Use ${prefix}help [name] for command details`)} 📚\n` +
+                    `${createBorder('', 'fire').substring(0, 35)}\n` +
+                    `🚩 ${toItalicFont('Made by TOHIDUL')}`;
 
         api.sendMessage(fancy + msg + info, threadID, (err, info) => {
             if (autoUnsend == false) {
