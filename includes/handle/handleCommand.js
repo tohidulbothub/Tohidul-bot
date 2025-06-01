@@ -153,32 +153,90 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         return;
       }
 
+      const cmdName = commandName.slice(PREFIX.length).toLowerCase();
+      
       if (!command) {
-        const allCommandName = Array.from(commands.keys());
-        const checker = stringSimilarity.findBestMatch(
-          commandName,
-          allCommandName,
-        );
-        if (checker.bestMatch.rating >= 0.5) {
-          command = commands.get(checker.bestMatch.target);
-        } else {
-          return; // Simply ignore invalid commands
+        // First check for exact command name match
+        command = commands.get(cmdName);
+        
+        // If not found, check for aliases
+        if (!command) {
+          for (const [name, cmdModule] of commands.entries()) {
+            if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+              if (cmdModule.config.aliases.some(alias => alias.toLowerCase() === cmdName)) {
+                command = cmdModule;
+                break;
+              }
+            }
+          }
+        }
+        
+        // If still not found, try similarity matching
+        if (!command) {
+          const allCommandNames = [];
+          // Add command names
+          for (const [name, cmdModule] of commands.entries()) {
+            allCommandNames.push(name);
+            // Add aliases
+            if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+              allCommandNames.push(...cmdModule.config.aliases);
+            }
+          }
+          
+          const checker = stringSimilarity.findBestMatch(cmdName, allCommandNames);
+          if (checker.bestMatch.rating >= 0.5) {
+            // Find the command by name or alias
+            const matchedName = checker.bestMatch.target;
+            command = commands.get(matchedName);
+            if (!command) {
+              // Check if it's an alias
+              for (const [name, cmdModule] of commands.entries()) {
+                if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+                  if (cmdModule.config.aliases.includes(matchedName)) {
+                    command = cmdModule;
+                    break;
+                  }
+                }
+              }
+            }
+          } else {
+            return; // Simply ignore invalid commands
+          }
         }
       }
     } else {
       // Handle commands without prefix (usePrefix: false)
       if (!command) {
         const firstWord = body.trim().split(' ')[0].toLowerCase();
-        // Check if any command has usePrefix: false and matches the first word
+        
+        // Check for exact command name match
         for (const [cmdName, cmdModule] of commands.entries()) {
           if (cmdModule.config && cmdModule.config.usePrefix === false && 
               cmdName.toLowerCase() === firstWord) {
             command = cmdModule;
-            // Update commandName and args for non-prefix commands
-            const tempArgs = body.trim().split(/ +/);
-            tempArgs.shift(); // Remove the command name
             break;
           }
+        }
+        
+        // If not found, check for aliases
+        if (!command) {
+          for (const [cmdName, cmdModule] of commands.entries()) {
+            if (cmdModule.config && cmdModule.config.usePrefix === false && 
+                cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+              if (cmdModule.config.aliases.some(alias => alias.toLowerCase() === firstWord)) {
+                command = cmdModule;
+                break;
+              }
+            }
+          }
+        }
+        
+        if (command) {
+          // Update args for non-prefix commands
+          const tempArgs = body.trim().split(/ +/);
+          tempArgs.shift(); // Remove the command name
+          args.length = 0; // Clear existing args
+          args.push(...tempArgs); // Add new args
         }
       }
     }

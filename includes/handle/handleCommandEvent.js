@@ -17,7 +17,19 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         
         if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == !![] && senderID == threadID) return;
         for (const eventReg of eventRegistered) {
-            const cmd = commands.get(eventReg);
+            let cmd = commands.get(eventReg);
+            
+            // If not found by name, check aliases
+            if (!cmd) {
+                for (const [cmdName, cmdModule] of commands.entries()) {
+                    if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+                        if (cmdModule.config.aliases.includes(eventReg)) {
+                            cmd = cmdModule;
+                            break;
+                        }
+                    }
+                }
+            }
             var getText2;
 
             if (cmd && cmd.languages && typeof cmd.languages == 'object') 
