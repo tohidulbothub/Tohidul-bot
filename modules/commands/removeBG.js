@@ -28,7 +28,7 @@ module.exports = {
                 
                 api.sendMessage("🔄 Processing image, please wait...", event.threadID);
                 
-                const response = await axios.get(`${await baseApiUrl()}/rmbg?url=${encodeURIComponent(imageUrl)}`, {
+                const response = await axios.get(`${await baseApiUrl()}/dipto/rmbg?url=${encodeURIComponent(imageUrl)}`, {
                     responseType: 'stream'
                 });
                 
