@@ -27,12 +27,10 @@ const WebServer = require('./web-server.js');
 
 // Enhanced startup banner
 console.log(chalk.bold.cyan(`
-╔═══════════════════════════════════════════════════════════╗
-║                   TOHI-BOT-HUB v${pkg.version}                   ║
-║              Advanced Bot Framework System               ║
-║                 Starting up components...                ║
-╚═══════════════════════════════════════════════════════════╝
-`));
+╭━━┳━┳╮╭┳━━╮╱╭━━┳━┳━━╮╱╭╮╭┳┳┳━━╮
+╰╮╭┫┃┃╰╯┣┃┣┻━┫╭╮┃┃┣╮╭┻━┫╰╯┃┃┃╭╮┃
+╱┃┃┃┃┃╭╮┣┃┣┳━┫╭╮┃┃┃┃┣━━┫╭╮┃┃┃╭╮┃
+╱╰╯╰━┻╯╰┻━━╯╱╰━━┻━╯╰╯╱╱╰╯╰┻━┻━━╯`));
 
 // Initialize web server with enhanced error handling
 try {

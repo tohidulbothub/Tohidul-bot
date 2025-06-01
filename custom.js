@@ -13,31 +13,6 @@ const chalk = require('chalk');
  * ═══════════════════════════════════════════════════════════
  */
 
-module.exports = async ({ api }) => {
-  // Enhanced configuration with better defaults
-  const config = {
-    autoRestart: {
-      status: false,
-      time: 30, // Restart every 30 minutes for stability
-      note: 'Auto-restart helps maintain bot stability and prevents memory leaks',
-    },
-    acceptPending: {
-      status: false,
-      time: 15, // Check every 15 minutes
-      note: 'Automatically approve pending message requests',
-    },
-    autoBackup: {
-      status: true,
-      time: 60, // Backup every hour
-      note: 'Automatically backup important data',
-    },
-    systemHealth: {
-      status: true,
-      time: 5, // Check every 5 minutes
-      note: 'Monitor system health and performance',
-    }
-  };
-
   // System startup message
   logger.log("TOHI-BOT-HUB Custom functions initialized", "CUSTOM");
   logger.log(`✓ Auto-restart: ${config.autoRestart.status ? 'Enabled' : 'Disabled'}`, "CUSTOM");
