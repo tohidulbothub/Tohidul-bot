@@ -1,12 +1,17 @@
 const fs = require("fs-extra");
 const path = require('path');
 const { join } = require('path');
-const { execSync, spawn } = require('child_process');
+const { execSync } = require('child_process');
+const { spawn } = require('child_process');
 const config = require("./config.json");
 const listPackage = JSON.parse(fs.readFileSync('./package.json')).dependencies;
 const login = require('./includes/login');
 const moment = require("moment-timezone");
-const logger = require("./utils/log.js");
+// Initialize colorful logging system first
+const logger = require("./utils/log");
+
+// Enable colorful console output globally
+require("./utils/log"); // This will override console.log with colorful version
 const chalk = require("chalk");
 const pkg = require('./package.json');
 const WebServer = require('./web-server.js');

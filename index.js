@@ -1,4 +1,3 @@
-
 const { exec } = require("child_process");
 const chalk = require("chalk");
 const check = require("get-latest-version");
@@ -53,7 +52,7 @@ if (configJson.removeSt) {
   try {
     fs.writeFileSync(fbstate, sign, { encoding: "utf8", flag: "w" });
     showRemovalMessage();
-    
+
     // Reset removeSt flag
     configJson.removeSt = false;
     fs.writeFileSync(
@@ -61,7 +60,7 @@ if (configJson.removeSt) {
       JSON.stringify(configJson, null, 2),
       "utf8"
     );
-    
+
     console.log(chalk.blue("⏰ Bot will exit in 5 seconds..."));
     setTimeout(() => {
       process.exit(0);
@@ -140,7 +139,7 @@ async function checkAndUpdateDependencies() {
   }
 
   console.log(chalk.blue("🔍 Checking for package updates..."));
-  
+
   try {
     const dependencies = Object.entries(packageJson.dependencies || {});
     let updatedCount = 0;
@@ -162,6 +161,14 @@ async function checkAndUpdateDependencies() {
     console.error(chalk.red("❌ Error during update check:"), error.message);
   }
 }
+
+// Initialize colorful logging system
+const logger = require("./utils/log");
+const { join } = require("path");
+
+// Use themed logging for startup
+logger.themed.banner("TOHI-BOT-HUB STARTING UP");
+console.success("Colorful logging system initialized!");
 
 // Enhanced startup sequence
 console.log(chalk.blue.bold(`

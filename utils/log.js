@@ -162,6 +162,70 @@ function logger(text, type) {
   }
 }
 
+// Override console.log to use colorful output
+const originalConsoleLog = console.log;
+console.log = function(...args) {
+  const colors = getThemeColors();
+  const timestamp = new Date().toLocaleTimeString();
+  const coloredArgs = args.map(arg => {
+    if (typeof arg === 'string') {
+      return colors.secondary(arg);
+    } else if (typeof arg === 'number') {
+      return colors.tertiary(arg);
+    } else if (typeof arg === 'object') {
+      return colors.main(JSON.stringify(arg, null, 2));
+    }
+    return arg;
+  });
+  
+  originalConsoleLog(
+    colors.main(`⫸ TBH ➤ `) + 
+    colors.subcolor(`[ ${timestamp} ] `) + 
+    ...coloredArgs
+  );
+};
+
+// Enhanced console methods
+console.success = function(...args) {
+  const colors = getThemeColors();
+  const timestamp = new Date().toLocaleTimeString();
+  originalConsoleLog(
+    colors.main(`⫸ TBH ➤ `) + 
+    chalk.green.bold(`[ SUCCESS ] `) + 
+    colors.secondary(args.join(' '))
+  );
+};
+
+console.warning = function(...args) {
+  const colors = getThemeColors();
+  const timestamp = new Date().toLocaleTimeString();
+  originalConsoleLog(
+    colors.main(`⫸ TBH ➤ `) + 
+    chalk.yellow.bold(`[ WARNING ] `) + 
+    colors.secondary(args.join(' '))
+  );
+};
+
+console.info = function(...args) {
+  const colors = getThemeColors();
+  const timestamp = new Date().toLocaleTimeString();
+  originalConsoleLog(
+    colors.main(`⫸ TBH ➤ `) + 
+    chalk.cyan.bold(`[ INFO ] `) + 
+    colors.secondary(args.join(' '))
+  );
+};
+
+console.debug = function(...args) {
+  const colors = getThemeColors();
+  const timestamp = new Date().toLocaleTimeString();
+  originalConsoleLog(
+    colors.main(`⫸ TBH ➤ `) + 
+    chalk.magenta.bold(`[ DEBUG ] `) + 
+    colors.secondary(args.join(' '))
+  );
+};
+
 module.exports = logger;
 module.exports.getThemeColors = getThemeColors;
 module.exports.log = logger;
@@ -194,5 +258,56 @@ module.exports.loader = (data, option) => {
     default:
       console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
       break;
+  }
+};
+
+// Additional colorful logging utilities
+module.exports.rainbow = (text) => {
+  return gradient.rainbow(text);
+};
+
+module.exports.colorize = {
+  success: (text) => chalk.green.bold(text),
+  error: (text) => chalk.red.bold(text),
+  warning: (text) => chalk.yellow.bold(text),
+  info: (text) => chalk.cyan.bold(text),
+  debug: (text) => chalk.magenta.bold(text),
+  highlight: (text) => getThemeColors().main(text),
+  accent: (text) => getThemeColors().subcolor(text),
+  secondary: (text) => getThemeColors().secondary(text),
+  tertiary: (text) => getThemeColors().tertiary(text)
+};
+
+// Themed console output
+module.exports.themed = {
+  log: (text, type = 'INFO') => {
+    const colors = getThemeColors();
+    console.log(
+      colors.main(`⫸ TBH ➤ `) +
+      colors.subcolor(`[ ${type.toUpperCase()} ] `) +
+      colors.secondary(text)
+    );
+  },
+  
+  box: (text, title = 'TOHI-BOT-HUB') => {
+    const colors = getThemeColors();
+    const boxWidth = Math.max(text.length, title.length) + 4;
+    const border = '═'.repeat(boxWidth);
+    
+    console.log(colors.main(`╔${border}╗`));
+    console.log(colors.main(`║ `) + colors.subcolor(title.padEnd(boxWidth - 2)) + colors.main(` ║`));
+    console.log(colors.main(`╠${border}╣`));
+    console.log(colors.main(`║ `) + colors.secondary(text.padEnd(boxWidth - 2)) + colors.main(` ║`));
+    console.log(colors.main(`╚${border}╝`));
+  },
+  
+  banner: (text) => {
+    const colors = getThemeColors();
+    const bannerWidth = text.length + 8;
+    const stars = '★'.repeat(bannerWidth);
+    
+    console.log(colors.main(stars));
+    console.log(colors.main('★★  ') + colors.subcolor(text) + colors.main('  ★★'));
+    console.log(colors.main(stars));
   }
 };
