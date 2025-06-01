@@ -33,7 +33,7 @@ module.exports.onLoad = async () => {
   if (!fs.existsSync(cachePath)) fs.mkdirSync(cachePath, { recursive: true });
   if (!fs.existsSync(imgPath)) {
     const bg = "https://i.postimg.cc/05tPS3cq/1eb9276ff9b9a420f6fd7de70a3f94b2.jpg";
-    const res = await axios.get(imgUrl, { responseType: "arraybuffer" });
+    const res = await axios.get(bg, { responseType: "arraybuffer" });
     fs.writeFileSync(imgPath, Buffer.from(res.data, "utf-8"));
   }
 };
@@ -73,8 +73,8 @@ async function makeImage({ one, two }) {
   fs.writeFileSync(avatarTwoPath, Buffer.from(res2.data, "utf-8"));
 
   // Read and process avatars
-  let circledOne = await Jimp.read(await circle(avatarOnePath));
-  let circledTwo = await Jimp.read(await circle(avatarTwoPath));
+  let circledOne = await Jimp.read(avatarOnePath).then(img => img.circle());
+  let circledTwo = await Jimp.read(avatarTwoPath).then(img => img.circle());
 
   baseImg
     .resize(1632, 917)
