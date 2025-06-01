@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "prefixgreet",
+  name: "prefix",
   version: "1.0.6",
   hasPermssion: 0,
   credits: "TOHI-BOT-HUB",
