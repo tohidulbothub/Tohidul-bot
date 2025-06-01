@@ -45,6 +45,9 @@ module.exports.config = {
 const fs = require("fs-extra");
 const BANPATH = __dirname + `/cache/bans.json`;
 
+// Add UIDs that should be protected from being banned. Replace with actual UIDs.
+const PROTECTED_UIDS = ["YOUR_UID_HERE", "ANOTHER_UID_HERE"];
+
 module.exports.run = async function({ api, args, Users, event, Threads, utils, client }) {
   let { messageID, threadID, senderID } = event;
   let info = await api.getThreadInfo(threadID);
@@ -153,12 +156,12 @@ module.exports.run = async function({ api, args, Users, event, Threads, utils, c
   }
 
   // ========== BAN / WARN ==========
-  // Only proceed if tag/reply
+  // Check for mentions first
   if (event.type != "message_reply" && Object.keys(event.mentions).length == 0)
-    return api.sendMessage(`❎ দয়া করে কাউকে ট্যাগ করুন অথবা রিপ্লাই দিয়ে কমান্ড দিন!\nব্যবহার: ban [@tag]/[reply] "কারণ"`, threadID, messageID);
+    return api.sendMessage(`❎ দয়া করে কাউকে ট্যাগ করুন অথবা রিপ্লাই দিয়ে কমান্ড দিন!\nব্যবহার: ban [@tag]/[reply] "কারণ"`, threadID, messageID);
 
   if (!info.adminIDs.some(i => i.id == senderID) && !(global.config.ADMINBOT || []).includes(senderID))
-    return api.sendMessage('❎ কেবল অ্যাডমিনরা ব্যান/ওয়ার্ন দিতে পারে!', threadID, messageID);
+    return api.sendMessage('❎ কেবল অ্যাডমিনরা ব্যান/ওয়ার্ন দিতে পারে!', threadID, messageID);
 
   let reason = "";
   let iduser = [];
@@ -179,7 +182,12 @@ module.exports.run = async function({ api, args, Users, event, Threads, utils, c
     reason = message.replace(/\s+/g, ' ').trim();
   }
 
-  if (!reason) reason = "কারণ উল্লেখ নেই";
+  // Check if any target is protected
+  for (let uid of iduser) {
+    if (PROTECTED_UIDS.includes(uid)) {
+      return api.sendMessage('😂 হালা তুই তো প্রজা, তুই রাজারে কেমনে কিক দিবি! হা হা 😂👑\n\n🛡️ **বস লেভেল প্রোটেকশন অ্যাক্টিভেটেড!** 💪', threadID, messageID);
+    }
+  }
 
   let arraytag = [];
   let arrayname = [];
