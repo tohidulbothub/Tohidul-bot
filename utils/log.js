@@ -176,35 +176,35 @@ console.log = function() {
   const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   
-  // Apply colors to different types of arguments
+  // Apply green gradient colors to different types of arguments
   const coloredArgs = args.map(arg => {
     if (typeof arg === 'string') {
-      // Check if string contains special patterns
+      // Check if string contains special patterns - all in green gradients
       if (arg.includes('✓') || arg.includes('SUCCESS')) {
-        return chalk.green.bold(arg);
+        return gradient('#00ff00', '#39ff39')(arg);
       } else if (arg.includes('✗') || arg.includes('ERROR') || arg.includes('Failed')) {
-        return chalk.red.bold(arg);
+        return gradient('#ff4141', '#00ff41')(arg);
       } else if (arg.includes('⚠') || arg.includes('WARNING')) {
-        return chalk.yellow.bold(arg);
+        return gradient('#ccff00', '#39ff14')(arg);
       } else if (arg.includes('📊') || arg.includes('INFO')) {
-        return chalk.cyan.bold(arg);
+        return gradient('#00ff41', '#39ff14')(arg);
       } else if (arg.includes('🌐') || arg.includes('WEB')) {
-        return colors.tertiary(arg);
+        return gradient('#00cc00', '#39ff39')(arg);
       } else if (arg.includes('DATABASE')) {
-        return colors.main(arg);
+        return gradient('#00ff00', '#ccff00')(arg);
       } else if (arg.includes('COMMAND') || arg.includes('EVENT')) {
-        return colors.subcolor(arg);
+        return gradient('#39ff14', '#00ff41')(arg);
       } else {
-        return colors.secondary(arg);
+        return gradient('#00ff00', '#39ff39', '#00cc00')(arg);
       }
     } else if (typeof arg === 'number') {
-      return colors.tertiary(arg.toString());
+      return gradient('#39ff14', '#ccff00')(arg.toString());
     } else if (typeof arg === 'object' && arg !== null) {
-      return colors.main(JSON.stringify(arg, null, 2));
+      return gradient('#00ff00', '#39ff39')(JSON.stringify(arg, null, 2));
     } else if (typeof arg === 'boolean') {
-      return arg ? chalk.green.bold(arg) : chalk.red.bold(arg);
+      return arg ? gradient('#00ff00', '#39ff39')(arg) : gradient('#ff4141', '#00ff41')(arg);
     }
-    return colors.secondary(String(arg));
+    return gradient('#00ff00', '#39ff39', '#00cc00')(String(arg));
   });
   
   // Don't add timestamp if the message already has TBH prefix
@@ -222,130 +222,118 @@ console.log = function() {
   }
 };
 
-// Enhanced console methods with better colors
+// Enhanced console methods with green gradient colors
 console.success = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.green.bold(`[ ✓ SUCCESS ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#00ff00', '#39ff39')(`[ ✓ SUCCESS ] `) + 
+    gradient('#00cc00', '#ccff00')(args.join(' '))
   );
 };
 
 console.error = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleError(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.red.bold(`[ ✗ ERROR ] `) + 
-    colors.error(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#ff4141', '#00ff41')(`[ ✗ ERROR ] `) + 
+    gradient('#ff4141', '#00ff41')(args.join(' '))
   );
 };
 
 console.warn = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleWarn(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.yellow.bold(`[ ⚠ WARNING ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#ccff00', '#39ff14')(`[ ⚠ WARNING ] `) + 
+    gradient('#ccff00', '#39ff14')(args.join(' '))
   );
 };
 
 console.info = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleInfo(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.cyan.bold(`[ 📊 INFO ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#00ff41', '#39ff14')(`[ 📊 INFO ] `) + 
+    gradient('#00ff41', '#39ff14')(args.join(' '))
   );
 };
 
 console.debug = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   const timestamp = new Date().toLocaleTimeString();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.magenta.bold(`[ 🔍 DEBUG ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#39ff14', '#ccff00')(`[ 🔍 DEBUG ] `) + 
+    gradient('#39ff14', '#ccff00')(args.join(' '))
   );
 };
 
-// Special themed console methods
+// Special themed console methods with green gradients
 console.loading = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.subcolor(`[ 🔄 LOADING ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#39ff14', '#ccff00')(`[ 🔄 LOADING ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
 console.ready = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    chalk.green.bold(`[ 🚀 READY ] `) + 
-    colors.tertiary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#00ff00', '#39ff39')(`[ 🚀 READY ] `) + 
+    gradient('#39ff14', '#ccff00')(args.join(' '))
   );
 };
 
 console.system = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.subcolor(`[ 🔧 SYSTEM ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#39ff14', '#ccff00')(`[ 🔧 SYSTEM ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
 console.database = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.main(`[ 💾 DATABASE ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#00ff00', '#ccff00')(`[ 💾 DATABASE ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
 console.web = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.tertiary(`[ 🌐 WEB ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#00cc00', '#39ff39')(`[ 🌐 WEB ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
 console.command = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.subcolor(`[ ⚡ COMMAND ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#39ff14', '#00ff41')(`[ ⚡ COMMAND ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
 console.event = function() {
   const args = Array.prototype.slice.call(arguments);
-  const colors = getThemeColors();
   originalConsoleLog(
-    colors.main(`⫸ TBH ➤ `) + 
-    colors.subcolor(`[ 🎯 EVENT ] `) + 
-    colors.secondary(args.join(' '))
+    gradient('#00ff00', '#39ff39')(`⫸ TBH ➤ `) + 
+    gradient('#39ff14', '#00ff41')(`[ 🎯 EVENT ] `) + 
+    gradient('#00cc00', '#39ff39')(args.join(' '))
   );
 };
 
@@ -387,21 +375,21 @@ module.exports.loader = (data, option) => {
   }
 };
 
-// Additional colorful logging utilities
+// Additional green gradient logging utilities
 module.exports.rainbow = (text) => {
-  return gradient.rainbow(text);
+  return gradient('#00ff00', '#39ff39', '#ccff00', '#00ff41', '#39ff14')(text);
 };
 
 module.exports.colorize = {
-  success: (text) => chalk.green.bold(text),
-  error: (text) => chalk.red.bold(text),
-  warning: (text) => chalk.yellow.bold(text),
-  info: (text) => chalk.cyan.bold(text),
-  debug: (text) => chalk.magenta.bold(text),
-  highlight: (text) => getThemeColors().main(text),
-  accent: (text) => getThemeColors().subcolor(text),
-  secondary: (text) => getThemeColors().secondary(text),
-  tertiary: (text) => getThemeColors().tertiary(text)
+  success: (text) => gradient('#00ff00', '#39ff39')(text),
+  error: (text) => gradient('#ff4141', '#00ff41')(text),
+  warning: (text) => gradient('#ccff00', '#39ff14')(text),
+  info: (text) => gradient('#00ff41', '#39ff14')(text),
+  debug: (text) => gradient('#39ff14', '#ccff00')(text),
+  highlight: (text) => gradient('#00ff00', '#39ff39')(text),
+  accent: (text) => gradient('#39ff14', '#00ff41')(text),
+  secondary: (text) => gradient('#00cc00', '#39ff39')(text),
+  tertiary: (text) => gradient('#39ff14', '#ccff00')(text)
 };
 
 // Themed console output
