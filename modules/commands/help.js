@@ -1,3 +1,4 @@
+
 module.exports.config = {
     name: "help",
     version: "1.0.6",
@@ -17,16 +18,15 @@ module.exports.config = {
 module.exports.languages = {
     "en": {
         "moduleInfo": `
-╔═────── ★ ★ ─────═╗
-        💫 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙈𝙊𝘿𝙐𝙇𝙀 𝙄𝙉𝙁𝙊 💫
-╚═────── ★ ★ ─────═╝
+╔═══════════════════════════════════════╗
+        🌟 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙈𝙊𝘿𝙐𝙇𝙀 𝙄𝙉𝙁𝙊 🌟
+╚═══════════════════════════════════════╝
 🔹 𝗡𝗮𝗺𝗲         : %1
 🔸 𝗨𝘀𝗮𝗴𝗲        : %3
 📝 𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻   : %2
 🌈 𝗖𝗮𝘁𝗲𝗴𝗼𝗿𝘆     : %4
 ⏳ 𝗖𝗼𝗼𝗹𝗱𝗼𝘄𝗻     : %5s
 🔑 𝗣𝗲𝗿𝗺𝗶𝘀𝘀𝗶𝗼𝗻   : %6
-
 ⚡️ 𝙈𝙖𝙙𝙚 𝙗𝙮 𝙏𝙊𝙃𝙄𝘿𝙐𝙇 | 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 ⚡️`,
         "helpList": `✨ 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏-এ মোট %1টি কমান্ড আছে!
 🔍 𝙏𝙄𝙋: %2help [কমান্ডনাম] লিখে বিস্তারিত জানুন!`,
@@ -35,6 +35,71 @@ module.exports.languages = {
         "adminBot": "Admin bot"
     }
 };
+
+// Stylish font transformation functions
+function toStylishFont(text) {
+    if (!text || typeof text !== 'string') {
+        return text || '';
+    }
+    const fontMap = {
+        'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜',
+        'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥',
+        'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭',
+        'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵', 'i': '𝗶',
+        'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽', 'q': '𝗾', 'r': '𝗿',
+        's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅', 'y': '𝘆', 'z': '𝘇',
+        '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+    };
+    return text.split('').map(char => fontMap[char] || char).join('');
+}
+
+function toItalicFont(text) {
+    if (!text || typeof text !== 'string') {
+        return text || '';
+    }
+    const fontMap = {
+        'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐',
+        'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙',
+        'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡',
+        'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩', 'i': '𝘪',
+        'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱', 'q': '𝘲', 'r': '𝘳',
+        's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹', 'y': '𝘺', 'z': '𝘻'
+    };
+    return text.split('').map(char => fontMap[char] || char).join('');
+}
+
+// Create decorative border
+function createBorder(text, type = 'default') {
+    const borders = {
+        default: '═══════════════════════════════',
+        double: '╔══════════════════════════════╗',
+        star: '✧･ﾟ: *✧･ﾟ:*✧･ﾟ: *✧･ﾟ:*✧･ﾟ: *✧･ﾟ:*',
+        wave: '～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～',
+        diamond: '◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆',
+        heart: '💖💕💖💕💖💕💖💕💖💕💖💕💖💕💖💕💖',
+        fire: '🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥'
+    };
+    return borders[type] || borders.default;
+}
+
+// Get category emoji
+function getCategoryEmoji(category) {
+    const emojis = {
+        'system': '⚙️',
+        'media': '🎵',
+        'utility': '🛠️',
+        'game': '🎮',
+        'economy': '💰',
+        'admin': '👑',
+        'fun': '🎉',
+        'image': '🖼️',
+        'ai': '🤖',
+        'social': '👥',
+        'music': '🎵',
+        'video': '📹'
+    };
+    return emojis[category.toLowerCase()] || '📝';
+}
 
 module.exports.handleEvent = function ({ api, event, getText }) {
     const { commands } = global.client;
@@ -67,18 +132,26 @@ module.exports.run = function ({ api, event, args, getText }) {
             else
                 group.find(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase()).cmds.push(commandConfig.config.name);
         }
-        group.forEach(commandGroup =>
-            msg += `\n✦ 𝑪𝑨𝑻𝑬𝑮𝑶𝑹𝒀: 『 ${commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1)} 』\n${commandGroup.cmds.map(cmd=>`   ⫸ TBH ➤ 『 ${cmd.toUpperCase()} 』`).join('\n')}\n`
-        );
+        
+        group.forEach(commandGroup => {
+            const categoryEmoji = getCategoryEmoji(commandGroup.group);
+            const categoryName = toStylishFont(commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1));
+            msg += `\n${createBorder('', 'diamond').substring(0, 30)}\n`;
+            msg += `${categoryEmoji} ${toItalicFont('Category')}: 『 ${categoryName} 』\n`;
+            msg += `${createBorder('', 'wave').substring(0, 25)}\n`;
+            msg += `${commandGroup.cmds.map(cmd => `   ⫸ ${toStylishFont('TBH')} ➤ 🔸 ${toItalicFont(cmd.toUpperCase())}`).join('\n')}\n`;
+        });
 
-        const fancy = `╔═━━━━━━ ◈ ━━━━━═╗
-    🪐 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙃𝙀𝙇𝙋 𝙈𝙀𝙉𝙐 🪐
-╚═━━━━━━ ◈ ━━━━━═╝\n`;
-        const info = `━━━━━━━━━━━━━━━━━━
-📝 মোট কমান্ড : ${commands.size}
-👑 𝙊𝙒𝙉𝙀𝙍: 𝙏𝙊𝙃𝙄𝘿𝙐𝙇
-ℹ️ ${prefix}help [নাম] লিখে কমান্ড ডিটেইল দেখুন!
-━━━━━━━━━━━━━━━━━━`;
+        const fancy = `${createBorder('', 'star')}\n` +
+                     `🌟 ${toStylishFont('TOHI-BOT HELP MENU')} 🌟\n` +
+                     `${createBorder('', 'star')}\n`;
+        
+        const info = `\n${createBorder('', 'fire').substring(0, 35)}\n` +
+                    `📝 ${toItalicFont('Total Commands')}: ${toStylishFont(commands.size.toString())} 💎\n` +
+                    `👑 ${toItalicFont('Owner')}: ${toStylishFont('TOHIDUL')} 🎯\n` +
+                    `ℹ️ ${toItalicFont(`Use ${prefix}help [name] for command details`)} 📚\n` +
+                    `${createBorder('', 'fire').substring(0, 35)}\n` +
+                    `🚩 ${toItalicFont('Made by TOHIDUL')}`;
 
         api.sendMessage(fancy + msg + info, threadID, (err, info) => {
             if (autoUnsend == false) {
@@ -105,15 +178,20 @@ module.exports.run = function ({ api, event, args, getText }) {
         const first = numberOfOnePage * page - numberOfOnePage;
         const helpView = arrayInfo.slice(first, first + numberOfOnePage);
 
-        for (let cmds of helpView) msg += `⫸ TBH ➤ 『 ${cmds.toUpperCase()} 』\n`;
-        const fancy = `╔╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╗
-  ✨ 𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝘾𝙊𝙈𝙈𝘼𝙉𝘿 𝙇𝙄𝙎𝙏 ✨
-╚╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╝\n`;
-        const info = `━━━━━━━━━━━━━━━━━━━
-📃 পেইজ : [${page}/${Math.ceil(arrayInfo.length / numberOfOnePage)}]
-📝 মোট কমান্ড : ${arrayInfo.length}
-ℹ️ ${prefix}help [নাম] লিখে কমান্ড ডিটেইল দেখুন!
-━━━━━━━━━━━━━━━━━━━`;
+        for (let cmds of helpView) {
+            msg += `⫸ ${toStylishFont('TBH')} ➤ 🔹 ${toItalicFont(cmds.toUpperCase())} ✨\n`;
+        }
+        
+        const fancy = `${createBorder('', 'heart').substring(0, 40)}\n` +
+                     `💫 ${toStylishFont('TOHI-BOT COMMAND LIST')} 💫\n` +
+                     `${createBorder('', 'heart').substring(0, 40)}\n`;
+        
+        const info = `\n${createBorder('', 'diamond').substring(0, 35)}\n` +
+                    `📃 ${toItalicFont('Page')}: [${toStylishFont(page.toString())}/${toStylishFont(Math.ceil(arrayInfo.length / numberOfOnePage).toString())}] 📄\n` +
+                    `📝 ${toItalicFont('Total Commands')}: ${toStylishFont(arrayInfo.length.toString())} 🎯\n` +
+                    `ℹ️ ${toItalicFont(`Use ${prefix}help [name] for command details`)} 📚\n` +
+                    `${createBorder('', 'diamond').substring(0, 35)}\n` +
+                    `🚩 ${toItalicFont('Made by TOHIDUL')}`;
 
         api.sendMessage(fancy + msg + info, threadID, (err, info) => {
             if (autoUnsend == false) {
@@ -126,17 +204,22 @@ module.exports.run = function ({ api, event, args, getText }) {
     }
 
     // ---------- single module info ----------
-    const leiamname = getText("moduleInfo",
-        command.config.name,
-        command.config.description || "𝙏𝙊𝙃𝙄-𝘽𝙊𝙏 𝙝𝙖𝙧 𝙘𝙤𝙢𝙢𝙖𝙣𝙙 𝙖𝙧𝙚 𝙢𝙖𝙜𝙞𝙘𝙖𝙡, 𝙚𝙖𝙨𝙮 𝙖𝙣𝙙 𝙨𝙢𝙖𝙧𝙩! 𝘾𝙝𝙖𝙩, 𝙛𝙪𝙣, 𝙪𝙩𝙞𝙡𝙞𝙩𝙮, 𝙖𝙣𝙙 𝙢𝙤𝙧𝙚 – 𝙖𝙡𝙬𝙖𝙮𝙨 𝙤𝙣 𝙮𝙤𝙪𝙧 𝙨𝙞𝙙𝙚. 💎",
-        `${prefix}${command.config.name} ${(command.config.usages) ? command.config.usages : ""}`,
-        command.config.commandCategory,
-        command.config.cooldowns,
-        ((command.config.hasPermssion == 0) ? getText("user") : (command.config.hasPermssion == 1) ? getText("adminGroup") : getText("adminBot")),
-        command.config.credits
-    );
+    const categoryEmoji = getCategoryEmoji(command.config.commandCategory);
+    
+    let moduleInfo = `${createBorder('', 'double')}\n`;
+    moduleInfo += `${categoryEmoji} ${toStylishFont('COMMAND INFORMATION')} ${categoryEmoji}\n`;
+    moduleInfo += `${createBorder('', 'wave')}\n`;
+    moduleInfo += `🔹 ${toItalicFont('Name')}: ${toStylishFont(command.config.name)} ✨\n`;
+    moduleInfo += `📝 ${toItalicFont('Description')}: ${command.config.description || toItalicFont('No description available')} 📚\n`;
+    moduleInfo += `🔸 ${toItalicFont('Usage')}: ${toStylishFont(`${prefix}${command.config.name} ${(command.config.usages) ? command.config.usages : ""}`)} 🎯\n`;
+    moduleInfo += `🌈 ${toItalicFont('Category')}: ${toStylishFont(command.config.commandCategory)} ${categoryEmoji}\n`;
+    moduleInfo += `⏳ ${toItalicFont('Cooldown')}: ${toStylishFont(command.config.cooldowns.toString())}s ⏰\n`;
+    moduleInfo += `🔑 ${toItalicFont('Permission')}: ${toStylishFont(((command.config.hasPermssion == 0) ? getText("user") : (command.config.hasPermssion == 1) ? getText("adminGroup") : getText("adminBot")))} 👤\n`;
+    moduleInfo += `${createBorder('', 'star')}\n`;
+    moduleInfo += `⚡️ ${toItalicFont('Credits')}: ${toStylishFont(command.config.credits)} 🏆\n`;
+    moduleInfo += `🚩 ${toItalicFont('Made by TOHIDUL')}`;
 
-    api.sendMessage(leiamname, threadID, (err, info) => {
+    api.sendMessage(moduleInfo, threadID, (err, info) => {
         if (autoUnsend == false) {
             setTimeout(() => {
                 return api.unsendMessage(info.messageID);
