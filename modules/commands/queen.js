@@ -20,7 +20,7 @@ module.exports.config = {
   }
 };
 
-const QUEEN_BG_URL = "https://i.imgur.com/VQXViKI.png";
+const QUEEN_BG_URL = "https://i.postimg.cc/vB55tT9V/king2.jpg";
 
 module.exports.onLoad = async () => {
   const dirMaterial = __dirname + `/cache/canvas/`;
@@ -35,9 +35,9 @@ module.exports.onLoad = async () => {
     
     // Multiple fallback URLs
     const backgroundUrls = [
-      "https://i.imgur.com/VQXViKI.png",
-      "https://i.imgur.com/ep1gG3r.png",
-      "https://i.ibb.co/9ZQX8Kp/queen-bg.png"
+      "https://i.postimg.cc/vB55tT9V/king2.jpg",
+      "",
+      ""
     ];
     
     let downloaded = false;
@@ -140,7 +140,7 @@ async function makeImage({ one, two }) {
     const avatar2 = await loadImage(avatarTwoPath);
 
     // Create canvas (background = 1023x1024)
-    const canvas = createCanvas(1023, 1024);
+    const canvas = createCanvas(1024, 1024);
     const ctx = canvas.getContext('2d');
 
     // Draw background
@@ -149,8 +149,8 @@ async function makeImage({ one, two }) {
     // Draw avatars as circles (custom positions)
     // avatar1: (276, 164), size: 130
     // avatar2: (640, 237), size: 152
-    drawCircularImage(ctx, avatar1, 276, 164, Math.min(130, 144));
-    drawCircularImage(ctx, avatar2, 640, 237, Math.min(154, 152));
+    drawCircularImage(ctx, avatar1, 640, 237, Math.min(154, 152));
+    drawCircularImage(ctx, avatar2, 276, 164, Math.min(130, 144));
 
     // Save the final image
     const buffer = canvas.toBuffer('image/png');
