@@ -1,4 +1,3 @@
-
 module.exports.config = {
   name: "checktt",
   version: "2.0.0",
@@ -91,19 +90,19 @@ module.exports.handleEvent = async({ event, Users }) => {
     const pathA = require('path');
     const thread = require('./cache/checktt.json');
     const path = pathA.join(__dirname, 'cache', 'checktt.json');
-    
+
     if(event.isGroup == false) return;
-    
+
     function isIterable(obj) {
         if (obj == null) {
             return false;
         }
         return typeof obj[Symbol.iterator] === 'function';
     }
-    
+
     if(isIterable(event.participantIDs) == false) return
     if(event.type == "message_reply") return;
-    
+
     if (thread.some(i => i.threadID == threadID) == false) {
         const data = [];
         for (let user of event.participantIDs) {
@@ -151,7 +150,7 @@ module.exports.run = async function ({ args, api, event }) {
     var mention = Object.keys(mentions);
     const thread = require('./cache/checktt.json');
     const data = thread.find(i => i.threadID == threadID)
-    
+
     if (!data) {
         return api.sendMessage("❌ No data found for this group! Send some messages first.", threadID, messageID);
     }
@@ -166,10 +165,10 @@ module.exports.run = async function ({ args, api, event }) {
         var page = 1;
         page = parseInt(args[1]) || 1;
         page < -1 ? page = 1 : "";
-        
+
         // Calculate total messages
         let totalMessages = exp.reduce((sum, user) => sum + user.exp, 0);
-        
+
         // Create stylish header
         var msg = `${createBorder('', 'star')}\n`;
         msg += `🎯 ${toStylishFont('GROUP MESSAGE LEADERBOARD')} 🎯\n`;
@@ -177,7 +176,7 @@ module.exports.run = async function ({ args, api, event }) {
         msg += `📊 ${toItalicFont('Total Messages')}: ${toStylishFont(totalMessages.toString())} 💬\n`;
         msg += `👥 ${toItalicFont('Active Members')}: ${toStylishFont(exp.length.toString())} 🌟\n`;
         msg += `${createBorder('', 'wave')}\n\n`;
-        
+
         var numPage = Math.ceil(exp.length/limit);
         for(var i = limit*(page - 1); i < limit*(page-1) + limit; i++){
             if(i >= exp.length) break;
@@ -186,29 +185,29 @@ module.exports.run = async function ({ args, api, event }) {
             let percentage = totalMessages > 0 ? ((dataInfo.exp / totalMessages) * 100).toFixed(1) : 0;
             let rankEmoji = getRankEmoji(rank);
             let interactionEmoji = getInteractionEmoji(percentage);
-            
+
             // Create progress bar
             let progressBars = Math.floor(percentage / 2);
             let progressBar = '█'.repeat(progressBars) + '░'.repeat(10 - progressBars);
-            
+
             msg += `${rankEmoji} ${toStylishFont(`#${rank}`)} ┃ ${toItalicFont(dataInfo.name)}\n`;
             msg += `   💬 ${toStylishFont(dataInfo.exp.toString())} messages ${interactionEmoji}\n`;
             msg += `   📈 ${percentage}% ┃ ${progressBar}\n`;
             msg += `${createBorder('', 'diamond').substring(0, 25)}\n`;
         }
-        
+
         msg += `\n${createBorder('', 'star')}\n`;
         msg += `📄 ${toItalicFont(`Page ${page}/${numPage}`)} 📄\n`;
         msg += `🔄 ${toItalicFont(`Use ${global.config.PREFIX}checktt all <page>`)} 🔄\n`;
         msg += `${createBorder('', 'star')}`;
-        
+
         return api.sendMessage(msg, threadID, messageID);
     }
     else {
         if(type == "message_reply") { 
             mention[0] = event.messageReply.senderID 
         }
-        
+
         if (mention[0]) {
             var exp = [], count = 0
             for(const user of data.data) {
@@ -217,20 +216,20 @@ module.exports.run = async function ({ args, api, event }) {
             }
             exp.sort(function (a, b) { return b.exp - a.exp });
             const rank = exp.findIndex(i => i.id == mention[0])
-            
+
             if (rank === -1) {
                 return api.sendMessage("❌ User not found in the database!", threadID, messageID);
             }
-            
+
             let userInfo = exp[rank];
             let percentage = count > 0 ? ((userInfo.exp / count) * 100).toFixed(1) : 0;
             let rankEmoji = getRankEmoji(rank + 1);
             let interactionEmoji = getInteractionEmoji(percentage);
-            
+
             // Create progress bar
             let progressBars = Math.floor(percentage / 2);
             let progressBar = '█'.repeat(progressBars) + '░'.repeat(10 - progressBars);
-            
+
             let msg = `${createBorder('', 'double')}\n`;
             msg += `${rankEmoji} ${toStylishFont('USER STATISTICS')} ${rankEmoji}\n`;
             msg += `${createBorder('', 'wave')}\n`;
@@ -239,8 +238,9 @@ module.exports.run = async function ({ args, api, event }) {
             msg += `💬 ${toItalicFont('Messages')}: ${toStylishFont(userInfo.exp.toString())} ${interactionEmoji}\n`;
             msg += `📊 ${toItalicFont('Activity')}: ${toStylishFont(percentage + '%')}\n`;
             msg += `📈 ${toItalicFont('Progress')}: ${progressBar}\n`;
-            msg += `${createBorder('', 'diamond')}`;
-            
+            msg += `${createBorder('', 'diamond')}\n\n`;
+            msg += `🚩 ${toItalicFont('Made by TOHIDUL')}`;
+
             return api.sendMessage(msg, threadID, messageID);
         }
         else {
@@ -251,20 +251,20 @@ module.exports.run = async function ({ args, api, event }) {
             }
             exp.sort(function (a, b) { return b.exp - a.exp });
             const rank = exp.findIndex(i => i.id == senderID);
-            
+
             if (rank === -1) {
                 return api.sendMessage("❌ You're not found in the database! Send some messages first.", threadID, messageID);
             }
-            
+
             let userInfo = exp[rank];
             let percentage = count > 0 ? ((userInfo.exp / count) * 100).toFixed(1) : 0;
             let rankEmoji = getRankEmoji(rank + 1);
             let interactionEmoji = getInteractionEmoji(percentage);
-            
+
             // Create progress bar
             let progressBars = Math.floor(percentage / 2);
             let progressBar = '█'.repeat(progressBars) + '░'.repeat(10 - progressBars);
-            
+
             let msg = `${createBorder('', 'double')}\n`;
             msg += `${rankEmoji} ${toStylishFont('YOUR STATISTICS')} ${rankEmoji}\n`;
             msg += `${createBorder('', 'wave')}\n`;
@@ -273,8 +273,9 @@ module.exports.run = async function ({ args, api, event }) {
             msg += `💬 ${toItalicFont('Messages')}: ${toStylishFont(userInfo.exp.toString())} ${interactionEmoji}\n`;
             msg += `📊 ${toItalicFont('Activity')}: ${toStylishFont(percentage + '%')}\n`;
             msg += `📈 ${toItalicFont('Progress')}: ${progressBar}\n`;
-            msg += `${createBorder('', 'diamond')}`;
-            
+            msg += `${createBorder('', 'diamond')}\n\n`;
+            msg += `🚩 ${toItalicFont('Made by TOHIDUL')}`;
+
             return api.sendMessage(msg, threadID, messageID);
         }
     }
