@@ -142,31 +142,25 @@ function getThemeColors() {
 module.exports = {
   getThemeColors,
   log: (text, type) => {
+    // Apply global coloring: green checkmark and pink "loaded successfully" to all messages
+    const coloredText = text.replace(/✓/g, chalk.green("✓")).replace(/loaded successfully/g, chalk.hex("#FF69B4")("loaded successfully"));
+    
     switch (type) {
       case "warn":
         process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + text + "\n",
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + coloredText + "\n",
         );
         break;
       case "error":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + text + "\n");
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + coloredText + "\n");
         break;
       case "load":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
-        break;
-      case "COMMAND":
-        // Apply coloring to all commands: green checkmark and pink "loaded successfully"
-        const coloredText = text.replace(/✓/g, chalk.green("✓")).replace(/loaded successfully/g, chalk.hex("#FF69B4")("loaded successfully"));
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-            coloredText +
-            "\n",
-        );
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + coloredText + "\n");
         break;
       default:
         process.stderr.write(
           getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-            text +
+            coloredText +
             "\n",
         );
     }
