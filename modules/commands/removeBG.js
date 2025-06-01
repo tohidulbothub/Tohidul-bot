@@ -45,10 +45,10 @@ module.exports = {
                 api.sendMessage({
                     body: "✅ Background removed successfully!",
                     attachment: fs.createReadStream(tempPath)
-                }, event.threadID, event.messageID, () => {
+                }, event.threadID, () => {
                     // Clean up temp file after sending
                     fs.unlinkSync(tempPath);
-                });
+                }, event.messageID);
                 
             } else {
                 api.sendMessage("❌ Please reply to an image to remove its background.", event.threadID, event.messageID);
