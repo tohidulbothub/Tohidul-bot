@@ -131,6 +131,50 @@ module.exports.run = async function ({ api, event, args }) {
         // Save config
         writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
         
+        // Auto backup to groupdata.json
+        try {
+          const path = require('path');
+          const groupDataPath = path.join(__dirname, '../../utils/groupdata.json');
+          
+          let groupData = {};
+          if (require('fs-extra').existsSync(groupDataPath)) {
+            groupData = JSON.parse(require('fs-extra').readFileSync(groupDataPath, 'utf8'));
+          } else {
+            groupData = { approvedGroups: [], lastUpdated: "", totalGroups: 0 };
+          }
+          
+          // Update backup with current approved groups
+          const currentTime = new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka" });
+          groupData.approvedGroups = [];
+          groupData.lastUpdated = currentTime;
+          groupData.totalGroups = config.APPROVAL.approvedGroups.length;
+          
+          for (const gId of config.APPROVAL.approvedGroups) {
+            try {
+              const gInfo = await api.getThreadInfo(gId);
+              groupData.approvedGroups.push({
+                threadID: gId,
+                threadName: gInfo.threadName || "Unknown Group",
+                memberCount: gInfo.participantIDs.length,
+                backupDate: currentTime,
+                status: "auto_backed_up"
+              });
+            } catch (e) {
+              groupData.approvedGroups.push({
+                threadID: gId,
+                threadName: "Group Info Unavailable",
+                memberCount: 0,
+                backupDate: currentTime,
+                status: "auto_backed_up"
+              });
+            }
+          }
+          
+          require('fs-extra').writeFileSync(groupDataPath, JSON.stringify(groupData, null, 2), 'utf8');
+        } catch (backupError) {
+          console.log("Auto backup failed:", backupError.message);
+        }
+        
         try {
           const info = await api.getThreadInfo(targetID);
           const successMsg = `✅ গ্রুপ চালু হয়েছে!
