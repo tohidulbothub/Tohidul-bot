@@ -1,4 +1,3 @@
-
 module.exports.config = {
   name: "prefix",
   version: "1.0.7",
@@ -23,25 +22,17 @@ module.exports.handleEvent = async function ({ api, event }) {
 
   if (!body) return;
   const trimmedBody = body.trim().toLowerCase();
-  
+
   // Respond to both exact prefix and "prefix" text
   if (trimmedBody !== prefix && trimmedBody !== "prefix") return;
 
   const message = [
     boxTop,
+    line("🤖 TOHI-BOT"),
     line(""),
-    line("🌟 আ্সসালামুআলাইকুম ওয়ারাহমাতুল্লাহি 🌟"),
+    line(`🔑 Prefix: ${prefix}`),
     line(""),
-    line("✨ আমি TOHI-BOT! কেমন আছেন? ✨"),
-    line(""),
-    line(`🔑 বট প্রিফিক্স: ⟨ ${prefix} ⟩`),
-    line(""),
-    line("💎 ডেভেলপার: TOHIDUL 💎"),
-    line(""),
-    line(`🚀 ${prefix}help লিখুন সব কমান্ড দেখার জন্য`),
-    line(""),
-    line("💝 ধন্যবাদ আমাদের ব্যবহার করার জন্য! 💝"),
-    line(""),
+    line("👨‍💻 Owner: TOHIDUL"),
     boxBot
   ].join("\n");
 
@@ -54,19 +45,11 @@ module.exports.run = async function ({ api, event }) {
 
   const message = [
     boxTop,
+    line("🤖 TOHI-BOT"),
     line(""),
-    line("🌟 আ্সসালামুআলাইকুম ওয়ারাহমাতুল্লাহি 🌟"),
+    line(`🔑 Prefix: ${prefix}`),
     line(""),
-    line("✨ আমি TOHI-BOT! কেমন আছেন? ✨"),
-    line(""),
-    line(`🔑 বট প্রিফিক্স: ⟨ ${prefix} ⟩`),
-    line(""),
-    line("💎 ডেভেলপার: TOHIDUL 💎"),
-    line(""),
-    line(`🚀 ${prefix}help লিখুন সব কমান্ড দেখার জন্য`),
-    line(""),
-    line("💝 ধন্যবাদ আমাদের ব্যবহার করার জন্য! 💝"),
-    line(""),
+    line("👨‍💻 Owner: TOHIDUL"),
     boxBot
   ].join("\n");
 
