@@ -85,7 +85,12 @@ async function updateDTSG(res, appstate, userId) {
     const appstateCUser =
       appstate.find((i) => i.key == "i_user") ||
       appstate.find((i) => i.key == "c_user");
-    const UID = userId || appstateCUser.value;
+    const UID = userId || (appstateCUser ? appstateCUser.value : null);
+    
+    if (!UID) {
+      utils.error("No valid user ID found for DTSG update");
+      return res;
+    }
     if (!res || !res.body) {
       throw new Error("Invalid response: Response body is missing.");
     }
@@ -121,7 +126,12 @@ async function bypassAutoBehavior(resp, jar, appstate, ID) {
     const appstateCUser =
       appstate.find((i) => i.key == "c_user") ||
       appstate.find((i) => i.key == "i_user");
-    const UID = ID || appstateCUser.value;
+    const UID = ID || (appstateCUser ? appstateCUser.value : null);
+    
+    if (!UID) {
+      utils.error("No valid user ID found in appstate");
+      return resp;
+    }
     const FormBypass = {
       av: UID,
       fb_api_caller_class: "RelayModern",
@@ -176,6 +186,9 @@ async function bypassAutoBehavior(resp, jar, appstate, ID) {
 
 async function checkIfSuspended(resp, appstate) {
   try {
+    if (!appstate || !Array.isArray(appstate)) {
+      return;
+    }
     const appstateCUser =
       appstate.find((i) => i.key == "c_user") ||
       appstate.find((i) => i.key == "i_user");
@@ -230,6 +243,9 @@ async function checkIfSuspended(resp, appstate) {
 
 async function checkIfLocked(resp, appstate) {
   try {
+    if (!appstate || !Array.isArray(appstate)) {
+      return;
+    }
     const appstateCUser =
       appstate.find((i) => i.key == "c_user") ||
       appstate.find((i) => i.key == "i_user");
@@ -405,6 +421,17 @@ async function loginHelper(appState, custom = {}, callback) {
   let mainPromise = null;
   const jar = utils.getJar();
   if (appState) {
+    // Validate appState structure
+    if (!Array.isArray(appState)) {
+      return callback(new Error("AppState must be an array"));
+    }
+    
+    // Check if appState has required cookies
+    const hasUserCookie = appState.some(c => c.key === "c_user" || c.key === "i_user");
+    if (!hasUserCookie) {
+      return callback(new Error("AppState missing user cookie (c_user or i_user)"));
+    }
+    
     if (utils.getType(appState) === "Array" && appState.some((c) => c.name)) {
       appState = appState.map((c) => {
         c.key = c.name;
