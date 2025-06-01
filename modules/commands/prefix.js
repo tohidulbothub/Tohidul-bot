@@ -10,8 +10,8 @@ module.exports.config = {
   cooldowns: 3
 };
 
-const boxTop = "╔═══════════════════════════════╗";
-const boxBot = "╚═══════════════════════════════╝";
+const boxTop = "╔════════════════════════╗";
+const boxBot = "╚════════════════════════╝";
 const boxBar = " ";
 const pad = (txt) => txt.padEnd(31, " ");
 const line = (txt) => `${boxBar} ${pad(txt)}${boxBar}`;
