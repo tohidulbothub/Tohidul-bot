@@ -26,12 +26,12 @@ module.exports.handleEvent = async function ({ api, event }) {
   // Respond to both exact prefix and "prefix" text
   if (trimmedBody !== prefix && trimmedBody !== "prefix") return;
 
+  const botName = global.config.BOTNAME || "TOHI-BOT";
+
   const message = [
     boxTop,
-    line("🤖 TOHI-BOT"),
-    line(""),
+    line(`🤖 ${botName}`),
     line(`🔑 Prefix: ${prefix}`),
-    line(""),
     line("👨‍💻 Owner: TOHIDUL"),
     boxBot
   ].join("\n");
@@ -43,12 +43,12 @@ module.exports.run = async function ({ api, event }) {
   const { threadID, messageID } = event;
   const prefix = global.config.PREFIX || "/";
 
+  const botName = global.config.BOTNAME || "TOHI-BOT";
+
   const message = [
     boxTop,
-    line("🤖 TOHI-BOT"),
-    line(""),
+    line(`🤖 ${botName}`),
     line(`🔑 Prefix: ${prefix}`),
-    line(""),
     line("👨‍💻 Owner: TOHIDUL"),
     boxBot
   ].join("\n");
