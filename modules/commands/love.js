@@ -32,7 +32,7 @@ module.exports.onLoad = async () => {
   const imgPath = path.resolve(__dirname, "cache", "ewhd.png");
   if (!fs.existsSync(cachePath)) fs.mkdirSync(cachePath, { recursive: true });
   if (!fs.existsSync(imgPath)) {
-    const imgUrl = "https://i.postimg.cc/zXz75tYZ/dvsdsv.jpg";
+    const imgUrl = "https://i.postimg.cc/05tPS3cq/1eb9276ff9b9a420f6fd7de70a3f94b2.jpg";
     const res = await axios.get(imgUrl, { responseType: "arraybuffer" });
     fs.writeFileSync(imgPath, Buffer.from(res.data, "utf-8"));
   }

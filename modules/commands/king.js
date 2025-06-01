@@ -5,6 +5,7 @@ const path = require('path');
 
 module.exports.config = {
   name: "king",
+  aliases: ["raja","kng"],
   version: "1.0.0",
   hasPermssion: 0,
   usePrefix: true,
