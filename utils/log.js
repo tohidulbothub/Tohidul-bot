@@ -155,21 +155,13 @@ module.exports = {
         console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
         break;
       case "COMMAND":
-        // Special coloring for twitter command
-        if (text.includes("twitter")) {
-          const coloredText = text.replace(/✓/g, chalk.green("✓")).replace(/loaded successfully/g, chalk.hex("#FF69B4")("loaded successfully"));
-          process.stderr.write(
-            getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-              coloredText +
-              "\n",
-          );
-        } else {
-          process.stderr.write(
-            getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-              text +
-              "\n",
-          );
-        }
+        // Apply coloring to all commands: green checkmark and pink "loaded successfully"
+        const coloredText = text.replace(/✓/g, chalk.green("✓")).replace(/loaded successfully/g, chalk.hex("#FF69B4")("loaded successfully"));
+        process.stderr.write(
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
+            coloredText +
+            "\n",
+        );
         break;
       default:
         process.stderr.write(
