@@ -448,5 +448,16 @@ module.exports.matrixRain = () => {
   console.log(gradient('#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000')(rain));
 };
 
-// Initialize colorful console on module load
-console.log(gradient('#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000')('🎨 TOHI-BOT-HUB Mixed Color Console System Initialized! 🎨'));
+// Initialize colorful console on module load with ASCII art
+const asciiArt = `
++------------------------------------------------------------------------+
+| ______ ____   __ __ ____      ___   ____  ______      __ __ __  __ ___ |
+|/_  __// __ \\ / // //  _/____ / _ ) / __ \\/_  __/____ / // // / / // _ )|
+| / /  / /_/ // _  /_/ / /___// _  |/ /_/ / / /  /___// _  // /_/ // _  ||
+|/_/   \\____//_//_//___/     /____/ \\____/ /_/       /_//_/ \\____//____/ |
++------------------------------------------------------------------------+
+
+🎨 TOHI-BOT-HUB Mixed Color Console System Initialized! 🎨
+`;
+
+console.log(gradient('#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000')(asciiArt));
