@@ -1,3 +1,4 @@
+
 {
   "version": "1.8.0",
   "language": "en",
@@ -23,13 +24,13 @@
   "BOTNAME": "TOHI-BOT",
   "PREFIX": "/",
   "ADMINBOT": [
-    "100092006324917",
     "100092006324917"
   ],
   "DESIGN": {
     "Title": "TOHI-BOT-HUB",
     "Theme": "matrix",
-    "Admin": "TOHI-BOT",
+    "Admin": "TOHI-BOT-HUB",
+    "Credits": "TOHI-BOT-HUB Framework",
     "Setup": {
       "Info": "Design your own custom terminal Titlebar for the title and must contain no numbers",
       "Themes": "Customize your console effortlessly with various theme colors. Explore Aqua, Fiery, Blue, Orange, Pink, Red, Retro, Sunlight, Teen, Summer, Flower, Ghost, Purple, Rainbow, Hacker, and Matrix themes to enhance your terminal logs."
@@ -107,5 +108,13 @@
     ],
     "pendingGroups": [],
     "rejectedGroups": []
+  },
+  "SYSTEM": {
+    "Framework": "TOHI-BOT-HUB",
+    "Version": "1.8.0",
+    "Developer": "TOHIDUL",
+    "Credits": "TOHI-BOT-HUB Advanced Bot Framework System",
+    "Repository": "https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB",
+    "License": "MIT"
   }
 }
