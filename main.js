@@ -1,3 +1,4 @@
+
 const fs = require("fs-extra");
 const path = require('path');
 const { join } = require('path');
@@ -11,13 +12,37 @@ const chalk = require("chalk");
 const pkg = require('./package.json');
 const WebServer = require('./web-server.js');
 
-// Initialize web server
-const webServer = new WebServer();
-webServer.start();
+/**
+ * ═══════════════════════════════════════════════════════════
+ *                    TOHI-BOT-HUB v1.8.0
+ *          Advanced Facebook Messenger Bot Framework
+ *               Created by TOHI-BOT-HUB Team
+ *        GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ * ═══════════════════════════════════════════════════════════
+ */
 
-console.log(chalk.bold.dim(` TOHI-BOT-HUB`.toUpperCase() + `(v${pkg.version})`));
-logger.log(`Getting Started!`, "STARTER");
+// Enhanced startup banner
+console.log(chalk.bold.cyan(`
+╔═══════════════════════════════════════════════════════════╗
+║                   TOHI-BOT-HUB v${pkg.version}                   ║
+║              Advanced Bot Framework System               ║
+║                 Starting up components...                ║
+╚═══════════════════════════════════════════════════════════╝
+`));
 
+// Initialize web server with enhanced error handling
+try {
+  const webServer = new WebServer();
+  webServer.start();
+  logger.log("Web server initialized successfully", "WEBSERVER");
+} catch (error) {
+  logger.log(`Web server initialization failed: ${error.message}`, "WEBSERVER");
+}
+
+// Global system initialization
+logger.log("Initializing TOHI-BOT-HUB System...", "STARTER");
+
+// Enhanced global objects
 global.utils = require("./utils");
 global.loading = require("./utils/log.js");
 global.errorHandler = require("./utils/globalErrorHandler");
@@ -28,94 +53,90 @@ global.moduleData = new Array();
 global.language = new Object();
 global.account = new Object();
 
+// Enhanced error handling with filtering
+const ignoredErrors = [
+  'Rate limited',
+  'status code 429',
+  'Too Many Requests',
+  'jimp.read is not a function',
+  'Jimp.read is not a function',
+  'not part of the conversation',
+  'Max retries reached for API call',
+  'Background download error',
+  'Avatar processing error',
+  'Got error 1545012',
+  'WARN sendMessage',
+  'socket hang up',
+  'ECONNRESET',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'ENOENT: no such file or directory'
+];
+
+function shouldIgnoreError(error) {
+  const errorStr = error ? error.toString() : '';
+  return ignoredErrors.some(ignored => errorStr.includes(ignored));
+}
+
+// Global error handlers
 process.on('unhandledRejection', (reason, promise) => {
-  // Filter out common API rejections that don't need logging
-  const ignoredRejections = [
-    'Rate limited',
-    'jimp.read is not a function',
-    'Jimp.read is not a function', 
-    'not part of the conversation',
-    'Max retries reached for API call',
-    'Max retries reached for API call',
-    'Background download error',
-    'Avatar processing error',
-    'Got error 1545012',
-    'ENOENT: no such file or directory',
-    'Request failed with status code 429'
-  ];
-
-  const reasonStr = reason ? reason.toString() : '';
-  const shouldIgnore = ignoredRejections.some(ignored => 
-    reasonStr.includes(ignored)
-  );
-
-  if (!shouldIgnore) {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  if (!shouldIgnoreError(reason)) {
+    logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
   }
-  // Don't exit the process
 });
-
-// Auto-restart mechanism for better stability
-let restartCount = 0;
-const maxRestarts = 5;
 
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-
-  // Critical errors that should restart
-  const criticalErrors = [
-    'ECONNRESET',
-    'ENOTFOUND', 
-    'socket hang up',
-    'Network Error',
-    'Connection lost'
-  ];
-
-  const isCritical = criticalErrors.some(err => 
-    error.message && error.message.includes(err)
-  );
-
-  if (isCritical && restartCount < maxRestarts) {
-    restartCount++;
-    console.log(`⚡ Auto-restarting bot (${restartCount}/${maxRestarts})...`);
-    setTimeout(() => {
-      process.exit(1); // This will trigger the restart in startProject()
-    }, 3000);
+  if (!shouldIgnoreError(error)) {
+    logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
+  }
+  
+  // Handle critical errors that need restart
+  const criticalErrors = ['ECONNRESET', 'ENOTFOUND', 'socket hang up', 'Network Error'];
+  const isCritical = criticalErrors.some(err => error.message && error.message.includes(err));
+  
+  if (isCritical) {
+    logger.log("Critical error detected, restarting...", "RESTART");
+    setTimeout(() => process.exit(1), 3000);
   }
 });
 
-// Reset restart counter every hour
-setInterval(() => {
-  restartCount = 0;
-}, 3600000);
-
-
-
+// Enhanced bot startup function
 function startProject() {
-    try {
-        const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "--max-old-space-size=1024", "index.js"], {
-            cwd: __dirname,
-            stdio: "inherit",
-            shell: true
-        });
+  try {
+    logger.log("Starting TOHI-BOT-HUB main process...", "STARTUP");
+    
+    const child = spawn("node", [
+      "--trace-warnings", 
+      "--async-stack-traces", 
+      "--max-old-space-size=2048",
+      "index.js"
+    ], {
+      cwd: __dirname,
+      stdio: "inherit",
+      shell: true
+    });
 
-        child.on("close", (codeExit) => {
-            if (codeExit !== 0) {
-                startProject();
-            }
-        });
+    child.on("close", (codeExit) => {
+      if (codeExit !== 0) {
+        logger.log(`Process exited with code ${codeExit}, restarting...`, "RESTART");
+        setTimeout(() => startProject(), 5000);
+      }
+    });
 
-        child.on("error", (error) => {
-            console.log(chalk.yellow(``), `An error occurred while starting the child process: ${error}`);
-        });
-    } catch (error) {
-        console.error("An error occurred:", error);
-    }
-} 
+    child.on("error", (error) => {
+      if (!shouldIgnoreError(error)) {
+        logger.log(`Child process error: ${error.message}`, "ERROR");
+      }
+    });
 
-startProject();
+  } catch (error) {
+    logger.log(`Startup error: ${error.message}`, "ERROR");
+    setTimeout(() => startProject(), 10000);
+  }
+}
 
-global.client = new Object({
+// Enhanced client object
+global.client = {
   commands: new Map(),
   events: new Map(),
   cooldowns: new Map(),
@@ -125,32 +146,30 @@ global.client = new Object({
   handleReply: new Array(),
   mainPath: process.cwd(),
   configPath: new String(),
+  
+  // Enhanced time functions
   getTime: function(option) {
-    switch (option) {
-      case "seconds":
-        return `${moment.tz("Asia/Manila").format("ss")}`;
-      case "minutes":
-        return `${moment.tz("Asia/Manila").format("mm")}`;
-      case "hours":
-        return `${moment.tz("Asia/Manila").format("HH")}`;
-      case "date":
-        return `${moment.tz("Asia/Manila").format("DD")}`;
-      case "month":
-        return `${moment.tz("Asia/Manila").format("MM")}`;
-      case "year":
-        return `${moment.tz("Asia/Manila").format("YYYY")}`;
-      case "fullHour":
-        return `${moment.tz("Asia/Manila").format("HH:mm:ss")}`;
-      case "fullYear":
-        return `${moment.tz("Asia/Manila").format("DD/MM/YYYY")}`;
-      case "fullTime":
-        return `${moment.tz("Asia/Manila").format("HH:mm:ss DD/MM/YYYY")}`;
-    }
+    const timezone = "Asia/Manila";
+    const format = {
+      "seconds": "ss",
+      "minutes": "mm", 
+      "hours": "HH",
+      "date": "DD",
+      "month": "MM",
+      "year": "YYYY",
+      "fullHour": "HH:mm:ss",
+      "fullYear": "DD/MM/YYYY",
+      "fullTime": "HH:mm:ss DD/MM/YYYY"
+    };
+    
+    return moment.tz(timezone).format(format[option] || "HH:mm:ss DD/MM/YYYY");
   },
+  
   timeStart: Date.now()
-});
+};
 
-global.data = new Object({
+// Enhanced data storage
+global.data = {
   threadInfo: new Map(),
   threadData: new Map(),
   userName: new Map(),
@@ -161,480 +180,446 @@ global.data = new Object({
   allUserID: new Array(),
   allCurrenciesID: new Array(),
   allThreadID: new Array()
-});
+};
 
-// ────────────────── //
-// -- LOAD THEMES -- //
+// Enhanced theme loading system
 const { getThemeColors } = require("./utils/log");
 const { main, secondary, tertiary, html } = getThemeColors();
+
 try {
   const themePath = './includes/cover/html.json';
   let themeData;
 
+  // Load or create theme configuration
   if (fs.existsSync(themePath)) {
-    const rawData = fs.readFileSync(themePath, 'utf8');
-
-    if (rawData.trim() === '' || rawData.trim() === '{}') {
-      themeData = null; // Will create default theme
-    } else {
-      try {
-        themeData = JSON.parse(rawData);
-        // Validate structure
-        if (!themeData || typeof themeData !== 'object' || !themeData.THEME_COLOR) {
-          themeData = null; // Invalid structure, create default
-        }
-      } catch (parseErr) {
-        console.error('Error parsing html.json:', parseErr);
-        themeData = null; // Parse error, create default
+    try {
+      const rawData = fs.readFileSync(themePath, 'utf8');
+      themeData = rawData.trim() ? JSON.parse(rawData) : null;
+      
+      if (!themeData || !themeData.THEME_COLOR) {
+        themeData = null;
       }
+    } catch (parseErr) {
+      logger.log(`Theme parse error: ${parseErr.message}`, "THEME");
+      themeData = null;
     }
   } else {
-    themeData = null; // File doesn't exist, create default
+    themeData = null;
   }
 
+  // Create default theme if needed
   if (!themeData) {
-    // Create default theme
     const defaultTheme = {
       THEME_COLOR: html || "#1702CF",
       primary: "#1702CF",
-      secondary: "#11019F",
+      secondary: "#11019F", 
       tertiary: "#1401BF",
       background: "#000000",
       text: "#ffffff",
       accent: "#1702CF"
     };
+    
+    fs.ensureDirSync(path.dirname(themePath));
     fs.writeFileSync(themePath, JSON.stringify(defaultTheme, null, 2));
-    console.log('Created default theme file');
-  } else {
-    // Ensure all required properties exist
-    const validTheme = {
-      THEME_COLOR: themeData.THEME_COLOR || html || "#1702CF",
-      primary: themeData.primary || "#1702CF",
-      secondary: themeData.secondary || "#11019F",
-      tertiary: themeData.tertiary || "#1401BF",
-      background: themeData.background || "#000000",
-      text: themeData.text || "#ffffff",
-      accent: themeData.accent || html || "#1702CF"
-    };
-    fs.writeFileSync(themePath, JSON.stringify(validTheme, null, 2));
-    console.log('Updated theme file with valid structure');
+    logger.log("Theme configuration created successfully", "THEME");
   }
+  
 } catch (error) {
-  console.error('Critical error in theme handling:', error);
-  // Final fallback - create basic theme
-  const fallbackTheme = {
-    THEME_COLOR: "#1702CF",
-    primary: "#1702CF",
-    secondary: "#11019F",
-    tertiary: "#1401BF",
-    background: "#000000",
-    text: "#ffffff",
-    accent: "#1702CF"
-  };
-  fs.writeFileSync('./includes/cover/html.json', JSON.stringify(fallbackTheme, null, 2));
+  logger.log(`Theme system error: ${error.message}`, "THEME");
 }
-// ────────────────── //
 
-const errorMessages = [];
-if (errorMessages.length > 0) {
-  console.log("Commands with errors:");
-  errorMessages.forEach(({ command, error }) => {
-    console.log(`${command}: ${error}`);
-  });
-}
-// ────────────────── //
-var configValue;
+// Configuration loading
+let configValue;
 try {
   global.client.configPath = path.join(global.client.mainPath, "config.json");
   configValue = require(global.client.configPath);
-  logger.loader("Found config.json file!");
+  logger.log("Configuration loaded successfully", "CONFIG");
 } catch (e) {
-  return logger.loader('"config.json" file not found."', "error");
+  return logger.log("Configuration file not found or invalid", "CONFIG");
 }
 
+// Apply configuration
 try {
-  for (const key in configValue) global.config[key] = configValue[key];
-  logger.loader("Config Loaded!");
+  for (const key in configValue) {
+    global.config[key] = configValue[key];
+  }
+  logger.log("Configuration applied successfully", "CONFIG");
 } catch (e) {
-  return logger.loader("Can't load file config!", "error")
+  return logger.log("Failed to apply configuration", "CONFIG");
 }
 
+// Load node modules
 for (const property in listPackage) {
   try {
-    global.nodemodule[property] = require(property)
-  } catch (e) { }
-}
-const langFile = (fs.readFileSync(`${__dirname}/languages/${global.config.language || "en"}.lang`, {
-  encoding: 'utf-8'
-})).split(/\r?\n|\r/);
-const langData = langFile.filter(item => item.indexOf('#') != 0 && item != '');
-for (const item of langData) {
-  const getSeparator = item.indexOf('=');
-  const itemKey = item.slice(0, getSeparator);
-  const itemValue = item.slice(getSeparator + 1, item.length);
-  const head = itemKey.slice(0, itemKey.indexOf('.'));
-  const key = itemKey.replace(head + '.', '');
-  const value = itemValue.replace(/\\n/gi, '\n');
-  if (typeof global.language[head] == "undefined") global.language[head] = new Object();
-  global.language[head][key] = value;
+    global.nodemodule[property] = require(property);
+  } catch (e) {
+    // Silent fail for optional modules
+  }
 }
 
+// Enhanced language loading system
+try {
+  const langFile = fs.readFileSync(
+    `${__dirname}/languages/${global.config.language || "en"}.lang`, 
+    { encoding: 'utf-8' }
+  ).split(/\r?\n|\r/);
+  
+  const langData = langFile.filter(item => item.indexOf('#') !== 0 && item !== '');
+  
+  for (const item of langData) {
+    const getSeparator = item.indexOf('=');
+    if (getSeparator === -1) continue;
+    
+    const itemKey = item.slice(0, getSeparator);
+    const itemValue = item.slice(getSeparator + 1);
+    const head = itemKey.slice(0, itemKey.indexOf('.'));
+    const key = itemKey.replace(head + '.', '');
+    const value = itemValue.replace(/\\n/gi, '\n');
+    
+    if (typeof global.language[head] === "undefined") {
+      global.language[head] = {};
+    }
+    global.language[head][key] = value;
+  }
+  
+  logger.log(`Language pack loaded: ${global.config.language || "en"}`, "LANGUAGE");
+} catch (error) {
+  logger.log(`Language loading failed: ${error.message}`, "LANGUAGE");
+}
+
+// Enhanced getText function
 global.getText = function(...args) {
   const langText = global.language;
+  
   if (!langText.hasOwnProperty(args[0])) {
-    throw new Error(`${__filename} - Not found key language: ${args[0]}`);
+    throw new Error(`Language key not found: ${args[0]}`);
   }
-  var text = langText[args[0]][args[1]];
+  
+  let text = langText[args[0]][args[1]];
   if (typeof text === 'undefined') {
-    throw new Error(`${__filename} - Not found key text: ${args[1]}`);
+    throw new Error(`Text key not found: ${args[1]}`);
   }
-  for (var i = args.length - 1; i > 0; i--) {
-    const regEx = RegExp(`%${i}`, 'g');
+  
+  // Replace placeholders
+  for (let i = args.length - 1; i > 0; i--) {
+    const regEx = new RegExp(`%${i}`, 'g');
     text = text.replace(regEx, args[i + 1]);
   }
+  
   return text;
 };
 
+// Enhanced appstate loading
 try {
-  var appStateFile = path.resolve(path.join(global.client.mainPath, config.APPSTATEPATH || "appstate.json"));
-  var appState = ((process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && (fs.readFileSync(appStateFile, 'utf8'))[0] != "[" && config.encryptSt) ? JSON.parse(global.utils.decryptState(fs.readFileSync(appStateFile, 'utf8'), (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER))) : require(appStateFile);
-  logger.loader("Found the bot's appstate.")
+  const appStateFile = path.resolve(path.join(global.client.mainPath, config.APPSTATEPATH || "appstate.json"));
+  const isEncrypted = (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && config.encryptSt;
+  
+  let appState;
+  if (isEncrypted) {
+    const encryptedData = fs.readFileSync(appStateFile, 'utf8');
+    if (encryptedData[0] !== "[") {
+      appState = JSON.parse(global.utils.decryptState(encryptedData, (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER)));
+    } else {
+      appState = JSON.parse(encryptedData);
+    }
+  } else {
+    appState = require(appStateFile);
+  }
+  
+  logger.log("Bot appstate loaded successfully", "APPSTATE");
 } catch (e) {
-  logger.loader("Can't find the bot's appstate.", "error");
- // return;
+  logger.log("Bot appstate not found or invalid", "APPSTATE");
+  var appState = [];
 }
 
-function onBot() {
-  let loginData = { appState: appState };
+// Enhanced bot initialization function
+function initializeBot() {
+  const loginData = { appState: appState };
+  
   login(loginData, async (err, api) => {
-    let getTheInfo = api;
     if (err) {
-      if (err.error == 'Error retrieving userID. This can be caused by a lot of things, including getting blocked by Facebook for logging in from an unknown location. Try logging in with a browser to verify.') {
-        console.log(err.error)
-        process.exit(0)
+      if (err.error === 'Error retrieving userID. This can be caused by a lot of things, including getting blocked by Facebook for logging in from an unknown location. Try logging in with a browser to verify.') {
+        logger.log("Account verification required. Please log in with browser.", "LOGIN");
+        return process.exit(0);
       } else {
-        console.log(err)
-        return process.exit(0)
+        logger.log(`Login error: ${err}`, "LOGIN");
+        return process.exit(0);
       }
     }
-    const custom = require('./custom');
-    custom({ api });
-    const fbstate = api.getAppState();
-    api.setOptions(global.config.FCAOption);
-      fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
-    let d = api.getAppState();
-    d = JSON.stringify(d, null, '\x09');
-    const raw = {
-      con: (datr, typ) => api.setPostReaction(datr, typ, () => {}),
-      trs:{ getTheInfo },
-    };
-    if ((process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && global.config.encryptSt) {
-      d = await global.utils.encryptState(d, process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER);
-      fs.writeFileSync(appStateFile, d)
-    } else {
-      fs.writeFileSync(appStateFile, d)
+
+    // Load custom functions
+    try {
+      const custom = require('./custom');
+      custom({ api });
+      logger.log("Custom functions loaded successfully", "CUSTOM");
+    } catch (error) {
+      logger.log(`Custom functions failed: ${error.message}`, "CUSTOM");
     }
-    global.account.cookie = fbstate.map(i => i = i.key + "=" + i.value).join(";");
-    global.client.api = api
-    global.config.version = config.version,
-      (async () => {
-        const commandsPath = `${global.client.mainPath}/modules/commands`;
-        const listCommand = fs.readdirSync(commandsPath).filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisabled.includes(command));
-        console.log(tertiary(`\n` + `──LOADING COMMANDS─●`));
-        for (const command of listCommand) {
-          try {
-            const module = require(`${commandsPath}/${command}`);
-            const { config } = module;
 
-            if (!config?.name) {
-              try {
-                throw new Error(`[ COMMAND ] ${command} command has no name property or empty!`);
-              } catch (error) {
-                console.log(chalk.red(error.message));
-                continue;
-              }
-            }
-            if (!config?.commandCategory) {
-              try {
-                throw new Error(`[ COMMAND ] ${command} commandCategory is empty!`);
-              } catch (error) {
-                console.log(chalk.red(error.message));
-                continue;
-              }
-            }
-
-            if (!config?.hasOwnProperty('usePrefix')) {
-              console.log(`Command`, chalk.hex("#ff0000")(command) + ` does not have the "usePrefix" property.`);
-              continue;
-            }
-
-            if (global.client.commands.has(config.name || '')) {
-              console.log(chalk.red(`[ COMMAND ] ${chalk.hex("#FFFF00")(command)} Module is already loaded!`));
-              continue;
-            }
-            const { dependencies, envConfig } = config;
-            if (dependencies) {
-              const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
-              Object.entries(dependencies).forEach(([reqDependency, _]) => {
-                if (listPackage[reqDependency] || builtinModules.includes(reqDependency)) return;
-
-                  try {
-                    execSync(`npm --package-lock false --save install ${reqDependency}`, {
-                      stdio: 'inherit',
-                      env: process.env,
-                      shell: true,
-                      cwd: join(__dirname, 'node_modules')
-                    });
-                    require.cache = {};
-                  } catch (error) {
-                    const errorMessage = `[PACKAGE] Failed to install package ${reqDependency} for module`;
-                    global.loading.err(chalk.hex('#ff7100')(errorMessage), 'LOADED');
-                  }
-              });
-            }
-
-            if (envConfig) {
-              const moduleName = config.name;
-              global.configModule[moduleName] = global.configModule[moduleName] || {};
-              global.config[moduleName] = global.config[moduleName] || {};
-              for (const envConfigKey in envConfig) {
-                global.configModule[moduleName][envConfigKey] = global.config[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-                global.config[moduleName][envConfigKey] = global.config[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-              }
-              var configPath = require('./config.json');
-              configPath[moduleName] = envConfig;
-              fs.writeFileSync(global.client.configPath, JSON.stringify(configPath, null, 4), 'utf-8');
-            }
-
-
-            if (module.onLoad) {
-              const moduleData = {
-                api: api
-              };
-              try {
-                module.onLoad(moduleData);
-              } catch (error) {
-                const errorMessage = "Unable to load the onLoad function of the module."
-                throw new Error(errorMessage, 'error');
-              }
-            }
-
-            if (module.handleEvent) global.client.eventRegistered.push(config.name);
-            global.client.commands.set(config.name, module);
-            try {
-              global.loading.log(`⫸ TBH ➤ ${main(`LOADED`)} ${secondary(config.name)} success`, "COMMAND");
-            } catch (err) {
-              console.error("An error occurred while loading the command:", err);
-            }
-
-            console.err
-          } catch (error) {
-            global.loading.err(`${chalk.hex('#ff7100')(`LOADED`)} ${chalk.hex("#FFFF00")(command)} fail ` + error, "COMMAND");
-          }
-        }
-      })(),
-
-      (async () => {
-        const events = fs.readdirSync(path.join(global.client.mainPath, 'modules/events')).filter(ev => ev.endsWith('.js') && !global.config.eventDisabled.includes(ev));
-        console.log(tertiary(`\n` + `──LOADING EVENTS─●`));
-        for (const ev of events) {
-          try {
-            const event = require(path.join(global.client.mainPath, 'modules/events', ev));
-            const { config, onLoad, run } = event;
-            if (!config || !config.name || !run) {
-              global.loading.err(`${chalk.hex('#ff7100')(`LOADED`)} ${chalk.hex("#FFFF00")(ev)} Module is not in the correct format. `, "EVENT");
-              continue;
-            }
-
-
-            if (errorMessages.length > 0) {
-              console.log("Commands with errors:");
-              errorMessages.forEach(({ command, error }) => {
-                console.log(`${command}: ${error}`);
-              });
-            }
-
-            if (global.client.events.has(config.name)) {
-              global.loading.err(`${chalk.hex('#ff7100')(`LOADED`)} ${chalk.hex("#FFFF00")(ev)} Module is already loaded!`, "EVENT");
-              continue;
-            }
-            if (config.dependencies) {
-              const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
-              const missingDeps = Object.keys(config.dependencies).filter(dep => !global.nodemodule[dep] && !builtinModules.includes(dep));
-              if (missingDeps.length) {
-                const depsToInstall = missingDeps.map(dep => `${dep}${config.dependencies[dep] ? '@' + config.dependencies[dep] : ''}`).join(' ');
-                if (depsToInstall) {
-                execSync(`npm install --no-package-lock --no-save ${depsToInstall}`, {
-                  stdio: 'inherit',
-                  env: process.env,
-                  shell: true,
-                  cwd: path.join(__dirname, 'node_modules')
-                });
-                }
-                Object.keys(require.cache).forEach(key => delete require.cache[key]);
-              }
-            }
-            if (config.envConfig) {
-              const configModule = global.configModule[config.name] || (global.configModule[config.name] = {});
-              const configData = global.config[config.name] || (global.config[config.name] = {});
-              for (const evt in config.envConfig) {
-                configModule[evt] = configData[evt] = config.envConfig[evt] || '';
-              }
-              fs.writeFileSync(global.client.configPath, JSON.stringify({
-                ...require(global.client.configPath),
-                [config.name]: config.envConfig
-              }, null, 2));
-            }
-            if (onLoad) {
-              const eventData = {
-                api: api
-              };
-              await onLoad(eventData);
-            }
-            global.client.events.set(config.name, event);
-            global.client.eventRegistered.push(config.name);
-            logger(`LOADED ${config.name} success`, "EVENT");
-          }
-          catch (err) {
-            global.loading.err(`${chalk.hex("#ff0000")('ERROR!')} ${secondary(ev)} failed with error: ${err.message}` + `\n`, "EVENT");
-          }
-        }
-      })();
-    console.log(tertiary(`\n` + `──BOT START─● `));
-    global.loading.log(`⫸ TBH ➤ ${main(`[ SUCCESS ]`)} Loaded ${secondary(`${global.client.commands.size}`)} commands and ${secondary(`${global.client.events.size}`)} events successfully`, "LOADED");
-    global.loading.log(`${main(`[ TIMESTART ]`)} Launch time: ${((Date.now() - global.client.timeStart) / 1000).toFixed()}s`, "LOADED");
-    global.utils.complete({ raw });
-
-    // Add comprehensive global error handlers
-process.on('uncaughtException', (error) => {
-  // Filter out common API errors that we don't need to log
-  const ignoredErrors = [
-    'Rate limited',
-    'status code 429',
-    'Too Many Requests',
-    'Jimp.read is not a function',
-    'not part of the conversation',
-    'Max retries reached for API call',
-    'Background download error',
-    'Avatar processing error',
-    'Got error 1545012',
-    'WARN sendMessage',
-    'socket hang up',
-    'ECONNRESET',
-    'ETIMEDOUT',
-    'ENOTFOUND'
-  ];
-
-  const shouldIgnore = ignoredErrors.some(ignored => 
-    error.message && error.message.includes(ignored)
-  );
-
-  if (!shouldIgnore) {
-    console.error('Uncaught Exception:', error);
-  }
-  // Don't exit the process
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  // Filter out common API rejections
-  const ignoredRejections = [
-    'Rate limited',
-    'status code 429',
-    'Too Many Requests',
-    'jimp.read is not a function',
-    'Jimp.read is not a function', 
-    'not part of the conversation',
-    'Max retries reached for API call',
-    'Background download error',
-    'Avatar processing error',
-    'Got error 1545012',
-    'ENOENT: no such file or directory',
-    'socket hang up',
-    'ECONNRESET',
-    'ETIMEDOUT',
-    'ENOTFOUND'
-  ];
-
-  const reasonStr = reason ? reason.toString() : '';
-  const shouldIgnore = ignoredRejections.some(ignored => 
-    reasonStr.includes(ignored)
-  );
-
-  if (!shouldIgnore) {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  }
-  // Don't exit the process
-});
-
-const listener = require('./includes/listen')({ api });
-    global.handleListen = api.listenMqtt(async (error, event) => {
-      if (error) {
-        // Handle critical login errors
-        if (error.error === 'Not logged in.') {
-          logger.log("Your bot account has been logged out!", 'LOGIN');
-          return process.exit(1);
-        }
-        if (error.error === 'Not logged in') {
-          logger.log("Your account has been checkpointed, please confirm your account and log in again!", 'CHECKPOINT');
-          return process.exit(0);
-        }
-
-        // Filter out ready state messages
-        if (error.type === 'ready' && error.error === null) {
-          return; // Silently handle ready state
-        }
-
-        // Comprehensive list of errors to ignore
-        const ignoredListenErrors = [
-          'Rate limited',
-          'Request failed with status code 429',
-          'Max retries reached',
-          'Avatar processing error',
-          'Background download error',
-          'Got error 1545012',
-          'Jimp.read is not a function',
-          'jimp.read is not a function',
-          'ENOTFOUND',
-          'ECONNRESET',
-          'ETIMEDOUT',
-          'socket hang up'
-        ];
-
-        const errorStr = error.toString();
-        const shouldIgnore = ignoredListenErrors.some(ignored => 
-          errorStr.includes(ignored)
-        );
-
-        if (!shouldIgnore) {
-          console.log('Listen Error:', error);
-        }
-
-        // Don't exit on common API errors
-        return;
+    // Configure API options
+    api.setOptions(global.config.FCAOption || {});
+    
+    // Save appstate
+    try {
+      const currentState = api.getAppState();
+      let stateData = JSON.stringify(currentState, null, 2);
+      
+      if ((process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && global.config.encryptSt) {
+        stateData = await global.utils.encryptState(stateData, process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER);
       }
+      
+      fs.writeFileSync(appStateFile, stateData);
+      logger.log("Appstate saved successfully", "APPSTATE");
+    } catch (error) {
+      logger.log(`Appstate save failed: ${error.message}`, "APPSTATE");
+    }
 
-      // Filter out ready state events
-      if (event && event.type === 'ready' && event.error === null) {
-        return; // Silently handle ready state
-      }
+    // Set global variables
+    global.account.cookie = api.getAppState().map(i => `${i.key}=${i.value}`).join(";");
+    global.client.api = api;
+    global.config.version = config.version;
 
-      return listener(event);
-    });
+    // Load commands
+    await loadCommands();
+    
+    // Load events  
+    await loadEvents();
+    
+    // Start listening
+    startListening(api);
   });
 }
 
-// ___END OF EVENT & API USAGE___ //
+// Enhanced command loading function
+async function loadCommands() {
+  const commandsPath = `${global.client.mainPath}/modules/commands`;
+  const listCommand = fs.readdirSync(commandsPath)
+    .filter(command => command.endsWith('.js') && 
+            !command.includes('example') && 
+            !global.config.commandDisabled.includes(command));
+
+  console.log(tertiary(`\n──LOADING COMMANDS─●`));
+  
+  let loadedCount = 0;
+  let failedCount = 0;
+
+  for (const command of listCommand) {
+    try {
+      const module = require(`${commandsPath}/${command}`);
+      const { config } = module;
+
+      // Validation
+      if (!config?.name) {
+        throw new Error(`Command ${command} has no name property`);
+      }
+      
+      if (!config?.commandCategory) {
+        throw new Error(`Command ${command} has no commandCategory`);
+      }
+      
+      if (!config.hasOwnProperty('usePrefix')) {
+        throw new Error(`Command ${command} missing usePrefix property`);
+      }
+
+      if (global.client.commands.has(config.name)) {
+        throw new Error(`Command ${config.name} already loaded`);
+      }
+
+      // Handle dependencies
+      if (config.dependencies) {
+        await handleDependencies(config.dependencies);
+      }
+
+      // Handle environment config
+      if (config.envConfig) {
+        handleEnvConfig(config.name, config.envConfig);
+      }
+
+      // Execute onLoad function
+      if (module.onLoad) {
+        try {
+          await module.onLoad({ api: global.client.api });
+        } catch (error) {
+          logger.log(`OnLoad failed for ${config.name}: ${error.message}`, "COMMAND");
+        }
+      }
+
+      // Register command
+      if (module.handleEvent) {
+        global.client.eventRegistered.push(config.name);
+      }
+      
+      global.client.commands.set(config.name, module);
+      logger.log(`✓ ${config.name} loaded successfully`, "COMMAND");
+      loadedCount++;
+
+    } catch (error) {
+      logger.log(`✗ ${command} failed: ${error.message}`, "COMMAND");
+      failedCount++;
+    }
+  }
+
+  logger.log(`Commands loaded: ${loadedCount} successful, ${failedCount} failed`, "COMMAND");
+}
+
+// Enhanced event loading function
+async function loadEvents() {
+  const eventsPath = path.join(global.client.mainPath, 'modules/events');
+  const events = fs.readdirSync(eventsPath)
+    .filter(ev => ev.endsWith('.js') && !global.config.eventDisabled.includes(ev));
+
+  console.log(tertiary(`\n──LOADING EVENTS─●`));
+  
+  let loadedCount = 0;
+  let failedCount = 0;
+
+  for (const ev of events) {
+    try {
+      const event = require(path.join(eventsPath, ev));
+      const { config, onLoad, run } = event;
+
+      if (!config?.name || !run) {
+        throw new Error(`Event ${ev} invalid format`);
+      }
+
+      if (global.client.events.has(config.name)) {
+        throw new Error(`Event ${config.name} already loaded`);
+      }
+
+      // Handle dependencies
+      if (config.dependencies) {
+        await handleDependencies(config.dependencies);
+      }
+
+      // Handle environment config
+      if (config.envConfig) {
+        handleEnvConfig(config.name, config.envConfig);
+      }
+
+      // Execute onLoad function
+      if (onLoad) {
+        try {
+          await onLoad({ api: global.client.api });
+        } catch (error) {
+          logger.log(`OnLoad failed for ${config.name}: ${error.message}`, "EVENT");
+        }
+      }
+
+      global.client.events.set(config.name, event);
+      global.client.eventRegistered.push(config.name);
+      logger.log(`✓ ${config.name} loaded successfully`, "EVENT");
+      loadedCount++;
+
+    } catch (error) {
+      logger.log(`✗ ${ev} failed: ${error.message}`, "EVENT");
+      failedCount++;
+    }
+  }
+
+  logger.log(`Events loaded: ${loadedCount} successful, ${failedCount} failed`, "EVENT");
+}
+
+// Dependency handler
+async function handleDependencies(dependencies) {
+  const builtinModules = ['fs', 'path', 'http', 'https', 'url', 'crypto', 'util', 'os', 'child_process', 'stream', 'events', 'buffer', 'querystring', 'zlib'];
+  
+  for (const [reqDependency, version] of Object.entries(dependencies)) {
+    if (listPackage[reqDependency] || builtinModules.includes(reqDependency)) continue;
+
+    try {
+      const installCmd = `npm install --no-package-lock --save ${reqDependency}${version ? '@' + version : ''}`;
+      execSync(installCmd, {
+        stdio: 'inherit',
+        env: process.env,
+        shell: true,
+        cwd: join(__dirname, 'node_modules')
+      });
+      
+      // Clear require cache
+      Object.keys(require.cache).forEach(key => delete require.cache[key]);
+      
+    } catch (error) {
+      logger.log(`Failed to install ${reqDependency}: ${error.message}`, "DEPENDENCY");
+    }
+  }
+}
+
+// Environment config handler
+function handleEnvConfig(moduleName, envConfig) {
+  global.configModule[moduleName] = global.configModule[moduleName] || {};
+  global.config[moduleName] = global.config[moduleName] || {};
+  
+  for (const [key, value] of Object.entries(envConfig)) {
+    global.configModule[moduleName][key] = global.config[moduleName][key] ?? value;
+    global.config[moduleName][key] = global.config[moduleName][key] ?? value;
+  }
+  
+  // Update config file
+  try {
+    const configPath = require('./config.json');
+    configPath[moduleName] = envConfig;
+    fs.writeFileSync(global.client.configPath, JSON.stringify(configPath, null, 2), 'utf-8');
+  } catch (error) {
+    logger.log(`Config update failed for ${moduleName}: ${error.message}`, "CONFIG");
+  }
+}
+
+// Enhanced listening function
+function startListening(api) {
+  console.log(tertiary(`\n──BOT READY─●`));
+  
+  // Display startup statistics
+  const startupTime = ((Date.now() - global.client.timeStart) / 1000).toFixed(2);
+  logger.log(`✓ System ready! Commands: ${global.client.commands.size}, Events: ${global.client.events.size}`, "READY");
+  logger.log(`⏱️ Startup time: ${startupTime}s`, "READY");
+  
+  // Load listener
+  const listener = require('./includes/listen')({ api });
+  
+  // Start listening with enhanced error handling
+  global.handleListen = api.listenMqtt(async (error, event) => {
+    if (error) {
+      // Handle critical login errors
+      if (error.error === 'Not logged in.' || error.error === 'Not logged in') {
+        logger.log("Authentication lost, please re-login", "AUTH");
+        return process.exit(1);
+      }
+
+      // Filter ready state and common errors
+      if (error.type === 'ready' || shouldIgnoreError(error)) {
+        return;
+      }
+
+      logger.log(`Listen error: ${error}`, "LISTEN");
+      return;
+    }
+
+    // Handle events
+    if (event && event.type !== 'ready') {
+      return listener(event);
+    }
+  });
+}
+
+// Database initialization
 (async () => {
   try {
-    console.log(tertiary(`\n` + `──DATABASE─●`));
-    global.loading.log(`${main(`[ CONNECT ]`)} Connected to JSON database successfully!`, "DATABASE");
-    onBot();
+    console.log(tertiary(`\n──DATABASE─●`));
+    logger.log("✓ Connected to JSON database successfully!", "DATABASE");
+    
+    // Start bot initialization
+    initializeBot();
+    
   } catch (error) {
-    global.loading.err(`${main(`[ CONNECT ]`)} Failed to connect to the JSON database: ` + error, "DATABASE");
+    logger.log(`✗ Database connection failed: ${error.message}`, "DATABASE");
   }
 })();
 
-/* *
-This bot was created by TOHIDUL (TOHI-BOT-HUB). Do not steal my code. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
-This file was modified by TOHIDUL (@TOHI-BOT-HUB). Do not steal my credits. (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
-* */
+/**
+ * ═══════════════════════════════════════════════════════════
+ *                     TOHI-BOT-HUB
+ *              © 2024 TOHI-BOT-HUB Team
+ *        GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ *              Do not remove credits
+ * ═══════════════════════════════════════════════════════════
+ */

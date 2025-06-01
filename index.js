@@ -1,128 +1,200 @@
+
 const { exec } = require("child_process");
 const chalk = require("chalk");
 const check = require("get-latest-version");
 const fs = require("fs");
 const semver = require("semver");
+
+// Initialize global loading system
 global.loading = require("./utils/log.js");
+
+/**
+ * TOHI-BOT-HUB - Advanced Bot System
+ * Created by TOHI-BOT-HUB
+ * https://github.com/YANDEVA/TOHI-BOT-HUB
+ */
 
 let configJson;
 let packageJson;
-const sign = "(›^-^)›";
+const sign = "TOHI-BOT-HUB";
 const fbstate = "appstate.json";
 
+// Load configuration
 try {
   configJson = require("./config.json");
+  console.log(chalk.green("✓ Configuration loaded successfully"));
 } catch (error) {
-  console.error("Error loading config.json:", error);
-  process.exit(1); // Exit the script with an error code
+  console.error(chalk.red("❌ Error loading config.json:"), error.message);
+  process.exit(1);
 }
 
-const delayedLog = async (message) => {
+// Animated message display function
+const delayedLog = async (message, speed = 50) => {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   for (const char of message) {
     process.stdout.write(char);
-    await delay(50);
+    await delay(speed);
   }
-
   console.log();
 };
 
-const showMessage = async () => {
-  const message =
-    chalk.yellow(" ") +
-    `The "removeSt" property is set true in the config.json. Therefore, the Appstate was cleared effortlessly! You can now place a new one in the same directory.`;
-
+// Show appstate removal message
+const showRemovalMessage = async () => {
+  const message = chalk.yellow(
+    "🔄 The 'removeSt' property is enabled in config.json. " +
+    "Appstate has been cleared! You can now add a new appstate file."
+  );
   await delayedLog(message);
 };
 
+// Handle appstate removal
 if (configJson.removeSt) {
-  fs.writeFileSync(fbstate, sign, { encoding: "utf8", flag: "w" });
-  showMessage();
-  configJson.removeSt = false;
-  fs.writeFileSync(
-    "./config.json",
-    JSON.stringify(configJson, null, 2),
-    "utf8",
-  );
-  setTimeout(() => {
-    process.exit(0);
-  }, 10000);
-  return;
+  try {
+    fs.writeFileSync(fbstate, sign, { encoding: "utf8", flag: "w" });
+    showRemovalMessage();
+    
+    // Reset removeSt flag
+    configJson.removeSt = false;
+    fs.writeFileSync(
+      "./config.json",
+      JSON.stringify(configJson, null, 2),
+      "utf8"
+    );
+    
+    console.log(chalk.blue("⏰ Bot will exit in 5 seconds..."));
+    setTimeout(() => {
+      process.exit(0);
+    }, 5000);
+    return;
+  } catch (error) {
+    console.error(chalk.red("❌ Error handling appstate removal:"), error.message);
+  }
 }
 
-// # Please note that sometimes this function is the reason the bot will auto-restart, even if your custom.js auto-restart is set to false. This is because the port switches automatically if it is unable to connect to the current port. ↓↓↓↓↓↓
-
-const excluded = configJson.UPDATE.EXCLUDED || [];
-
+// Load package.json
 try {
   packageJson = require("./package.json");
+  console.log(chalk.green("✓ Package.json loaded successfully"));
 } catch (error) {
-  console.error("Error loading package.json:", error);
+  console.error(chalk.red("❌ Error loading package.json:"), error.message);
   return;
 }
 
-function nv(version) {
+// Get excluded packages from config
+const excluded = configJson.UPDATE?.EXCLUDED || [];
+
+// Normalize version function
+function normalizeVersion(version) {
   return version.replace(/^\^/, "");
 }
 
+// Update package function with enhanced error handling
 async function updatePackage(dependency, currentVersion, latestVersion) {
-  if (!excluded.includes(dependency)) {
-    const ncv = nv(currentVersion);
+  if (excluded.includes(dependency)) {
+    console.log(chalk.gray(`⏭️  Skipping ${dependency} (excluded)`));
+    return;
+  }
 
-    if (semver.neq(ncv, latestVersion)) {
+  try {
+    const normalizedCurrent = normalizeVersion(currentVersion);
+
+    if (semver.neq(normalizedCurrent, latestVersion)) {
       console.log(
-        chalk.bgYellow.bold(` UPDATE `),
-        `There is a newer version ${chalk.yellow(`(^${latestVersion})`)} available for ${chalk.yellow(dependency)}. Updating to the latest version...`,
+        chalk.bgYellow.bold(" UPDATE "),
+        `New version available for ${chalk.yellow(dependency)}: ${chalk.green(`^${latestVersion}`)} (current: ${chalk.red(normalizedCurrent)})`
       );
 
+      // Update package.json
       packageJson.dependencies[dependency] = `^${latestVersion}`;
-
       fs.writeFileSync("./package.json", JSON.stringify(packageJson, null, 2));
 
       console.log(
-        chalk.green.bold(`UPDATED`),
-        `${chalk.yellow(dependency)} updated to ${chalk.yellow(`^${latestVersion}`)}`,
+        chalk.green.bold("✅ UPDATED"),
+        `${chalk.yellow(dependency)} → ${chalk.green(`^${latestVersion}`)}`
       );
 
-      exec(`npm install ${dependency}@latest`, (error, stdout, stderr) => {
-        if (error) {
-          console.error("Error executing npm install command:", error);
-          return;
-        }
-        console.log("npm install output:", stdout);
+      // Install the updated package
+      return new Promise((resolve, reject) => {
+        exec(`npm install ${dependency}@latest --save`, (error, stdout, stderr) => {
+          if (error) {
+            console.error(chalk.red(`❌ Failed to install ${dependency}:`), error.message);
+            reject(error);
+          } else {
+            console.log(chalk.green(`✅ ${dependency} installed successfully`));
+            resolve(stdout);
+          }
+        });
       });
     }
+  } catch (error) {
+    console.error(chalk.red(`❌ Error updating ${dependency}:`), error.message);
   }
 }
 
-async function checkAndUpdate() {
-  if (configJson.UPDATE && configJson.UPDATE.Package) {
-    try {
-      for (const [dependency, currentVersion] of Object.entries(
-        packageJson.dependencies,
-      )) {
+// Main update checker function
+async function checkAndUpdateDependencies() {
+  if (!configJson.UPDATE?.Package) {
+    console.log(chalk.yellow("📦 Package updates are disabled in config.json"));
+    return;
+  }
+
+  console.log(chalk.blue("🔍 Checking for package updates..."));
+  
+  try {
+    const dependencies = Object.entries(packageJson.dependencies || {});
+    let updatedCount = 0;
+
+    for (const [dependency, currentVersion] of dependencies) {
+      try {
         const latestVersion = await check(dependency);
         await updatePackage(dependency, currentVersion, latestVersion);
+        updatedCount++;
+      } catch (error) {
+        if (!error.message.includes('404')) {
+          console.log(chalk.red(`❌ Failed to check ${dependency}:`), error.message);
+        }
       }
-    } catch (error) {
-      console.error("Error checking and updating dependencies:", error);
     }
-  } else {
-    console.log(
-      chalk.yellow(""),
-      "Update for packages is not enabled in config.json",
-    );
+
+    console.log(chalk.green(`✅ Update check completed! Processed ${updatedCount} packages.`));
+  } catch (error) {
+    console.error(chalk.red("❌ Error during update check:"), error.message);
   }
 }
 
-// Do not remove anything if you don't know what you're doing! -Yan
+// Enhanced startup sequence
+console.log(chalk.blue.bold(`
+╔══════════════════════════════════════╗
+║          TOHI-BOT-HUB v1.8.0         ║
+║      Advanced Facebook Bot System    ║
+║     Created by TOHI-BOT-HUB Team     ║
+╚══════════════════════════════════════╝
+`));
 
+// Start update check with delay for better startup experience
 setTimeout(() => {
-  checkAndUpdate();
-}, 20000);
+  checkAndUpdateDependencies().catch(error => {
+    console.error(chalk.red("❌ Critical error during startup:"), error.message);
+  });
+}, 15000);
 
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log(chalk.yellow("\n🛑 Graceful shutdown initiated..."));
+  process.exit(0);
+});
 
+process.on('SIGTERM', () => {
+  console.log(chalk.yellow("\n🛑 Termination signal received..."));
+  process.exit(0);
+});
 
-// __@YanMaglinte was Here__ //
-// ----------------------------//
+console.log(chalk.green("🚀 TOHI-BOT-HUB initialization completed!"));
+console.log(chalk.blue("📝 Visit: https://github.com/YANDEVA/TOHI-BOT-HUB"));
+
+/**
+ * Credits: TOHI-BOT-HUB
+ * GitHub: https://github.com/YANDEVA/TOHI-BOT-HUB
+ * Do not remove credits - Respect the developers
+ */
