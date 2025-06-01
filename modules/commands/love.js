@@ -1,3 +1,4 @@
+
 /**
 * @author ProCoderMew
 * @warn Do not edit code or edit credits
@@ -25,7 +26,6 @@ const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
 const { loadImage, createCanvas } = require('canvas');
-const Jimp = require("jimp");
 
 module.exports.onLoad = async () => {
   const cachePath = __dirname + "/cache/";
@@ -38,22 +38,29 @@ module.exports.onLoad = async () => {
   }
 };
 
-async function circle(imgPath) {
-  let img = await Jimp.read(imgPath);
-  img.circle();
-  return await img.getBufferAsync("image/png");
+function drawCircularImage(ctx, image, x, y, size) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(image, x, y, size, size);
+  ctx.restore();
 }
 
 async function makeImage({ one, two }) {
-  const fs = require("fs-extra");
-  const path = require("path");
-  const axios = require("axios");
-  const Jimp = require("jimp");
-
   const basePath = path.resolve(__dirname, "cache");
-  let baseImg = await Jimp.read(basePath + "/ewhd.png");
+  
+  // Load base image
+  const baseImg = await loadImage(basePath + "/ewhd.png");
+  
+  // Create canvas
+  const canvas = createCanvas(1632, 917);
+  const ctx = canvas.getContext('2d');
+  
+  // Draw base image
+  ctx.drawImage(baseImg, 0, 0, 1632, 917);
 
-  // Download avatars
+  // Paths for avatars
   let avatarOnePath = basePath + `/avt_${one}.png`;
   let avatarTwoPath = basePath + `/avt_${two}.png`;
   let outPath = basePath + `/ewhd_${one}_${two}.png`;
@@ -72,16 +79,16 @@ async function makeImage({ one, two }) {
   );
   fs.writeFileSync(avatarTwoPath, Buffer.from(res2.data, "utf-8"));
 
-  // Read and process avatars
-  let circledOne = await Jimp.read(avatarOnePath).then(img => img.circle());
-  let circledTwo = await Jimp.read(avatarTwoPath).then(img => img.circle());
+  // Load avatars
+  const avatar1 = await loadImage(avatarOnePath);
+  const avatar2 = await loadImage(avatarTwoPath);
 
-  baseImg
-    .resize(1632, 917)
-    .composite(circledOne.resize(400, 400), 215, 258)
-    .composite(circledTwo.resize(400, 400), 1015, 260);
+  // Draw circular avatars
+  drawCircularImage(ctx, avatar1, 215, 258, 400);
+  drawCircularImage(ctx, avatar2, 1015, 260, 400);
 
-  let buffer = await baseImg.getBufferAsync("image/png");
+  // Save the final image
+  const buffer = canvas.toBuffer('image/png');
   fs.writeFileSync(outPath, buffer);
 
   // Cleanup avatars
