@@ -4,7 +4,7 @@ module.exports.config = {
   hasPermssion: 0,
   credits: "TOHI-BOT-HUB",
   description: "🔥 স্টাইলিশ প্রিফিক্স গ্রিটিং! 🚀",
-  usePrefix: false,
+  usePrefix: true,
   commandCategory: "system",
   usages: "",
   cooldowns: 3
@@ -20,7 +20,11 @@ module.exports.handleEvent = async function ({ api, event }) {
   const { threadID, messageID, body } = event;
   const prefix = global.config.PREFIX || "/";
 
-  if (!body || body.trim() !== prefix) return;
+  if (!body) return;
+  const trimmedBody = body.trim().toLowerCase();
+  
+  // Respond to both exact prefix and "prefix" text
+  if (trimmedBody !== prefix && trimmedBody !== "prefix") return;
 
   const message = [
     boxTop,
