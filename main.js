@@ -316,18 +316,33 @@ try {
   let appState;
   if (isEncrypted) {
     const encryptedData = fs.readFileSync(appStateFile, 'utf8');
+
     if (encryptedData[0] !== "[") {
       appState = JSON.parse(global.utils.decryptState(encryptedData, (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER)));
     } else {
       appState = JSON.parse(encryptedData);
     }
   } else {
-    appState = require(appStateFile);
+    appState = JSON.parse(fs.readFileSync(appStateFile, 'utf8'));
   }
 
-  logger.log("Bot appstate loaded successfully", "APPSTATE");
+  // Validate appstate structure
+  if (!Array.isArray(appState) || appState.length === 0) {
+    throw new Error("AppState is empty or invalid format");
+  }
+
+  // Check for required cookies
+  const hasUserCookie = appState.some(c => c.key === "c_user" || c.key === "i_user");
+  const hasSessionCookie = appState.some(c => c.key === "xs" || c.key === "fr");
+
+  if (!hasUserCookie || !hasSessionCookie) {
+    throw new Error("AppState missing required authentication cookies");
+  }
+
+  logger.log("Bot appstate loaded and validated successfully", "APPSTATE");
 } catch (e) {
-  logger.log("Bot appstate not found or invalid", "APPSTATE");
+  logger.log(`Bot appstate error: ${e.message}`, "APPSTATE");
+  logger.log("Please provide a valid appstate.json file with Facebook login cookies", "APPSTATE");
   var appState = [];
 }
 

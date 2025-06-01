@@ -123,10 +123,15 @@ async function updateDTSG(res, appstate, userId) {
 let isBehavior = false;
 async function bypassAutoBehavior(resp, jar, appstate, ID) {
   try {
+    if (!appstate || !Array.isArray(appstate)) {
+      utils.error("Invalid appstate provided");
+      return resp;
+    }
+    
     const appstateCUser =
       appstate.find((i) => i.key == "c_user") ||
       appstate.find((i) => i.key == "i_user");
-    const UID = ID || (appstateCUser ? appstateCUser.value : null);
+    const UID = ID || (appstateCUser && appstateCUser.value ? appstateCUser.value : null);
     
     if (!UID) {
       utils.error("No valid user ID found in appstate");
@@ -292,24 +297,34 @@ function buildAPI(html, jar) {
   let secondary_profile = cookie.filter(function (val) {
     return val.cookieString().split("=")[0] === "i_user";
   });
+  
   if (primary_profile.length === 0 && secondary_profile.length === 0) {
     throw {
       error: errorRetrieving,
     };
   } else {
     if (html.indexOf("/checkpoint/block/?next") > -1) {
-      return utils.warn(
-        "login",
-        "Checkpoint detected. Please log in with a browser to verify.",
-      );
+      throw {
+        error: "Checkpoint detected. Please log in with a browser to verify.",
+      };
     }
-    if (
-      secondary_profile[0] &&
-      secondary_profile[0].cookieString().includes("i_user")
-    ) {
-      userID = secondary_profile[0].cookieString().split("=")[1].toString();
-    } else {
-      userID = primary_profile[0].cookieString().split("=")[1].toString();
+    
+    if (secondary_profile.length > 0 && secondary_profile[0].cookieString().includes("i_user")) {
+      const cookieParts = secondary_profile[0].cookieString().split("=");
+      if (cookieParts.length > 1) {
+        userID = cookieParts[1].toString();
+      }
+    } else if (primary_profile.length > 0) {
+      const cookieParts = primary_profile[0].cookieString().split("=");
+      if (cookieParts.length > 1) {
+        userID = cookieParts[1].toString();
+      }
+    }
+    
+    if (!userID) {
+      throw {
+        error: errorRetrieving,
+      };
     }
   }
   // logger.connect("Logged in!");
