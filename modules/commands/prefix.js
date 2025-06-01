@@ -1,19 +1,19 @@
 module.exports.config = {
   name: "prefixgreet",
-  version: "1.0.5",
+  version: "1.0.6",
   hasPermssion: 0,
   credits: "TOHI-BOT-HUB",
-  description: "🔥 বটের প্রিফিক্স দেখাও এবং এপিক গ্রিটিং পাও! 🚀",
+  description: "🔥 স্টাইলিশ প্রিফিক্স গ্রিটিং! 🚀",
   usePrefix: false,
   commandCategory: "system",
   usages: "",
   cooldowns: 3
 };
 
-const boxTop = "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓";
-const boxBot = "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛";
-const boxBar = "┃";
-const pad = (txt) => txt.padEnd(38, " ");
+const boxTop = "╔══════════════════════════════╗";
+const boxBot = "╚══════════════════════════════╝";
+const boxBar = "║";
+const pad = (txt) => txt.padEnd(30, " ");
 const line = (txt) => `${boxBar} ${pad(txt)}${boxBar}`;
 
 module.exports.handleEvent = async function ({ api, event }) {
@@ -24,14 +24,14 @@ module.exports.handleEvent = async function ({ api, event }) {
 
   const message = [
     boxTop,
-    line("🌟 𝗔𝘀𝘀𝗮𝗹𝗮𝗺𝘂𝗮𝗹𝗮𝗶𝗸𝘂𝗺! 🌟"),
+    line("🌟 𝐀𝐬𝐬𝐚𝐥𝐚𝐦𝐮𝐚𝐥𝐚𝐢𝐤𝐮𝐦 🌟"),
     line(""),
-    line("👋 𝗞𝗲𝗺𝗼𝗻 𝗮𝘀𝗲𝗻?! 😎"),
+    line("✨ 𝐇𝐞𝐲 𝐓𝐡𝐞𝐫𝐞! 👋"),
     line(""),
-    line(`🔧 𝗣𝗿𝗲𝗳𝗶𝘅: [ ${prefix} ]`),
-    line("🎨 𝗠𝗮𝗱𝗲 𝗯𝘆: ✨ ŤØĤƗĐɄŁ ✨"),
+    line(`🔑 𝐏𝐫𝐞𝐟𝐢𝐱: 「 ${prefix} 」`),
+    line("💎 𝐁𝐲: TOHIDUL ✨"),
     line(""),
-    line(`💥 ${prefix}help to see all commad! 🚀`),
+    line(`🚀 ${prefix}help 𝐟𝐨𝐫 𝐜𝐦𝐝! 💫`),
     boxBot
   ].join("\n");
 
@@ -44,14 +44,14 @@ module.exports.run = async function ({ api, event }) {
 
   const message = [
     boxTop,
-    line("🌟 𝗔𝘀𝘀𝗮𝗹𝗮𝗺𝘂𝗮𝗹𝗮𝗶𝗸𝘂𝗺! 🌟"),
+    line("🌟 𝐀𝐬𝐬𝐚𝐥𝐚𝐦𝐮𝐚𝐥𝐚𝐢𝐤𝐮𝐦 🌟"),
     line(""),
-    line("👋 𝗞𝗲𝗺𝗼𝗻 𝗮𝘀𝗲𝗻?! 😎"),
+    line("✨ 𝐇𝐞𝐲 𝐓𝐡𝐞𝐫𝐞! 👋"),
     line(""),
-    line(`🔧 𝗣𝗿𝗲𝗳𝗶𝘅: [ ${prefix} ]`),
-    line("🎨 𝗠𝗮𝗱𝗲 𝗯𝘆: ✨ ŤØĤƗĐɄŁ ✨"),
+    line(`🔑 𝐏𝐫𝐞𝐟𝐢𝐱: 「 ${prefix} 」`),
+    line("💎 𝐁𝐲: TOHIDUL ✨"),
     line(""),
-    line(`💥 ${prefix}help to see all commad! 🚀`),
+    line(`🚀 ${prefix}help 𝐟𝐨𝐫 𝐜𝐦𝐝! 💫`),
     boxBot
   ].join("\n");
 
