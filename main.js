@@ -309,21 +309,25 @@ global.getText = function(...args) {
 };
 
 // Enhanced appstate loading
+let appState = [];
+const appStateFile = path.resolve(path.join(global.client.mainPath, config.APPSTATEPATH || "appstate.json"));
+
 try {
-  const appStateFile = path.resolve(path.join(global.client.mainPath, config.APPSTATEPATH || "appstate.json"));
+  if (!fs.existsSync(appStateFile)) {
+    throw new Error("AppState file not found");
+  }
+
   const isEncrypted = (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && config.encryptSt;
+  let fileContent = fs.readFileSync(appStateFile, 'utf8');
 
-  let appState;
-  if (isEncrypted) {
-    const encryptedData = fs.readFileSync(appStateFile, 'utf8');
+  if (!fileContent || fileContent.trim() === '') {
+    throw new Error("AppState file is empty");
+  }
 
-    if (encryptedData[0] !== "[") {
-      appState = JSON.parse(global.utils.decryptState(encryptedData, (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER)));
-    } else {
-      appState = JSON.parse(encryptedData);
-    }
+  if (isEncrypted && fileContent[0] !== "[") {
+    appState = JSON.parse(global.utils.decryptState(fileContent, (process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER)));
   } else {
-    appState = JSON.parse(fs.readFileSync(appStateFile, 'utf8'));
+    appState = JSON.parse(fileContent);
   }
 
   // Validate appstate structure
@@ -335,19 +339,30 @@ try {
   const hasUserCookie = appState.some(c => c.key === "c_user" || c.key === "i_user");
   const hasSessionCookie = appState.some(c => c.key === "xs" || c.key === "fr");
 
-  if (!hasUserCookie || !hasSessionCookie) {
-    throw new Error("AppState missing required authentication cookies");
+  if (!hasUserCookie) {
+    throw new Error("AppState missing user cookie (c_user or i_user)");
+  }
+
+  if (!hasSessionCookie) {
+    throw new Error("AppState missing session cookies (xs or fr)");
   }
 
   logger.log("Bot appstate loaded and validated successfully", "APPSTATE");
 } catch (e) {
   logger.log(`Bot appstate error: ${e.message}`, "APPSTATE");
   logger.log("Please provide a valid appstate.json file with Facebook login cookies", "APPSTATE");
-  var appState = [];
+  appState = [];
 }
 
 // Enhanced bot initialization function
 function initializeBot() {
+  // Check if appstate is valid before attempting login
+  if (!appState || !Array.isArray(appState) || appState.length === 0) {
+    logger.log("❌ Cannot start bot: No valid appstate provided", "LOGIN");
+    logger.log("Please ensure your appstate.json contains valid Facebook cookies", "LOGIN");
+    return;
+  }
+
   const loginData = { appState: appState };
 
   login(loginData, async (err, api) => {

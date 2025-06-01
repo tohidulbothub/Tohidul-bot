@@ -435,7 +435,7 @@ function buildAPI(html, jar) {
 async function loginHelper(appState, custom = {}, callback) {
   let mainPromise = null;
   const jar = utils.getJar();
-  if (appState) {
+  if (appState && Array.isArray(appState) && appState.length > 0) {
     // Validate appState structure
     if (!Array.isArray(appState)) {
       return callback(new Error("AppState must be an array"));
@@ -443,8 +443,14 @@ async function loginHelper(appState, custom = {}, callback) {
     
     // Check if appState has required cookies
     const hasUserCookie = appState.some(c => c.key === "c_user" || c.key === "i_user");
+    const hasSessionCookie = appState.some(c => c.key === "xs" || c.key === "fr");
+    
     if (!hasUserCookie) {
       return callback(new Error("AppState missing user cookie (c_user or i_user)"));
+    }
+    
+    if (!hasSessionCookie) {
+      return callback(new Error("AppState missing session cookies (xs or fr)"));
     }
     
     if (utils.getType(appState) === "Array" && appState.some((c) => c.name)) {
