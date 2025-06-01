@@ -31,7 +31,7 @@ module.exports = {
                 const response = await axios.post('https://api.remove.bg/v1.0/removebg', form, {
                     headers: {
                         ...form.getHeaders(),
-                        'X-Api-Key': 'YOUR_REMOVE_BG_API_KEY_HERE' // Replace with your actual API key
+                        'X-Api-Key': 'ocQu4HPEgnhyf6QgzjEUqgT9' // Replace with your actual API key
                     },
                     responseType: 'arraybuffer'
                 });
