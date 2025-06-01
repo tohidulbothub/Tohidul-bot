@@ -154,6 +154,23 @@ module.exports = {
       case "load":
         console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + text + "\n");
         break;
+      case "COMMAND":
+        // Special coloring for twitter command
+        if (text.includes("twitter")) {
+          const coloredText = text.replace(/✓/g, chalk.green("✓")).replace(/loaded successfully/g, chalk.hex("#FF69B4")("loaded successfully"));
+          process.stderr.write(
+            getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
+              coloredText +
+              "\n",
+          );
+        } else {
+          process.stderr.write(
+            getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
+              text +
+              "\n",
+          );
+        }
+        break;
       default:
         process.stderr.write(
           getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
