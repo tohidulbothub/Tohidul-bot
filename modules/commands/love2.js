@@ -32,7 +32,7 @@ module.exports.onLoad = async () => {
   const imgPath = path.resolve(__dirname, "cache", "frtwb.png");
   if (!fs.existsSync(cachePath)) fs.mkdirSync(cachePath, { recursive: true });
   if (!fs.existsSync(imgPath)) {
-    const imgUrl = "https://drive.google.com/uc?id=1y8MKI9UCcwF7BadcKGj97FrAOuB1600S";
+    const imgUrl ="https://i.postimg.cc/59BcbrFV/lov2.jpg";
     const res = await axios.get(imgUrl, { responseType: "arraybuffer" });
     fs.writeFileSync(imgPath, Buffer.from(res.data, "utf-8"));
   }
@@ -80,7 +80,7 @@ async function makeImage({ one, two }) {
   ctx.beginPath();
   ctx.arc(760, 380, 100, 0, Math.PI * 2);
   ctx.clip();
-  ctx.drawImage(avatar1, 660, 280, 200, 200);
+  ctx.drawImage(avatar1, 750, 306, 628, 428);
   ctx.restore();
 
   // Second avatar (right side)
@@ -88,7 +88,7 @@ async function makeImage({ one, two }) {
   ctx.beginPath();
   ctx.arc(332, 379, 100, 0, Math.PI * 2);
   ctx.clip();
-  ctx.drawImage(avatar2, 232, 279, 200, 200);
+  ctx.drawImage(avatar2, 479, 402, 121, 121);
   ctx.restore();
 
   // Save the final image
