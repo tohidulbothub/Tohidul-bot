@@ -1,9 +1,3 @@
-
-/**
-* @author Mohammad Nayan
-* @warn Do not edit code or edit credits
-*/
-
 module.exports.config = {
   name: "love2", 
   version: "1.0.0", 
@@ -40,16 +34,16 @@ module.exports.onLoad = async () => {
 
 async function makeImage({ one, two }) {
   const basePath = path.resolve(__dirname, "cache");
-  
+
   // Load base image
   const baseImg = await loadImage(basePath + "/frtwb.png");
-  
+
   // Create canvas
   const canvas = createCanvas(baseImg.width, baseImg.height);
   const ctx = canvas.getContext('2d');
-  
+
   // Draw base image
-  ctx.drawImage(baseImg, 0, 0);
+  ctx.drawImage(baseImg, 0, 0, baseImg.width, baseImg.height);
 
   // Paths for avatars
   let avatarOnePath = basePath + `/avt_${one}.png`;
@@ -75,20 +69,23 @@ async function makeImage({ one, two }) {
   const avatar2 = await loadImage(avatarTwoPath);
 
   // Draw circular avatars
+
   // First avatar (left side)
   ctx.save();
   ctx.beginPath();
-  ctx.arc(760, 380, 100, 0, Math.PI * 2);
+  ctx.arc(200, 360, 80, 0, Math.PI * 2, true);
+  ctx.closePath();
   ctx.clip();
-  ctx.drawImage(avatar1, 750, 306, 628, 428);
+  ctx.drawImage(avatar1, 120, 280, 160, 160);
   ctx.restore();
 
   // Second avatar (right side)
   ctx.save();
   ctx.beginPath();
-  ctx.arc(332, 379, 100, 0, Math.PI * 2);
+  ctx.arc(600, 360, 80, 0, Math.PI * 2, true);
+  ctx.closePath();
   ctx.clip();
-  ctx.drawImage(avatar2, 479, 402, 121, 121);
+  ctx.drawImage(avatar2, 520, 280, 160, 160);
   ctx.restore();
 
   // Save the final image
@@ -106,7 +103,7 @@ module.exports.run = async function({ event, api, args }) {
   const { threadID, messageID, senderID, mentions } = event;
   var mentionId = Object.keys(mentions)[0];
   let mentionTag = mentions[mentionId] ? mentions[mentionId].replace('@', '') : null;
-  
+
   if (!mentionId) {
     return api.sendMessage('Please tag 1 person', threadID, messageID);
   } else {
@@ -117,6 +114,8 @@ module.exports.run = async function({ event, api, args }) {
         mentions: [{ tag: mentionTag, id: mentionId }],
         attachment: fs.createReadStream(imgPath)
       }, threadID, () => fs.unlinkSync(imgPath), messageID);
+    }).catch(e=>{
+      api.sendMessage("Image generate korte problem hocche! " + e, threadID, messageID);
     });
   }
 };
