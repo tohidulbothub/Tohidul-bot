@@ -26,7 +26,7 @@ async function makeImage({ one, two }) {
     const fs = global.nodemodule["fs-extra"];
     const path = global.nodemodule["path"];
     const axios = global.nodemodule["axios"]; 
-    const { Jimp } = require("jimp");
+    const Jimp = require("jimp");
     const __root = path.resolve(__dirname, "cache", "canvas");
 
     let pairing_img = await Jimp.read(__root + "/pairing.png");
@@ -35,16 +35,16 @@ async function makeImage({ one, two }) {
     let avatarTwo = __root + `/avt_${two}.png`;
 
     let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-    fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
+    fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne));
 
     let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
-    fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
+    fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo));
 
     let circleOne = await Jimp.read(await circle(avatarOne));
     let circleTwo = await Jimp.read(await circle(avatarTwo));
     pairing_img.composite(circleOne.resize(150, 150), 980, 200).composite(circleTwo.resize(150, 150), 140, 200);
 
-    let raw = await pairing_img.getBufferAsync("image/png");
+    let raw = await pairing_img.getBufferAsync(Jimp.MIME_PNG);
 
     fs.writeFileSync(pathImg, raw);
     fs.unlinkSync(avatarOne);
@@ -53,10 +53,10 @@ async function makeImage({ one, two }) {
     return pathImg;
 }
 async function circle(image) {
-    const { Jimp } = require("jimp");
+    const Jimp = require("jimp");
     image = await Jimp.read(image);
     image.circle();
-    return await image.getBufferAsync("image/png");
+    return await image.getBufferAsync(Jimp.MIME_PNG);
 }
 module.exports. run = async function({ api, event, args, Users, Threads, Currencies }) {
   const axios = require("axios");
