@@ -77,10 +77,10 @@ async function makeImage({ one, two }) {
   }
 }
 async function circle(image) {
-  const jimp = require("jimp");
-  image = await jimp.read(image);
+  const Jimp = require("jimp");
+  image = await Jimp.read(image);
   image.circle();
-  return await image.getBufferAsync("image/png");
+  return await image.getBufferAsync("image/png");ferAsync("image/png");
 }
 
 module.exports.run = async function ({ event, api, args }) {    
