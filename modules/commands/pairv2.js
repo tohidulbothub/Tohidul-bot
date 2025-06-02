@@ -58,7 +58,7 @@ async function circle(image) {
     image.circle();
     return await image.getBufferAsync(Jimp.MIME_PNG);
 }
-module.exports. run = async function({ api, event, args, Users, Threads, Currencies }) {
+module.exports.run = async function({ api, event, args, Users, Threads, Currencies }) {
   const axios = require("axios");
     const fs = require("fs-extra");
     const { threadID, messageID, senderID } = event;

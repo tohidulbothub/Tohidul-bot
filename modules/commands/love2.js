@@ -34,7 +34,7 @@ module.exports.onLoad = async () => {
   if (!fs.existsSync(imgPath)) {
     const imgUrl ="https://i.postimg.cc/59BcbrFV/lov2.jpg";
     const res = await axios.get(imgUrl, { responseType: "arraybuffer" });
-    fs.writeFileSync(imgPath, Buffer.from(res.data, "utf-8"));
+    fs.writeFileSync(imgPath, Buffer.from(res.data));
   }
 };
 
@@ -61,14 +61,14 @@ async function makeImage({ one, two }) {
     `https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
     { responseType: "arraybuffer" }
   );
-  fs.writeFileSync(avatarOnePath, Buffer.from(res1.data, "utf-8"));
+  fs.writeFileSync(avatarOnePath, Buffer.from(res1.data));
 
   // Download second avatar
   let res2 = await axios.get(
     `https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
     { responseType: "arraybuffer" }
   );
-  fs.writeFileSync(avatarTwoPath, Buffer.from(res2.data, "utf-8"));
+  fs.writeFileSync(avatarTwoPath, Buffer.from(res2.data));
 
   // Load avatars
   const avatar1 = await loadImage(avatarOnePath);
