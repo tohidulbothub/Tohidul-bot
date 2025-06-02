@@ -1,7 +1,6 @@
 
 /**
 * @author Mohammad Nayan
-* @warn Do not edit code or edit credits
 */
 
 module.exports.config = {
