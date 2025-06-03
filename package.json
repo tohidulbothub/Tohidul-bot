@@ -3,6 +3,7 @@
   "version": "1.8.0",
   "description": "A Simple Messenger chatbot By Tohidul.",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -63,13 +64,14 @@
     "path": "^0.12.7",
     "pidusage": "^4.0.1",
     "process": "^0.11.10",
+    "psl": "^1.9.0",
     "qrcode": "^1.5.4",
     "qrcode-reader": "^1.0.4",
-    "request": "^2.88.2",
     "semver": "^7.7.2",
     "simple-youtube-api": "^5.2.1",
     "string-similarity": "^4.0.4",
     "tinyurl": "^1.1.7",
+    "tough-cookie": "^4.1.4",
     "websocket-stream": "^5.5.2",
     "wikijs": "^6.4.1",
     "youtube-search-api": "^1.2.2",

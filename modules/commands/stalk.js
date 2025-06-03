@@ -80,7 +80,7 @@ module.exports.run = async function({api, event, args, utils, Users, Threads}) {
 
             let fontSize = 30;
             ctx.font = `${fontSize}px Semi`;
-            
+
             while (ctx.measureText(name).width > size) {
                 fontSize -= 2;
                 ctx.font = `${fontSize}px Semi`;

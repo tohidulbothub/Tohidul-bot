@@ -496,7 +496,11 @@ async function loadCommands() {
       loadedCount++;
 
     } catch (error) {
-      logger.log(`✗ ${command} failed: ${error.message}`, "COMMAND");
+      if (error.message.includes('Cannot use import statement outside a module')) {
+        logger.log(`✗ ${command} skipped: ES6 module compatibility issue`, "COMMAND");
+      } else {
+        logger.log(`✗ ${command} failed: ${error.message}`, "COMMAND");
+      }
       failedCount++;
     }
   }
