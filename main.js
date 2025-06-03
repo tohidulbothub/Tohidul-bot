@@ -248,7 +248,8 @@ try {
   configValue = require(global.client.configPath);
   logger.log("Configuration loaded successfully", "CONFIG");
 } catch (e) {
-  return logger.log("Configuration file not found or invalid", "CONFIG");
+  logger.log("Configuration file not found or invalid", "CONFIG");
+  process.exit(1);
 }
 
 // Apply configuration
@@ -258,7 +259,8 @@ try {
   }
   logger.log("Configuration applied successfully", "CONFIG");
 } catch (e) {
-  return logger.log("Failed to apply configuration", "CONFIG");
+  logger.log("Failed to apply configuration", "CONFIG");
+  process.exit(1);
 }
 
 // Load node modules
