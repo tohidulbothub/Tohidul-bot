@@ -49,7 +49,7 @@ logger.log("Initializing TOHI-BOT-HUB System...", "STARTER");
 global.utils = require("./utils/index.js");
 global.loading = require("./utils/log.js");
 global.errorHandler = require("./utils/globalErrorHandler.js");
-global.cacheManager = require("./utils/cacheManager.js");
+
 global.nodemodule = new Object();
 global.config = new Object();
 global.configModule = new Object();

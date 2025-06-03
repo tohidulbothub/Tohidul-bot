@@ -435,10 +435,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         command.run(Obj);
         timestamps.set(senderID, dateNow);
 
-        // Auto cleanup cache files after command execution
-        if (global.cacheManager) {
-          global.cacheManager.autoCleanupAfterCommand(commandName, 60); // Cleanup after 1 minute
-        }
+        
         return;
       }
     } catch (e) {
