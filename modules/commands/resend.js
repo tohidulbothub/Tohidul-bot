@@ -56,45 +56,77 @@ module.exports.handleEvent = async function({ event, api, Users }) {
     if (!cached) return;
 
     const senderName = await Users.getNameUser(senderID);
-    // If no attachment, just send text
-    if (!cached.attachment || cached.attachment.length === 0) {
-      api.sendMessage(
-        `${senderName} unsent the message!\n\nContent:\n${cached.msgBody || ""}`,
-        main
-      );
-    } else {
-      // Re-send all attachments
-      let files = [];
-      let i = 0;
-      for (const att of cached.attachment) {
-        i++;
-        // Download attachment
-        let fileExt = (att.type === "photo") ? "jpg" :
-                      (att.type === "video") ? "mp4" :
-                      (att.type === "audio") ? "mp3" :
-                      (att.type === "file") ? "bin" : "dat";
-        let attPath = path.join(__dirname, `/cache/resend_${i}.${fileExt}`);
+    
+    // Send to both group and main admin
+    const sendTo = [threadID, main];
+    
+    for (const target of sendTo) {
+      try {
+        // If no attachment, just send text
+        if (!cached.attachment || cached.attachment.length === 0) {
+          await api.sendMessage(
+            `🔄 ${senderName} unsent a message!\n\n📝 Content:\n${cached.msgBody || "No text content"}`,
+            target
+          );
+        } else {
+          // Re-send all attachments
+          let files = [];
+          let i = 0;
+          for (const att of cached.attachment) {
+            i++;
+            // Download attachment
+            let fileExt = (att.type === "photo") ? "jpg" :
+                          (att.type === "video") ? "mp4" :
+                          (att.type === "audio") ? "mp3" :
+                          (att.type === "file") ? "bin" : "dat";
+            let attPath = path.join(__dirname, `/cache/resend_${Date.now()}_${i}.${fileExt}`);
 
-        // Download file
-        const response = await axios.get(att.url, { responseType: "arraybuffer" });
-        fs.writeFileSync(attPath, Buffer.from(response.data, "utf-8"));
-        files.push(fs.createReadStream(attPath));
-      }
-      api.sendMessage(
-        {
-          body: `${senderName} unsent the message!\n\nContent:\n${cached.msgBody || ""}\n\nAttachment(s) below.`,
-          attachment: files
-        },
-        main,
-        () => {
-          // Clean up downloaded files
-          for (const file of files) {
-            file.close && file.close();
-            fs.unlinkSync(file.path);
+            try {
+              // Download file
+              const response = await axios.get(att.url, { responseType: "arraybuffer" });
+              fs.writeFileSync(attPath, Buffer.from(response.data));
+              files.push(fs.createReadStream(attPath));
+            } catch (downloadError) {
+              console.log(`[RESEND] Failed to download attachment: ${downloadError.message}`);
+            }
+          }
+          
+          if (files.length > 0) {
+            await api.sendMessage(
+              {
+                body: `🔄 ${senderName} unsent a message!\n\n📝 Content:\n${cached.msgBody || "No text content"}\n\n📎 Attachment(s) below:`,
+                attachment: files
+              },
+              target
+            );
+            
+            // Clean up downloaded files
+            setTimeout(() => {
+              for (const file of files) {
+                try {
+                  if (file.path && fs.existsSync(file.path)) {
+                    fs.unlinkSync(file.path);
+                  }
+                } catch (cleanupError) {
+                  console.log(`[RESEND] Cleanup error: ${cleanupError.message}`);
+                }
+              }
+            }, 5000);
+          } else {
+            // If files failed to download, send text only
+            await api.sendMessage(
+              `🔄 ${senderName} unsent a message with attachments!\n\n📝 Content:\n${cached.msgBody || "No text content"}\n\n❌ Attachments could not be recovered.`,
+              target
+            );
           }
         }
-      );
+      } catch (sendError) {
+        console.log(`[RESEND] Send error to ${target}: ${sendError.message}`);
+      }
     }
+    
+    // Clean up cache after processing
+    global.resendCache.delete(messageID);
   }
 };
 
