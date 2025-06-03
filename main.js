@@ -628,8 +628,7 @@ async function startListening(api) {
   // Load listener
   const listener = require('./includes/listen.js');
 
-  // Start auto cache cleanup
-  global.cacheManager.startAutoCleanup(10); // Cleanup every 10 minutes
+  
   
   // Start listening with enhanced error handling
   global.handleListen = api.listenMqtt(async (error, event) => {
