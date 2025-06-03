@@ -185,7 +185,7 @@ module.exports.handleEvent = async function ({ api, event }) {
     if (body.startsWith("baby") || body.startsWith("bby") || body.startsWith("/bot")) {
       const arr = body.replace(/^\S+\s*/, "");
       if (!arr) {
-        await api.sendMessage("হুম, বলো আমি আসি 🤖", event.threadID, (error, info) => {
+        await api.sendMessage("hmm bby bolo 😉​", event.threadID, (error, info) => {
           global.client.handleReply.push({
             name: this.config.name,
             type: "reply",
