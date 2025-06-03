@@ -2,6 +2,7 @@ const fs = require("fs");
 const axios = require("axios");
 const ytdl = require("@distube/ytdl-core");
 const yts = require("yt-search");
+const path = require("path");
 
 module.exports.config = {
   name: "sing",
@@ -51,58 +52,34 @@ module.exports.run = async function({ api, event, args }) {
         // Download audio
         const stream = ytdl(videoUrl, {
           filter: 'audioonly',
-          quality: 'lowest'
+          quality: 'lowest',
+          format: 'mp3'
         });
 
-        // Ensure cache/songs directory exists
-        const cacheDir = `${__dirname}/cache/songs`;
+        // Ensure cache directory exists
+        const cacheDir = path.join(__dirname, 'cache');
         if (!fs.existsSync(cacheDir)) {
           fs.mkdirSync(cacheDir, { recursive: true });
         }
 
         const fileName = `sing_${Date.now()}.mp3`;
-        const filePath = `${cacheDir}/${fileName}`;
+        const filePath = path.join(cacheDir, fileName);
         const writeStream = fs.createWriteStream(filePath);
 
         stream.pipe(writeStream);
 
         writeStream.on('finish', () => {
-          // Check if file exists and has content
-          if (!fs.existsSync(filePath) || fs.statSync(filePath).size === 0) {
-            api.editMessage("❌ Downloaded file is empty. Please try again.", info.messageID);
-            return;
-          }
-
-          // Check file size (limit to 25MB)
-          const fileSize = fs.statSync(filePath).size;
-          if (fileSize > 26214400) {
-            api.editMessage("❌ File too large (max 25MB). Try a shorter song.", info.messageID);
-            fs.unlinkSync(filePath);
-            return;
-          }
-
           api.sendMessage({
             body: `🎵 ${video.title}\n👤 ${video.author.name}\n⏰ ${video.timestamp}\n👁️ ${video.views.toLocaleString()} views`,
             attachment: fs.createReadStream(filePath)
-          }, threadID, (err, messageInfo) => {
-            if (err) {
-              console.error('Send message error:', err);
-              api.editMessage("❌ Failed to send audio file. Please try again.", info.messageID);
-            } else {
-              // Successfully sent, remove processing message
-              api.unsendMessage(info.messageID);
-            }
-            
+          }, threadID, () => {
             // Auto-delete the song file after sending
             setTimeout(() => {
               if (fs.existsSync(filePath)) {
-                try {
-                  fs.unlinkSync(filePath);
-                } catch (deleteError) {
-                  console.log('File cleanup error:', deleteError.message);
-                }
+                fs.unlinkSync(filePath);
               }
-            }, 2000);
+            }, 1000);
+            api.unsendMessage(info.messageID);
           }, messageID);
         });
 
@@ -112,24 +89,9 @@ module.exports.run = async function({ api, event, args }) {
 
           // Clean up on error
           if (fs.existsSync(filePath)) {
-            try {
-              fs.unlinkSync(filePath);
-            } catch (deleteError) {
-              console.log('File cleanup error:', deleteError.message);
-            }
+            fs.unlinkSync(filePath);
           }
         });
-
-        // Add timeout for download
-        setTimeout(() => {
-          if (!writeStream.destroyed) {
-            writeStream.destroy();
-            api.editMessage("❌ Download timeout. Please try again.", info.messageID);
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-            }
-          }
-        }, 60000); // 60 second timeout
 
       } catch (error) {
         console.error('Search/Download error:', error);
