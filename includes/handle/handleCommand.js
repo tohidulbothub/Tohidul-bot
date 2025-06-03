@@ -417,6 +417,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     else getText2 = () => {};
 
     try {
+      const cacheManager = require('../../utils/cacheManager');
+      
       const Obj = {
         ...rest,
         ...rest2,
@@ -429,11 +431,17 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         Currencies: Currencies,
         permssion: permssion,
         getText: getText2,
+        cacheManager: cacheManager, // Add cache manager to command object
       };
 
       if (command && typeof command.run === "function") {
         command.run(Obj);
         timestamps.set(senderID, dateNow);
+        
+        // Auto cleanup cache files after 30 seconds
+        setTimeout(() => {
+          cacheManager.cleanup();
+        }, 30000);
 
         if (DeveloperMode == !![]) {
           logger.log(

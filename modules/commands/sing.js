@@ -18,7 +18,7 @@ module.exports.config = {
     commandCategory: "media",
     usages: "{pn} [<song name>|<song link>]:"+ "\n   Example:"+"\n{pn} chipi chipi chapa chapa"
   }
-  module.exports.run = async ({api,args, event,commandName, message }) =>{
+  module.exports.run = async ({api,args, event,commandName, message, cacheManager }) =>{
     const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
     let videoID;
     const urlYtb = checkurl.test(args[0]);
@@ -94,6 +94,12 @@ async function dipto(url,pathName) {
     })).data;
 
     fs.writeFileSync(pathName, Buffer.from(response));
+    
+    // Track file for auto-deletion
+    if (global.cacheManager) {
+      global.cacheManager.trackFile(pathName);
+    }
+    
     return fs.createReadStream(pathName);
   }
   catch (err) {

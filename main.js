@@ -85,7 +85,7 @@ process.on('unhandledRejection', (reason, promise) => {
   const shouldIgnore = shouldIgnoreError(reason) || 
                       (reason && reason.error === 'Send message failed.') ||
                       (reason && reason.toString().includes('status code 500'));
-  
+
   if (!shouldIgnore) {
     logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
   }

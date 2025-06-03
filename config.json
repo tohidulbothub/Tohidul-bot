@@ -116,5 +116,6 @@
     "Credits": "TOHI-BOT-HUB Advanced Bot Framework System",
     "Repository": "https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB",
     "License": "MIT"
-  }
+  },
+  "autoCleanCache": true
 }
