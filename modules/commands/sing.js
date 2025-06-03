@@ -2,7 +2,6 @@ const fs = require("fs");
 const axios = require("axios");
 const ytdl = require("@distube/ytdl-core");
 const yts = require("yt-search");
-const path = require("path");
 
 module.exports.config = {
   name: "sing",
@@ -56,31 +55,61 @@ module.exports.run = async function({ api, event, args }) {
           format: 'mp3'
         });
 
-        // Ensure cache directory exists
-        const cacheDir = path.join(__dirname, 'cache');
-        if (!fs.existsSync(cacheDir)) {
-          fs.mkdirSync(cacheDir, { recursive: true });
-        }
-
         const fileName = `sing_${Date.now()}.mp3`;
-        const filePath = path.join(cacheDir, fileName);
+        const filePath = __dirname + `/cache/${fileName}`;
         const writeStream = fs.createWriteStream(filePath);
 
         stream.pipe(writeStream);
 
         writeStream.on('finish', () => {
+          // Check if file exists and has content
+          if (!fs.existsSync(filePath) || fs.statSync(filePath).size === 0) {
+            api.editMessage("❌ Failed to download audio file.", info.messageID);
+            return;
+          }
+
+          // Create attachment stream
+          const attachment = fs.createReadStream(filePath);
+          
           api.sendMessage({
             body: `🎵 ${video.title}\n👤 ${video.author.name}\n⏰ ${video.timestamp}\n👁️ ${video.views.toLocaleString()} views`,
-            attachment: fs.createReadStream(filePath)
-          }, threadID, () => {
+            attachment: attachment
+          }, threadID, (err, messageInfo) => {
+            // Close the stream
+            if (attachment && typeof attachment.destroy === 'function') {
+              attachment.destroy();
+            }
+            
+            if (err) {
+              console.error('Send message error:', err);
+              api.editMessage("❌ Failed to send audio file. Please try again.", info.messageID);
+            } else {
+              api.unsendMessage(info.messageID);
+            }
+
             // Auto-delete the song file after sending
             setTimeout(() => {
-              if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
+              try {
+                if (fs.existsSync(filePath)) {
+                  fs.unlinkSync(filePath);
+                }
+              } catch (deleteError) {
+                console.log('File cleanup error:', deleteError.message);
               }
-            }, 1000);
-            api.unsendMessage(info.messageID);
+            }, 3000);
           }, messageID);
+        });
+
+        stream.on('error', (error) => {
+          console.error('Download stream error:', error);
+          api.editMessage("❌ Error downloading audio. Please try again.", info.messageID);
+          if (fs.existsSync(filePath)) {
+            try {
+              fs.unlinkSync(filePath);
+            } catch (deleteError) {
+              console.log('File cleanup error:', deleteError.message);
+            }
+          }
         });
 
         writeStream.on('error', (error) => {
