@@ -95,7 +95,10 @@ process.on('uncaughtException', (error) => {
   if (!shouldIgnoreError(error)) {
     logger.log(`Uncaught Exception: ${error}`, "ERROR");
   }
-});Error(error)) {
+});
+
+process.on('uncaughtException', (error) => {
+  if (!shouldIgnoreError(error)) {
     logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
   }
 
