@@ -1,9 +1,8 @@
+import express from 'express';
+import fs from 'fs-extra';
+import path from 'path';
 
-const express = require('express');
-const fs = require('fs-extra');
-const path = require('path');
-
-class WebServer {
+export default class WebServer {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 5000;
@@ -76,7 +75,7 @@ class WebServer {
     this.server = this.app.listen(this.port, '0.0.0.0', () => {
       console.log(`🌐 Web server running on http://0.0.0.0:${this.port}`);
     });
-    
+
     this.server.on('error', (error) => {
       if (error.code === 'EADDRINUSE') {
         console.log(`Port ${this.port} is busy, trying another port...`);
@@ -94,5 +93,3 @@ class WebServer {
     }
   }
 }
-
-module.exports = WebServer;
