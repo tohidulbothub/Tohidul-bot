@@ -70,14 +70,26 @@ module.exports.run = async function({ api, event, Users, Threads }) {
         if (error) {
           console.error(`Failed to re-add user ${leftParticipantFbId}:`, error);
           
-          // Send failure message
-          const failureMsg = `
+          // Check if error is due to bot not being admin
+          let failureMsg;
+          if (error.toString().includes('admin') || error.toString().includes('permission')) {
+            failureMsg = `
+${stylishText("গ্রুপে থাকার যোগ্যতা নেই দেখে লিভ দিছিলো!", "fire")}
+
+😂 ${userInfo.name} পালানোর চেষ্টা করেছে!
+❌ ফেরত আনা যায়নি - বট এডমিন নয়।
+💡 বটকে এডমিন বানালে আবার এড করতে পারবো।
+
+🚩 Made by TOHIDUL`;
+          } else {
+            failureMsg = `
 ${stylishText("গ্রুপে থাকার যোগ্যতা নেই দেখে লিভ দিছিলো!", "fire")}
 
 😂 ${userInfo.name} পালানোর চেষ্টা করেছে কিন্তু ব্যর্থ!
 ❌ ফেরত আনা যায়নি - হয়তো বটকে ব্লক করেছে।
 
 🚩 Made by TOHIDUL`;
+          }
 
           return api.sendMessage(failureMsg, threadID);
         } else {
