@@ -58,9 +58,18 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
                 Obj.Currencies = Currencies 
                 Obj.getText = getText2;
                 
-                if (cmd && cmd.handleEvent) cmd.handleEvent(Obj);
+                if (cmd && cmd.handleEvent) {
+                    // Wrap in async handler to catch promise rejections
+                    Promise.resolve(cmd.handleEvent(Obj)).catch(eventError => {
+                        if (!shouldIgnoreError(eventError)) {
+                            logger.log(`Event error in ${cmd.config.name}: ${eventError.message}`, 'error');
+                        }
+                    });
+                }
             } catch (error) {
-                logger.log(global.getText('handleCommandEvent', 'moduleError', cmd.config.name), 'error');
+                if (!shouldIgnoreError(error)) {
+                    logger.log(`Command event error in ${cmd.config?.name || 'unknown'}: ${error.message}`, 'error');
+                }
             }
         }
     };

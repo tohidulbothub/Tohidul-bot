@@ -24,6 +24,16 @@ module.exports.run = async function ({ api, event, args, Users }) {
     const link = `${await baseApiUrl()}/baby`;
     const dipto = args.join(" ").toLowerCase();
     const uid = event.senderID;
+    
+    // Add rate limiting
+    const now = Date.now();
+    if (!global.babyCommandCooldown) global.babyCommandCooldown = new Map();
+    
+    const lastUsed = global.babyCommandCooldown.get(uid) || 0;
+    if (now - lastUsed < 2000) { // 2 second cooldown
+      return;
+    }
+    global.babyCommandCooldown.set(uid, now);
 
     if (!args[0]) {
       const ran = [
@@ -116,18 +126,30 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     // If not any command, chat normally
-    const a = (await axios.get(`${link}?text=${encodeURIComponent(dipto)}&senderID=${uid}&font=1`)).data.reply;
-    return api.sendMessage(a, event.threadID,
-      (error, info) => {
-        global.client.handleReply.push({
-          name: this.config.name,
-          type: "reply",
-          messageID: info.messageID,
-          author: event.senderID,
-          lnk: a,
-          apiUrl: link
-        });
-      }, event.messageID);
+    try {
+      const response = await axios.get(`${link}?text=${encodeURIComponent(dipto)}&senderID=${uid}&font=1`, {
+        timeout: 10000,
+        retry: 3
+      });
+      const a = response.data.reply;
+      
+      return api.sendMessage(a, event.threadID,
+        (error, info) => {
+          if (!error && info) {
+            global.client.handleReply.push({
+              name: this.config.name,
+              type: "reply",
+              messageID: info.messageID,
+              author: event.senderID,
+              lnk: a,
+              apiUrl: link
+            });
+          }
+        }, event.messageID);
+    } catch (apiError) {
+      console.error('[BABY] API Error:', apiError.message);
+      return api.sendMessage("⚠️ Service temporarily unavailable. Please try again later.", event.threadID, event.messageID);
+    }
 
   } catch (e) {
     console.error('Error in command execution:', e);

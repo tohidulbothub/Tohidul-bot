@@ -135,47 +135,81 @@ module.exports = function (defaultFuncs, api, ctx) {
 				"https://www.facebook.com/profile.php?id=" + (ctx.i_userID || ctx.userID);
 		}
 
-		defaultFuncs
-			.post("https://www.facebook.com/messaging/send/", ctx.jar, form)
-			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
-			.then(function (resData) {
-				if (!resData) {
-					return callback({ error: "Send message failed." });
-				}
-
-				if (resData.error) {
-					if (resData.error === 1545012) {
-						log.warn(
-							"sendMessage",
-							"Got error 1545012. This might mean that you're not part of the conversation " +
-							threadID
-						);
+		// Add retry logic for failed requests
+		const maxRetries = 3;
+		let retryCount = 0;
+		
+		function attemptSend() {
+			defaultFuncs
+				.post("https://www.facebook.com/messaging/send/", ctx.jar, form)
+				.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
+				.then(function (resData) {
+					if (!resData) {
+						if (retryCount < maxRetries) {
+							retryCount++;
+							const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+							setTimeout(attemptSend, delay);
+							return;
+						}
+						return callback({ error: "Send message failed after retries." });
 					}
-					else {
-						log.error("sendMessage", resData);
+
+					if (resData.error) {
+						if (resData.error === 1545012) {
+							log.warn(
+								"sendMessage",
+								"Got error 1545012. This might mean that you're not part of the conversation " +
+								threadID
+							);
+						}
+						else if (resData.error === 500 && retryCount < maxRetries) {
+							retryCount++;
+							const delay = Math.pow(2, retryCount) * 1000;
+							setTimeout(attemptSend, delay);
+							return;
+						}
+						else {
+							log.error("sendMessage", resData);
+						}
+						return callback(null, resData);
 					}
-					return callback(null, resData);
-				}
 
-				const messageInfo = resData.payload.actions.reduce(function (p, v) {
-					return (
-						{
-							threadID: v.thread_fbid,
-							messageID: v.message_id,
-							timestamp: v.timestamp
-						} || p
-					);
-				}, null);
+					const messageInfo = resData.payload && resData.payload.actions ? 
+						resData.payload.actions.reduce(function (p, v) {
+							return (
+								{
+									threadID: v.thread_fbid,
+									messageID: v.message_id,
+									timestamp: v.timestamp
+								} || p
+							);
+						}, null) : null;
 
-				return callback(null, messageInfo);
-			})
-			.catch(function (err) {
-				log.error("sendMessage", err);
-				if (utils.getType(err) == "Object" && err.error === "Not logged in.") {
-					ctx.loggedIn = false;
-				}
-				return callback(err);
-			});
+					return callback(null, messageInfo);
+				})
+				.catch(function (err) {
+					log.error("sendMessage", err);
+					
+					// Handle specific error cases
+					if (utils.getType(err) == "Object" && err.error === "Not logged in.") {
+						ctx.loggedIn = false;
+						return callback(err);
+					}
+					
+					// Retry on certain errors
+					if ((err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || 
+						 err.response?.status === 500) && retryCount < maxRetries) {
+						retryCount++;
+						const delay = Math.pow(2, retryCount) * 1000;
+						setTimeout(attemptSend, delay);
+						return;
+					}
+					
+					return callback(err);
+				});
+		}
+		
+		attemptSend();
 	}
 
 	function send(form, threadID, messageAndOTID, callback, isGroup) {

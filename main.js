@@ -80,15 +80,22 @@ function shouldIgnoreError(error) {
   return ignoredErrors.some(ignored => errorStr.includes(ignored));
 }
 
-// Global error handlers
+// Global error handlers with better filtering
 process.on('unhandledRejection', (reason, promise) => {
-  if (!shouldIgnoreError(reason)) {
+  const shouldIgnore = shouldIgnoreError(reason) || 
+                      (reason && reason.error === 'Send message failed.') ||
+                      (reason && reason.toString().includes('status code 500'));
+  
+  if (!shouldIgnore) {
     logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
   }
 });
 
 process.on('uncaughtException', (error) => {
   if (!shouldIgnoreError(error)) {
+    logger.log(`Uncaught Exception: ${error}`, "ERROR");
+  }
+});Error(error)) {
     logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
   }
 

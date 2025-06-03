@@ -27,6 +27,7 @@ class GlobalErrorHandler {
     const ignoredErrors = [
       'Rate limited',
       'Request failed with status code 429',
+      'Request failed with status code 500',
       'Canvas context error',
       'loadImage error',
       'not part of the conversation',
@@ -35,6 +36,8 @@ class GlobalErrorHandler {
       'Avatar processing error',
       'Got error 1545012',
       'WARN sendMessage',
+      'Send message failed',
+      'parseAndCheckLogin Got status code 500',
       'ENOENT: no such file or directory',
       'ECONNRESET',
       'ETIMEDOUT',
