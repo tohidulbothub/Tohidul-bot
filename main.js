@@ -425,6 +425,12 @@ function initializeBot() {
     global.client.api = api;
     global.config.version = config.version;
 
+    // Log bot info once
+    logger.log(
+      `[ BOT_INFO ] success!\n[ NAME ]: ${global.config.BOTNAME || "Bot Messenger"} \n[ BotID ]: ${api.getCurrentUserID()}\n[ PREFIX ]: ${global.config.PREFIX}`,
+      "LOADED"
+    );
+
     // Load commands
     await loadCommands();
 

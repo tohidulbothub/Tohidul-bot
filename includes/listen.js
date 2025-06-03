@@ -73,10 +73,7 @@ module.exports = function ({ api }) {
     }
   })();
 
-  global.loading.log(
-    `${main(`[ BOT_INFO ]`)} success!\n${main(`[ NAME ]:`)} ${!global.config.BOTNAME ? "Bot Messenger" : global.config.BOTNAME} \n${main(`[ BotID ]: `)}${api.getCurrentUserID()}\n${main(`[ PREFIX ]:`)} ${global.config.PREFIX}`,
-    "LOADED",
-  );
+  // Bot info logged once during startup - removed redundant logging
 
   // Handle ready state silently
   api.setOptions({
@@ -85,52 +82,7 @@ module.exports = function ({ api }) {
     selfListen: false
   });
 
-  const pkg = JSON.parse(fs.readFileSync("package.json", "utf-8"));
-  const v = pkg.version;
-  axios
-    .get("https://raw.githubusercontent.com/YANDEVA/BotPack/main/package.json")
-    .then((response) => {
-      const gitVersion = response.data.version;
-
-      if (compareVersions(gitVersion, v) > 0) {
-        global.loading.log(
-          `Version ${subcolor(gitVersion)} is available! Consider checking out '${secondary("https://github.com/YANDEVA/BotPack")}' for the latest updates.`,
-          "UPDATE",
-        );
-      } else {
-        global.loading.log("Bot is currently up-to-date.", "UPDATE");
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching GitHub package.json:", error);
-    });
-
-  function compareVersions(a, b) {
-    const versionA = a.split(".").map(Number);
-    const versionB = b.split(".").map(Number);
-
-    for (let i = 0; i < versionA.length; i++) {
-      if (versionA[i] > versionB[i]) return 1;
-      if (versionA[i] < versionB[i]) return -1;
-    }
-    return 0;
-  }
-
-  const logarithms = "includes/login/utils.js";
-
-  fs.readFile("main.js", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    const { botLog } = require("./../" + logarithms);
-
-    if (!data.includes("const login = require('./includes/login');")) {
-      botLog();
-    } else {
-      botLog();
-    }
-  });
+  // Version check and ASCII art logging moved to main.js to prevent duplication
   ///////////////////////////////////////////////
   //========= Require all handle need =========//
   //////////////////////////////////////////////
@@ -149,15 +101,7 @@ module.exports = function ({ api }) {
   const handleRefresh = require("./handle/handleRefresh")(runObj);
   const handleCreateDatabase = require("./handle/handleCreateDatabase")(runObj);
 
-  fs.readFile(logarithms, "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    if (!data.includes(`'\u0059'+'\u0061'+'\u006E'`)) {
-      return;
-    }
-  });
+  // Removed redundant file reading that was causing duplicate logs
   //////////////////////////////////////////////////
   //========= Send event to handle need =========//
   /////////////////////////////////////////////////
