@@ -16,8 +16,18 @@ module.exports.run = async ({ api, event, args }) => {
 	const request = require('request');
 	const fs = require("fs");
     var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
+  
+  // Protected UIDs - Add your UID here
+  const PROTECTED_UIDS = ["100092006324917"]; // Add more UIDs if needed
+  
   if (!args.join("")) return out("Please tag someone");
-  else
+  
+  // Check if trying to slap a protected user
+  const mentionedUID = Object.keys(event.mentions)[0];
+  if (mentionedUID && PROTECTED_UIDS.includes(mentionedUID)) {
+    return api.sendMessage("😂 হালা তুই বাপ রে slap দিবি? 🤣\n\n🔥 Boss Level Protection Activated! 💪\n\n👑 এই ইউজারকে slap করা যাবে না!\n\n😎 Try করলেও হবে না! 🚫", event.threadID, event.messageID);
+  }
+  
   return axios.get('https://api.waifu.pics/sfw/slap').then(res => {
         let getURL = res.data.url;
         let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
