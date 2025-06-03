@@ -39,20 +39,8 @@ module.exports.run = async function({ api, event, args, Threads }) {
   const input = args[0] ? args[0].toLowerCase() : "status";
 
   try {
-    // Check if user is bot admin
-    const isBotAdmin = global.config.ADMINBOT.includes(senderID.toString());
-    
-    // Check if user is group admin
+    // Get thread info for bot admin check
     const info = await api.getThreadInfo(threadID);
-    const isGroupAdmin = info.adminIDs.some(item => item.id == senderID);
-    
-    // Permission check for on/off commands - only bot admin or group admin can use
-    if ((input === "on" || input === "off") && !isBotAdmin && !isGroupAdmin) {
-      return api.sendMessage(
-        `${stylishText("Access Denied!", "error")}\n\n❌ শুধুমাত্র বট এডমিন বা গ্রুপ এডমিন Anti-Out চালু/বন্ধ করতে পারবেন।\n\n💡 পারমিশনের জন্য এডমিনের সাথে যোগাযোগ করুন।\n\n🚩 Made by TOHIDUL`, 
-        threadID
-      );
-    }
 
     // Get current thread data
     const data = (await Threads.getData(threadID)).data || {};
@@ -144,7 +132,7 @@ module.exports.run = async function({ api, event, args, Threads }) {
 
 💡 **বৈশিষ্ট্য:**
    • কেউ গ্রুপ ছাড়লে আবার এড করবে
-   • শুধু বট/গ্রুপ এডমিন ব্যবহার করতে পারবেন
+   • যে কেউ ব্যবহার করতে পারবেন
    • বট অবশ্যই গ্রুপ এডমিন হতে হবে
 
 ${!isBotAdmin2 ? '\n⚠️ **সতর্কতা:** বটকে গ্রুপ এডমিন বানান Anti-Out কাজ করার জন্য।' : ''}
