@@ -55,8 +55,14 @@ module.exports.run = async function({ api, event, args }) {
           format: 'mp3'
         });
 
+        // Ensure cache/songs directory exists
+        const cacheDir = `${__dirname}/cache/songs`;
+        if (!fs.existsSync(cacheDir)) {
+          fs.mkdirSync(cacheDir, { recursive: true });
+        }
+
         const fileName = `sing_${Date.now()}.mp3`;
-        const filePath = `./${fileName}`;
+        const filePath = `${cacheDir}/${fileName}`;
         const writeStream = fs.createWriteStream(filePath);
 
         stream.pipe(writeStream);
@@ -66,8 +72,12 @@ module.exports.run = async function({ api, event, args }) {
             body: `🎵 ${video.title}\n👤 ${video.author.name}\n⏰ ${video.timestamp}\n👁️ ${video.views.toLocaleString()} views`,
             attachment: fs.createReadStream(filePath)
           }, threadID, () => {
-            // Clean up
-            fs.unlinkSync(filePath);
+            // Auto-delete the song file after sending
+            setTimeout(() => {
+              if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+              }
+            }, 1000);
             api.unsendMessage(info.messageID);
           }, messageID);
         });
