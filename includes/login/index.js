@@ -1,14 +1,15 @@
+
 "use strict";
 
-import * as utils from "./utils.js";
-import cheerio from "cheerio";
-import { randomBytes, createHash } from "crypto";
-import logger from "../../utils/log.js";
-import { getThemeColors } from "../../utils/log.js";
+const utils = require("./utils.js");
+const cheerio = require("cheerio");
+const { randomBytes, createHash } = require("crypto");
+const logger = require("../../utils/log.js");
+const { getThemeColors } = require("../../utils/log.js");
 const { main, subcolor, error } = getThemeColors();
-import fs from "fs";
-import cron from "node-cron";
-import { loader } from '../../utils/log.js';
+const fs = require("fs");
+const cron = require("node-cron");
+const { loader } = require('../../utils/log.js');
 
 let globalOptions = {};
 let ctx = null;
@@ -529,13 +530,8 @@ async function loginHelper(appState, custom = {}, callback) {
         fs.readdirSync(folder)
           .filter((v) => v.endsWith(".js"))
           .map((v) => {
-            import(folder + v)
-              .then(module => {
-                api[v.replace(".js", "")] = module.default(_defaultFuncs, api, ctx);
-              })
-              .catch(err => {
-                console.error(`Failed to import ${folder + v}:`, err);
-              });
+            const module = require(folder + v);
+            api[v.replace(".js", "")] = module(_defaultFuncs, api, ctx);
           });
       };
       api.addFunctions(__dirname + "/src");
@@ -641,4 +637,4 @@ async function login(loginData, options, callback) {
   return;
 }
 
-export default login;
+module.exports = login;

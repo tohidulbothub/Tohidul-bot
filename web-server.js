@@ -1,8 +1,9 @@
-import express from 'express';
-import fs from 'fs-extra';
-import path from 'path';
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const logger = require('./utils/log.js');
 
-export default class WebServer {
+class WebServer {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 5000;
@@ -11,85 +12,71 @@ export default class WebServer {
   }
 
   setupMiddleware() {
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.static('includes/cover'));
+    this.app.use(express.json());
   }
 
   setupRoutes() {
-    // Main dashboard route
+    // Serve the main dashboard
     this.app.get('/', (req, res) => {
-      try {
-        const htmlPath = path.join(__dirname, 'includes/cover/index.html');
-        if (fs.existsSync(htmlPath)) {
-          res.sendFile(htmlPath);
-        } else {
-          res.send('<h1>TOHI-BOT-HUB</h1><p>Bot is running successfully!</p>');
-        }
-      } catch (error) {
-        res.status(500).send('Server Error');
-      }
-    });
-
-    // Dashboard route
-    this.app.get('/dashboard', (req, res) => {
       try {
         const dashboardPath = path.join(__dirname, 'includes/cover/dashboard.html');
         if (fs.existsSync(dashboardPath)) {
           res.sendFile(dashboardPath);
         } else {
-          res.json({ status: 'Bot is running', commands: global.client?.commands?.size || 0 });
+          res.send(`
+            <html>
+              <head><title>TOHI-BOT-HUB Dashboard</title></head>
+              <body>
+                <h1>🤖 TOHI-BOT-HUB is Running!</h1>
+                <p>Bot is online and ready to serve.</p>
+                <p>Dashboard coming soon...</p>
+              </body>
+            </html>
+          `);
         }
       } catch (error) {
-        res.status(500).json({ error: 'Dashboard error' });
+        logger.log(`Dashboard error: ${error.message}`, "WEBSERVER");
+        res.status(500).send('Server Error');
       }
     });
 
-    // Reviews route
-    this.app.get('/reviews', (req, res) => {
-      try {
-        const reviewsPath = path.join(__dirname, 'includes/cover/reviews.html');
-        if (fs.existsSync(reviewsPath)) {
-          res.sendFile(reviewsPath);
-        } else {
-          res.json({ message: 'Reviews not available' });
-        }
-      } catch (error) {
-        res.status(500).json({ error: 'Reviews error' });
-      }
-    });
-
-    // API status route
+    // API endpoint for bot status
     this.app.get('/api/status', (req, res) => {
       res.json({
         status: 'online',
         uptime: process.uptime(),
-        commands: global.client?.commands?.size || 0,
-        events: global.client?.events?.size || 0,
-        timestamp: new Date().toISOString()
+        memory: process.memoryUsage(),
+        commands: global.client ? global.client.commands.size : 0,
+        events: global.client ? global.client.events.size : 0
+      });
+    });
+
+    // Keep-alive endpoint
+    this.app.get('/ping', (req, res) => {
+      res.json({ 
+        status: 'alive', 
+        timestamp: new Date().toISOString() 
       });
     });
   }
 
   start() {
     this.server = this.app.listen(this.port, '0.0.0.0', () => {
-      console.log(`🌐 Web server running on http://0.0.0.0:${this.port}`);
+      logger.log(`Web server running on port ${this.port}`, "WEBSERVER");
     });
 
     this.server.on('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
-        console.log(`Port ${this.port} is busy, trying another port...`);
-        this.port = this.port + 1;
-        setTimeout(() => this.start(), 1000);
-      } else {
-        console.error('Web server error:', error);
-      }
+      logger.log(`Web server error: ${error.message}`, "WEBSERVER");
     });
   }
 
   stop() {
     if (this.server) {
       this.server.close();
+      logger.log("Web server stopped", "WEBSERVER");
     }
   }
 }
+
+module.exports = WebServer;

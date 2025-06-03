@@ -1,21 +1,21 @@
 
-import fs from "fs-extra";
-import path from 'path';
-import { join } from 'path';
-import { execSync } from 'child_process';
-import { spawn } from 'child_process';
-import config from "./config.json" assert { type: "json" };
-import pkg from './package.json' assert { type: "json" };
+const fs = require("fs-extra");
+const path = require('path');
+const { join } = require('path');
+const { execSync } = require('child_process');
+const { spawn } = require('child_process');
+const config = require("./config.json");
+const pkg = require('./package.json');
 const listPackage = pkg.dependencies;
-import login from './includes/login/index.js';
-import moment from "moment-timezone";
+const login = require('./includes/login/index.js');
+const moment = require("moment-timezone");
 // Initialize colorful logging system first
-import logger from "./utils/log.js";
+const logger = require("./utils/log.js");
 
 // Enable colorful console output globally
-import "./utils/log.js"; // This will override console.log with colorful version
-import chalk from "chalk";
-import WebServer from './web-server.js';
+require("./utils/log.js"); // This will override console.log with colorful version
+const chalk = require("chalk");
+const WebServer = require('./web-server.js');
 
 /**
  * ═══════════════════════════════════════════════════════════
@@ -46,10 +46,10 @@ try {
 logger.log("Initializing TOHI-BOT-HUB System...", "STARTER");
 
 // Enhanced global objects
-global.utils = await import("./utils/index.js");
-global.loading = await import("./utils/log.js");
-global.errorHandler = await import("./utils/globalErrorHandler.js");
-global.cacheManager = await import("./utils/cacheManager.js");
+global.utils = require("./utils/index.js");
+global.loading = require("./utils/log.js");
+global.errorHandler = require("./utils/globalErrorHandler.js");
+global.cacheManager = require("./utils/cacheManager.js");
 global.nodemodule = new Object();
 global.config = new Object();
 global.configModule = new Object();
@@ -197,7 +197,7 @@ global.data = {
 };
 
 // Enhanced theme loading system
-const { getThemeColors } = await import("./utils/log.js");
+const { getThemeColors } = require("./utils/log.js");
 const { main, secondary, tertiary, html } = getThemeColors();
 
 try {
@@ -267,7 +267,7 @@ try {
 // Load node modules
 for (const property in listPackage) {
   try {
-    global.nodemodule[property] = await import(property);
+    global.nodemodule[property] = require(property);
   } catch (e) {
     // Silent fail for optional modules
   }
@@ -395,8 +395,8 @@ function initializeBot() {
 
     // Load custom functions
     try {
-      const custom = await import('./custom.js');
-      custom.default({ api });
+      const custom = require('./custom.js');
+      custom({ api });
       logger.log("Custom functions loaded successfully", "CUSTOM");
     } catch (error) {
       logger.log(`Custom functions failed: ${error.message}`, "CUSTOM");
@@ -411,7 +411,7 @@ function initializeBot() {
       let stateData = JSON.stringify(currentState, null, 2);
 
       if ((process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER) && global.config.encryptSt) {
-        stateData = await global.utils.encryptState(stateData, process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER);
+        stateData = global.utils.encryptState(stateData, process.env.REPL_OWNER || process.env.PROCESSOR_IDENTIFIER);
       }
 
       fs.writeFileSync(appStateFile, stateData);
@@ -451,7 +451,8 @@ async function loadCommands() {
 
   for (const command of listCommand) {
     try {
-      const module = await import(`${commandsPath}/${command}`);
+      delete require.cache[require.resolve(`${commandsPath}/${command}`)];
+      const module = require(`${commandsPath}/${command}`);
       const { config } = module;
 
       // Validation
@@ -525,7 +526,8 @@ async function loadEvents() {
 
   for (const ev of events) {
     try {
-      const event = await import(path.join(eventsPath, ev));
+      delete require.cache[require.resolve(path.join(eventsPath, ev))];
+      const event = require(path.join(eventsPath, ev));
       const { config, onLoad, run } = event;
 
       if (!config?.name || !run) {
@@ -586,7 +588,7 @@ async function handleDependencies(dependencies) {
       });
 
       // Clear require cache
-      Object.keys(process.moduleLoadList).forEach(key => delete process.moduleLoadList[key]);
+      Object.keys(require.cache).forEach(key => delete require.cache[key]);
 
     } catch (error) {
       logger.log(`Failed to install ${reqDependency}: ${error.message}`, "DEPENDENCY");
@@ -615,7 +617,7 @@ function handleEnvConfig(moduleName, envConfig) {
 }
 
 // Enhanced listening function
-function startListening(api) {
+async function startListening(api) {
   console.log(tertiary(`\n──BOT READY─●`));
 
   // Display startup statistics
@@ -624,7 +626,7 @@ function startListening(api) {
   logger.log(`⏱️ Startup time: ${startupTime}s`, "READY");
 
   // Load listener
-  const listener = await import('./includes/listen.js');
+  const listener = require('./includes/listen.js');
 
   // Start auto cache cleanup
   global.cacheManager.startAutoCleanup(10); // Cleanup every 10 minutes
@@ -649,7 +651,7 @@ function startListening(api) {
 
     // Handle events
     if (event && event.type !== 'ready') {
-      return listener.default({ api })(event);
+      return listener({ api })(event);
     }
   });
 }
