@@ -128,9 +128,16 @@ module.exports.run = async function ({ api, event, args, Users }) {
     // If not any command, chat normally
     try {
       const response = await axios.get(`${link}?text=${encodeURIComponent(dipto)}&senderID=${uid}&font=1`, {
-        timeout: 10000,
-        retry: 3
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
       });
+      
+      if (!response.data || !response.data.reply) {
+        throw new Error('Invalid response format');
+      }
+      
       const a = response.data.reply;
       
       return api.sendMessage(a, event.threadID,
@@ -162,20 +169,34 @@ module.exports.handleReply = async function ({ api, event, handleReply }) {
     if (event.type == "message_reply") {
       const reply = event.body.toLowerCase();
       if (isNaN(reply)) {
-        const b = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(reply)}&senderID=${event.senderID}&font=1`)).data.reply;
+        const response = await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(reply)}&senderID=${event.senderID}&font=1`, {
+          timeout: 15000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        if (!response.data || !response.data.reply) {
+          throw new Error('Invalid API response');
+        }
+        
+        const b = response.data.reply;
         await api.sendMessage(b, event.threadID, (error, info) => {
-          global.client.handleReply.push({
-            name: this.config.name,
-            type: "reply",
-            messageID: info.messageID,
-            author: event.senderID,
-            lnk: b
-          });
+          if (!error && info) {
+            global.client.handleReply.push({
+              name: this.config.name,
+              type: "reply",
+              messageID: info.messageID,
+              author: event.senderID,
+              lnk: b
+            });
+          }
         }, event.messageID);
       }
     }
   } catch (err) {
-    return api.sendMessage(`Error: ${err.message}`, event.threadID, event.messageID);
+    console.error('[BABY] HandleReply Error:', err.message);
+    return api.sendMessage("⚠️ Service temporarily unavailable.", event.threadID, event.messageID);
   }
 };
 
@@ -186,27 +207,43 @@ module.exports.handleEvent = async function ({ api, event }) {
       const arr = body.replace(/^\S+\s*/, "");
       if (!arr) {
         await api.sendMessage("hmm bby bolo 😉​", event.threadID, (error, info) => {
-          global.client.handleReply.push({
-            name: this.config.name,
-            type: "reply",
-            messageID: info.messageID,
-            author: event.senderID
-          });
+          if (!error && info) {
+            global.client.handleReply.push({
+              name: this.config.name,
+              type: "reply",
+              messageID: info.messageID,
+              author: event.senderID
+            });
+          }
         }, event.messageID);
       } else {
-        const a = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(arr)}&senderID=${event.senderID}&font=1`)).data.reply;
+        const response = await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(arr)}&senderID=${event.senderID}&font=1`, {
+          timeout: 15000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        if (!response.data || !response.data.reply) {
+          throw new Error('Invalid API response');
+        }
+        
+        const a = response.data.reply;
         await api.sendMessage(a, event.threadID, (error, info) => {
-          global.client.handleReply.push({
-            name: this.config.name,
-            type: "reply",
-            messageID: info.messageID,
-            author: event.senderID,
-            lnk: a
-          });
+          if (!error && info) {
+            global.client.handleReply.push({
+              name: this.config.name,
+              type: "reply",
+              messageID: info.messageID,
+              author: event.senderID,
+              lnk: a
+            });
+          }
         }, event.messageID);
       }
     }
   } catch (err) {
-    return api.sendMessage(`Error: ${err.message}`, event.threadID, event.messageID);
+    console.error('[BABY] HandleEvent Error:', err.message);
+    // Don't send error messages for event handlers to avoid spam
   }
 };
