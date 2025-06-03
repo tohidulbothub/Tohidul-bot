@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+const fs = require('fs-extra');
 const pathFile = __dirname + '/autoreact.txt';
 
 module.exports = {

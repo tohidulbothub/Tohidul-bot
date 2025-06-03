@@ -1,12 +1,12 @@
-import axios from "axios";
-import fs from 'fs';
+const axios = require("axios");
+const fs = require('fs')
 const baseApiUrl = async () => {
   const base = await axios.get(
 `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`,
   );
   return base.data.api;
 };
-export const config = {
+module.exports.config = {
     name: "sing",
     version: "2.1.0",
     aliases: [ "music", "play"],
@@ -18,7 +18,7 @@ export const config = {
     commandCategory: "media",
     usages: "{pn} [<song name>|<song link>]:"+ "\n   Example:"+"\n{pn} chipi chipi chapa chapa"
   }
-  export const run = async ({api,args, event,commandName, message, cacheManager }) => {
+  module.exports.run = async ({api,args, event,commandName, message, cacheManager }) =>{
     const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
     let videoID;
     const urlYtb = checkurl.test(args[0]);
@@ -64,7 +64,7 @@ global.client.handleReply.push({
       });
     },event.messageID);
   }
- export const handleReply = async ({ event, api, handleReply }) => {
+ module.exports.handleReply = async ({ event, api, handleReply }) => {
     try {
     const { result } = handleReply;
     const choice = parseInt(event.body);

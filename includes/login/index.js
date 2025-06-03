@@ -1,14 +1,14 @@
 "use strict";
 
-import * as utils from "./utils.js";
-import cheerio from "cheerio";
-import { randomBytes, createHash } from "crypto";
-import logger from "../../utils/log.js";
-import { getThemeColors } from "../../utils/log.js";
+const utils = require("./utils");
+const cheerio = require("cheerio");
+const { randomBytes, createHash } = require("crypto");
+const logger = require("../../utils/log.js");
+const { getThemeColors } = require("../../utils/log.js");
 const { main, subcolor, error } = getThemeColors();
-import fs from "fs";
-import cron from "node-cron";
-import { loader } from '../../utils/log.js';
+const fs = require("fs");
+const cron = require("node-cron");
+const { loader } = require('../../utils/log');
 
 let globalOptions = {};
 let ctx = null;
@@ -86,7 +86,7 @@ async function updateDTSG(res, appstate, userId) {
       appstate.find((i) => i.key == "i_user") ||
       appstate.find((i) => i.key == "c_user");
     const UID = userId || (appstateCUser ? appstateCUser.value : null);
-
+    
     if (!UID) {
       utils.error("No valid user ID found for DTSG update");
       return res;
@@ -127,12 +127,12 @@ async function bypassAutoBehavior(resp, jar, appstate, ID) {
       utils.error("Invalid appstate provided");
       return resp;
     }
-
+    
     const appstateCUser =
       appstate.find((i) => i.key == "c_user") ||
       appstate.find((i) => i.key == "i_user");
     const UID = ID || (appstateCUser && appstateCUser.value ? appstateCUser.value : null);
-
+    
     if (!UID) {
       utils.error("No valid user ID found in appstate");
       return resp;
@@ -297,7 +297,7 @@ function buildAPI(html, jar) {
   let secondary_profile = cookie.filter(function (val) {
     return val.cookieString().split("=")[0] === "i_user";
   });
-
+  
   if (primary_profile.length === 0 && secondary_profile.length === 0) {
     throw {
       error: errorRetrieving,
@@ -308,7 +308,7 @@ function buildAPI(html, jar) {
         error: "Checkpoint detected. Please log in with a browser to verify.",
       };
     }
-
+    
     if (secondary_profile.length > 0 && secondary_profile[0].cookieString().includes("i_user")) {
       const cookieParts = secondary_profile[0].cookieString().split("=");
       if (cookieParts.length > 1) {
@@ -320,7 +320,7 @@ function buildAPI(html, jar) {
         userID = cookieParts[1].toString();
       }
     }
-
+    
     if (!userID) {
       throw {
         error: errorRetrieving,
@@ -440,19 +440,19 @@ async function loginHelper(appState, custom = {}, callback) {
     if (!Array.isArray(appState)) {
       return callback(new Error("AppState must be an array"));
     }
-
+    
     // Check if appState has required cookies
     const hasUserCookie = appState.some(c => c.key === "c_user" || c.key === "i_user");
     const hasSessionCookie = appState.some(c => c.key === "xs" || c.key === "fr");
-
+    
     if (!hasUserCookie) {
       return callback(new Error("AppState missing user cookie (c_user or i_user)"));
     }
-
+    
     if (!hasSessionCookie) {
       return callback(new Error("AppState missing session cookies (xs or fr)"));
     }
-
+    
     if (utils.getType(appState) === "Array" && appState.some((c) => c.name)) {
       appState = appState.map((c) => {
         c.key = c.name;
@@ -529,13 +529,11 @@ async function loginHelper(appState, custom = {}, callback) {
         fs.readdirSync(folder)
           .filter((v) => v.endsWith(".js"))
           .map((v) => {
-            import(folder + v)
-              .then(module => {
-                api[v.replace(".js", "")] = module.default(_defaultFuncs, api, ctx);
-              })
-              .catch(err => {
-                console.error(`Failed to import ${folder + v}:`, err);
-              });
+            api[v.replace(".js", "")] = require(folder + v)(
+              _defaultFuncs,
+              api,
+              ctx,
+            );
           });
       };
       api.addFunctions(__dirname + "/src");
@@ -641,4 +639,4 @@ async function login(loginData, options, callback) {
   return;
 }
 
-export default login;
+module.exports = login;
