@@ -27,10 +27,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
     if (!args[0]) {
       const ran = [
-        "Bolo baby",
-        "হুম, বলো আমি আসি 💬",
-        "type help baby",
-        "type !baby hi"
+        "bolo bby tumi amake valopasho 🙂​🙃​"
       ];
       const r = ran[Math.floor(Math.random() * ran.length)];
       return api.sendMessage(r, event.threadID, event.messageID);
