@@ -2,16 +2,26 @@
 const fs = require('fs');
 const path = require('path');
 
+const fs = require('fs-extra');
+const path = require('path');
+
 class CacheManager {
   constructor() {
     this.cacheDir = path.join(__dirname, '../modules/commands/cache');
     this.tempFiles = new Set();
     this.cleanupTimer = null;
+    this.commandFiles = new Map(); // Track files by command
   }
 
   // Track a file for auto-deletion
-  trackFile(filePath) {
+  trackFile(filePath, commandName = null) {
     this.tempFiles.add(filePath);
+    if (commandName) {
+      if (!this.commandFiles.has(commandName)) {
+        this.commandFiles.set(commandName, new Set());
+      }
+      this.commandFiles.get(commandName).add(filePath);
+    }
   }
 
   // Clean up tracked files
@@ -27,6 +37,33 @@ class CacheManager {
       }
     }
     this.tempFiles.clear();
+    this.commandFiles.clear();();
+  }
+
+  // Clean up files for a specific command
+  cleanupCommand(commandName) {
+    if (this.commandFiles.has(commandName)) {
+      const files = this.commandFiles.get(commandName);
+      let deletedCount = 0;
+      
+      for (const filePath of files) {
+        try {
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            deletedCount++;
+          }
+          this.tempFiles.delete(filePath);
+        } catch (error) {
+          console.error(`❌ Error deleting ${filePath}:`, error.message);
+        }
+      }
+      
+      this.commandFiles.delete(commandName);
+      
+      if (deletedCount > 0) {
+        console.log(`🧹 Auto-deleted ${deletedCount} cache files for command: ${commandName}`);
+      }
+    }
   }
 
   // Clean up specific file extensions in cache directory
@@ -65,6 +102,13 @@ class CacheManager {
     }
   }
 
+  // Auto cleanup after command execution (with delay)
+  autoCleanupAfterCommand(commandName, delaySeconds = 30) {
+    setTimeout(() => {
+      this.cleanupCommand(commandName);
+    }, delaySeconds * 1000);
+  }
+
   // Start automatic cleanup timer
   startAutoCleanup(intervalMinutes = 15) {
     if (this.cleanupTimer) {
@@ -88,4 +132,4 @@ class CacheManager {
   }
 }
 
-module.exports = new CacheManager();
+module.exports = new CacheManager();w CacheManager();

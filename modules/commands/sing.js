@@ -22,7 +22,7 @@ module.exports.config = {
     const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
     let videoID;
     const urlYtb = checkurl.test(args[0]);
-     
+
 if (urlYtb) {
   const match = args[0].match(checkurl);
   videoID = match ? match[1] : null;
@@ -94,12 +94,12 @@ async function dipto(url,pathName) {
     })).data;
 
     fs.writeFileSync(pathName, Buffer.from(response));
-    
+
     // Track file for auto-deletion
     if (global.cacheManager) {
-      global.cacheManager.trackFile(pathName);
+      global.cacheManager.trackFile(pathName, 'sing');
     }
-    
+
     return fs.createReadStream(pathName);
   }
   catch (err) {

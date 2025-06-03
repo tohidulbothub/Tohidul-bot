@@ -48,6 +48,7 @@ logger.log("Initializing TOHI-BOT-HUB System...", "STARTER");
 global.utils = require("./utils");
 global.loading = require("./utils/log.js");
 global.errorHandler = require("./utils/globalErrorHandler");
+global.cacheManager = require("./utils/cacheManager");
 global.nodemodule = new Object();
 global.config = new Object();
 global.configModule = new Object();
@@ -622,6 +623,9 @@ function startListening(api) {
   // Load listener
   const listener = require('./includes/listen')({ api });
 
+  // Start auto cache cleanup
+  global.cacheManager.startAutoCleanup(10); // Cleanup every 10 minutes
+  
   // Start listening with enhanced error handling
   global.handleListen = api.listenMqtt(async (error, event) => {
     if (error) {

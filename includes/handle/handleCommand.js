@@ -154,11 +154,11 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       }
 
       const cmdName = commandName.slice(PREFIX.length).toLowerCase();
-      
+
       if (!command) {
         // First check for exact command name match
         command = commands.get(cmdName);
-        
+
         // If not found, check for aliases
         if (!command) {
           for (const [name, cmdModule] of commands.entries()) {
@@ -170,7 +170,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
             }
           }
         }
-        
+
         // If still not found, try similarity matching
         if (!command) {
           const allCommandNames = [];
@@ -182,7 +182,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
               allCommandNames.push(...cmdModule.config.aliases);
             }
           }
-          
+
           const checker = stringSimilarity.findBestMatch(cmdName, allCommandNames);
           if (checker.bestMatch.rating >= 0.5) {
             // Find the command by name or alias
@@ -208,7 +208,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       // Handle commands without prefix (usePrefix: false)
       if (!command) {
         const firstWord = body.trim().split(' ')[0].toLowerCase();
-        
+
         // Check for exact command name match
         for (const [cmdName, cmdModule] of commands.entries()) {
           if (cmdModule.config && cmdModule.config.usePrefix === false && 
@@ -217,7 +217,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
             break;
           }
         }
-        
+
         // If not found, check for aliases
         if (!command) {
           for (const [cmdName, cmdModule] of commands.entries()) {
@@ -279,15 +279,15 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         const isCommandMatch = firstWord === command.config.name.toLowerCase() || 
           (command.config.aliases && Array.isArray(command.config.aliases) && 
            command.config.aliases.some(alias => alias.toLowerCase() === firstWord));
-        
+
         if (!isCommandMatch) {
           return; // Silently ignore if not matching
         }
-        
+
         // Update args for non-prefix commands
         const tempArgs = body.trim().split(/ +/);
         tempArgs.shift(); // Remove the command name
-        
+
         // Clear existing args and add new ones
         while (args.length > 0) {
           args.pop();
@@ -418,7 +418,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
 
     try {
       const cacheManager = require('../../utils/cacheManager');
-      
+
       const Obj = {
         ...rest,
         ...rest2,
@@ -437,26 +437,10 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       if (command && typeof command.run === "function") {
         command.run(Obj);
         timestamps.set(senderID, dateNow);
-        
-        // Auto cleanup cache files after 30 seconds
-        setTimeout(() => {
-          cacheManager.cleanup();
-        }, 30000);
 
-        if (DeveloperMode == !![]) {
-          logger.log(
-            global.getText(
-              "handleCommand",
-              "executeCommand",
-              time,
-              commandName,
-              senderID,
-              threadID,
-              args.join(" "),
-              Date.now() - dateNow,
-            ),
-            "DEV MODE",
-          );
+        // Auto cleanup cache files after command execution
+        if (global.cacheManager) {
+          global.cacheManager.autoCleanupAfterCommand(commandName, 60); // Cleanup after 1 minute
         }
         return;
       }
