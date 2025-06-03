@@ -2,27 +2,34 @@
   "approvedGroups": [
     {
       "threadID": "29215999454712506",
-      "threadName": "Bot Tester GC",
-      "memberCount": 8,
-      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "threadName": "Group Info Unavailable",
+      "memberCount": 0,
+      "backupDate": "৩/৬/২০২৫, ১২:৫৪:২৮ PM",
       "status": "auto_backed_up"
     },
     {
       "threadID": "8691975704250419",
-      "threadName": "Group Info Unavailable",
-      "memberCount": 0,
-      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "threadName": "《♡𝙶𝚑𝚘𝚜𝚝Տ ᶜˡᵘᵇ᭄∮⚔️",
+      "memberCount": 119,
+      "backupDate": "৩/৬/২০২৫, ১২:৫৪:২৮ PM",
       "status": "auto_backed_up"
     },
     {
       "threadID": "24135804796027468",
-      "threadName": "Unknown Group",
-      "memberCount": 3,
-      "backupDate": "১/৬/২০২৫, ২:০৬:১৬ PM",
+      "threadName": "Group Info Unavailable",
+      "memberCount": 0,
+      "backupDate": "৩/৬/২০২৫, ১২:৫৪:২৮ PM",
+      "status": "auto_backed_up"
+    },
+    {
+      "threadID": "28955540137378384",
+      "threadName": "HSC26 Lahiri Degree College",
+      "memberCount": 28,
+      "backupDate": "৩/৬/২০২৫, ১২:৫৪:২৮ PM",
       "status": "auto_backed_up"
     }
   ],
-  "lastUpdated": "১/৬/২০২৫, ২:০৬:১৬ PM",
-  "totalGroups": 3,
+  "lastUpdated": "৩/৬/২০২৫, ১২:৫৪:২৮ PM",
+  "totalGroups": 4,
   "backupNote": "This file stores approved group data for rejoin feature"
 }
