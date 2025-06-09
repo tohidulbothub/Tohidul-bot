@@ -17,13 +17,13 @@ module.exports = {
   run: async function ({ api, event }) {
     try {
       if (!event.messageReply || !event.messageReply.attachments || event.messageReply.attachments.length === 0) {
-        message.reply("Please reply to a video message to convert it to audio.");
+        api.sendMessage("Please reply to a video message to convert it to audio.", event.threadID, event.messageID);
         return;
       }
 
       const dipto = event.messageReply.attachments[0];
       if (dipto.type !== "video") {
-        api.sendMessage("The replied content must be a video.", threadID, messageID);
+        api.sendMessage("The replied content must be a video.", event.threadID, event.messageID);
         return;
       }
       const { data } = await axios.get(dipto.url, { method: 'GET', responseType: 'arraybuffer' });
@@ -35,7 +35,7 @@ module.exports = {
       api.sendMessage(msg, event.threadID, event.messageID);
     } catch (e) {
       console.log(e);
-api.sendMessage(e.message, threadID, messageID)
+api.sendMessage(e.message, event.threadID, event.messageID)
     }
   },
 };

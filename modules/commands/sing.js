@@ -1,3 +1,4 @@
+
 module.exports.config = {
   name: "play",
   version: "1.0.5",
@@ -26,7 +27,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
   const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
   ytdl.getInfo(handleReply.link[event.body - 1]).then(res => {
   let body = res.videoDetails.title;
-  api.sendMessage(`Processing audio... !\n??????????????\n${body}\n??????????????\nPlease Wait !`, event.threadID, (err, info) =>
+  api.sendMessage(`Processing audio... !\n──────────\n${body}\n──────────\nPlease Wait !`, event.threadID, (err, info) =>
   setTimeout(() => {api.unsendMessage(info.messageID) } , 10000));
     });
   try {
@@ -35,14 +36,14 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     ytdl(handleReply.link[event.body - 1])
       .pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`))
       .on("close", () => {
-        if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`).size > 26214400) return api.sendMessage('??File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID);
+        if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`).size > 26214400) return api.sendMessage('❌File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID);
         else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID)
       })
       .on("error", (error) => api.sendMessage(`There was a problem processing the request, error: \n${error}`, event.threadID, event.messageID));
     });
     }
   catch {
-    api.sendMessage("?Unable to process your request!", event.threadID, event.messageID);
+    api.sendMessage("❌Unable to process your request!", event.threadID, event.messageID);
   }
   return api.unsendMessage(handleReply.messageID);
 }
@@ -56,7 +57,7 @@ module.exports.run = async function({ api, event, args }) {
 
   const youtube = new YouTubeAPI(global.configModule[this.config.name].YOUTUBE_API);
   const keyapi = global.configModule[this.config.name].YOUTUBE_API
-  if (args.length == 0 || !args) return api.sendMessage(',??The search field cannot be left blank!', event.threadID, event.messageID);
+  if (args.length == 0 || !args) return api.sendMessage('❌The search field cannot be left blank!', event.threadID, event.messageID);
   const keywordSearch = args.join(" ");
   const videoPattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
   const scRegex = /^https?:\/\/(soundcloud\.com)\/(.*)$/;
@@ -71,15 +72,15 @@ module.exports.run = async function({ api, event, args }) {
       ytdl(args[0])
         .pipe(createWriteStream(__dirname + `/cache/${id}.m4a`))
         .on("close", () => {
-          if (statSync(__dirname + `/cache/${id}.m4a`).size > 26214400) return api.sendMessage('??The file could not be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`), event.messageID);
+          if (statSync(__dirname + `/cache/${id}.m4a`).size > 26214400) return api.sendMessage('❌The file could not be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`), event.messageID);
           else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${id}.m4a`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`) , event.messageID)
         })
-        .on("error", (error) => api.sendMessage(`?There was a problem while processing the request, error: \n${error}`, event.threadID, event.messageID));
+        .on("error", (error) => api.sendMessage(`❌There was a problem while processing the request, error: \n${error}`, event.threadID, event.messageID));
       });
       }
     catch (e) {
       console.log(e);
-      api.sendMessage("?Unable to process your request!", event.threadID, event.messageID);
+      api.sendMessage("❌Unable to process your request!", event.threadID, event.messageID);
     }
 
   }
@@ -91,8 +92,7 @@ module.exports.run = async function({ api, event, args }) {
       body = `Title: ${songInfo.title} | ${(timePlay - (timePlay %= 60)) / 60 + (9 < timePlay ? ':' : ':0') + timePlay}]`;
     }
     catch (error) {
-      if (error.statusCode == "4JUdGzvrMFDWrUUwY3toJATSeNwjn54LkCnKBPRzDuhzi5vSepHfUckJNxRL2gjkNrSqtCoRUrEDAgRwsQvVCjZbRyFTLRNyDmT1a1boZVmessageID);
-      api.sendMessage("?The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
+      api.sendMessage("❌The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
     }
     try {
       await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, global.configModule[this.config.name].SOUNDCLOUD_API ? global.configModule[this.config.name].SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
@@ -113,12 +113,12 @@ module.exports.run = async function({ api, event, args }) {
         let time = (gettime.slice(2));
         let datac = (await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${value.id}&key=${keyapi}`)).data;
         let channel = datac.items[0].snippet.channelTitle;
-        msg += (`${num+=1}. ${value.title}\nTime: ${time}\nChannel: ${channel}\n??????????????\n`);
+        msg += (`${num+=1}. ${value.title}\nTime: ${time}\nChannel: ${channel}\n──────────\n`);
       }
-      return api.sendMessage(`? Done! ${link.length} Results match your search keyword: \n${msg}\nPlease reply(feedback) choose one of the above searches\nMaximum Song Time is 10M!`, event.threadID,(error, info) => global.client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
+      return api.sendMessage(`✅ Done! ${link.length} Results match your search keyword: \n${msg}\nPlease reply(feedback) choose one of the above searches\nMaximum Song Time is 10M!`, event.threadID,(error, info) => global.client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
     }
     catch (error) {
-      api.sendMessage("?The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
+      api.sendMessage("❌The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
     }
   }
 }

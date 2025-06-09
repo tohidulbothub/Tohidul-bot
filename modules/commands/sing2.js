@@ -41,7 +41,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     });
     }
   catch {
-    api.sendMessage("?Unable to process your request!", event.threadID, event.messageID);
+    api.sendMessage("❌Unable to process your request!", event.threadID, event.messageID);
   }
   return api.unsendMessage(handleReply.messageID);
 }
@@ -78,7 +78,7 @@ module.exports.run = async function({ api, event, args }) {
       }
     catch (e) {
       console.log(e);
-      api.sendMessage("?Unable to process your request!", event.threadID, event.messageID);
+      api.sendMessage("❌Unable to process your request!", event.threadID, event.messageID);
     }
 
   }
@@ -91,7 +91,7 @@ module.exports.run = async function({ api, event, args }) {
     }
     catch (error) {
       if (error.statusCode == "4JUdGzvrMFDWrUUwY3toJATSeNwjn54LkCnKBPRzDuhzi5vSepHfUckJNxRL2gjkNrSqtCoRUrEDAgRwsQvVCjZbRyFTLRNyDmT1a1boZVmessageID);
-      api.sendMessage("?The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
+      api.sendMessage("❌The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
     }
     try {
       await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, global.configModule[this.config.name].SOUNDCLOUD_API ? global.configModule[this.config.name].SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
@@ -117,7 +117,7 @@ module.exports.run = async function({ api, event, args }) {
       return api.sendMessage(`? Done! ${link.length} Results match your search keyword: \n${msg}\nPlease reply(feedback) choose one of the above searches\nMaximum Song Time is 10M!`, event.threadID,(error, info) => global.client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
     }
     catch (error) {
-      api.sendMessage("?The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
+      api.sendMessage("❌The request could not be processed due to an error: " + error.message, event.threadID, event.messageID);
     }
   }
 }
