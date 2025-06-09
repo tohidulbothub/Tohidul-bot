@@ -26,8 +26,7 @@ module.exports.run = async ({ event, api, args, Users }) => {
   var avatar = (await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).body;
 
   let img = await new DIG.Wanted().getImage(avatar, currency);
-  let attach = new Discord.MessageAttachment(img);
   var path_wanted = __dirname + "/cache/wetd.png";
-  fs.writeFileSync(path_wanted, attach.attachment);
+  fs.writeFileSync(path_wanted, img);
   api.sendMessage({attachment: fs.createReadStream(path_wanted)}, event.threadID, () => fs.unlinkSync(path_wanted), event.messageID);
 }
