@@ -69,6 +69,7 @@
     "request": "^2.88.2",
     "semver": "^7.7.2",
     "simple-youtube-api": "^5.2.1",
+    "soundcloud-downloader": "^1.0.0",
     "string-similarity": "^4.0.4",
     "tinyurl": "^1.1.7",
     "tough-cookie": "^4.1.4",

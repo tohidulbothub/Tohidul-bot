@@ -1,6 +1,6 @@
 
 module.exports.config = {
-  name: "play",
+  name: "sing",
   version: "1.0.5",
   hasPermssion: 0,
   usePrefix: true,
