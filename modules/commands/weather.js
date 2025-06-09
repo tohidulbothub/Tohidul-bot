@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.1",
 	permission: 0,
 	credits: "TOHI-BOT-HUB",
-  usePrefix: false,
+  usePrefix: true,
 	description: "see weather information in the area",
 	commandCategory: "utility",
 	usages: "[location]",

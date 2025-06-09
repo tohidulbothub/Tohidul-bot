@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: "uid",
+	name: "uid2",
 	version: "1.0.0",
 	permission: 0,
 	credits: "TOHI-BOT-HUB",

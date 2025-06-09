@@ -1,9 +1,9 @@
-module.exports.config = {
+cv  7g               module.exports.config = {
 	name: "wiki",
 	version: "1.0.1",
 	permission: 0,
 	credits: "TOHI-BOT-HUB",
-	usePrefix: false,
+	usePrefix: true,
 	description: "wikipedia search",
 	commandCategory: "without prefix",
 	usages: "[en] [question]",
