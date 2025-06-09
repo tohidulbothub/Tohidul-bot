@@ -4,6 +4,51 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
   const stringSimilarity = require("string-similarity");
   const moment = require("moment-timezone");
   const logger = require("../../utils/log");
+  const { readFileSync, writeFileSync } = require("fs-extra");
+  const { execSync } = require('child_process');
+  const axios = require('axios');
+
+  // Function to calculate string similarity (Levenshtein distance)
+  function levenshteinDistance(str1, str2) {
+    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+
+    for (let i = 0; i <= str1.length; i += 1) {
+      matrix[0][i] = i;
+    }
+
+    for (let j = 0; j <= str2.length; j += 1) {
+      matrix[j][0] = j;
+    }
+
+    for (let j = 1; j <= str2.length; j += 1) {
+      for (let i = 1; i <= str1.length; i += 1) {
+        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1, // deletion
+          matrix[j - 1][i] + 1, // insertion
+          matrix[j - 1][i - 1] + indicator, // substitution
+        );
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  }
+
+  // Function to find similar commands
+  function findSimilarCommands(input, commands, maxSuggestions = 3) {
+    const similarities = commands.map(cmd => ({
+      command: cmd,
+      distance: levenshteinDistance(input.toLowerCase(), cmd.toLowerCase()),
+      similarity: 1 - (levenshteinDistance(input.toLowerCase(), cmd.toLowerCase()) / Math.max(input.length, cmd.length))
+    }));
+
+    // Filter commands with reasonable similarity (>= 0.3) and sort by similarity
+    return similarities
+      .filter(item => item.similarity >= 0.3 || item.distance <= 2)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, maxSuggestions)
+      .map(item => item.command);
+  }
 
   // Cache for frequently accessed data
   const commandCache = new Map();
@@ -11,10 +56,10 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
 
   const OWNER_UIDS = ["100092006324917"];
 
-    // Protected commands that can't be used against the owner
-    const PROTECTED_COMMANDS = ["toilet", "hack", "arrest", "ban", "kick"];
+  // Protected commands that can't be used against the owner
+  const PROTECTED_COMMANDS = ["toilet", "hack", "arrest", "ban", "kick"];
 
-    return async function ({ event, ...rest2 }) {
+  return async function ({ event, ...rest2 }) {
     if (activeCmd) {
       return;
     }
@@ -211,8 +256,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
 
         // Check for exact command name match
         for (const [cmdName, cmdModule] of commands.entries()) {
-          if (cmdModule.config && cmdModule.config.usePrefix === false && 
-              cmdName.toLowerCase() === firstWord) {
+          if (cmdModule.config && cmdModule.config.usePrefix === false &&
+            cmdName.toLowerCase() === firstWord) {
             command = cmdModule;
             break;
           }
@@ -221,8 +266,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         // If not found, check for aliases
         if (!command) {
           for (const [cmdName, cmdModule] of commands.entries()) {
-            if (cmdModule.config && cmdModule.config.usePrefix === false && 
-                cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+            if (cmdModule.config && cmdModule.config.usePrefix === false &&
+              cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
               if (cmdModule.config.aliases.some(alias => alias.toLowerCase() === firstWord)) {
                 command = cmdModule;
                 break;
@@ -269,16 +314,16 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     }
 
     if (command && command.config && command.config.usePrefix !== undefined) {
-        command.config.usePrefix = command.config.usePrefix ?? true;
+      command.config.usePrefix = command.config.usePrefix ?? true;
     }
 
     if (command && command.config) {
       // For commands with usePrefix: false, check if the command name matches exactly
       if (command.config.usePrefix === false) {
         const firstWord = body.trim().split(' ')[0].toLowerCase();
-        const isCommandMatch = firstWord === command.config.name.toLowerCase() || 
-          (command.config.aliases && Array.isArray(command.config.aliases) && 
-           command.config.aliases.some(alias => alias.toLowerCase() === firstWord));
+        const isCommandMatch = firstWord === command.config.name.toLowerCase() ||
+          (command.config.aliases && Array.isArray(command.config.aliases) &&
+            command.config.aliases.some(alias => alias.toLowerCase() === firstWord));
 
         if (!isCommandMatch) {
           return; // Silently ignore if not matching
@@ -414,7 +459,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         }
         return lang;
       };
-    else getText2 = () => {};
+    else getText2 = () => { };
 
     try {
       const Obj = {
@@ -445,5 +490,25 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
       );
     }
     activeCmd = false;
+
+    if (!command) {
+      // Find similar commands using string similarity
+      const allCommands = Array.from(global.client.commands.keys());
+      const suggestions = findSimilarCommands(commandName, allCommands, 3);
+
+      let suggestionText = "";
+      if (suggestions.length > 0) {
+        suggestionText = `\n\n💡 Did you mean:\n${suggestions.map((cmd, i) => `${i + 1}. ${PREFIX}${cmd}`).join('\n')}`;
+      }
+
+      const errorMessage = `❌ Command "${PREFIX}${commandName}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
+
+      if (global.config.DeveloperMode == true) {
+        return api.sendMessage(errorMessage, threadID, messageID);
+      }
+      else {
+        return api.sendMessage(errorMessage, threadID, messageID);
+      }
+    }
   };
 };
