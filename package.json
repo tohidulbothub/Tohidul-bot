@@ -86,7 +86,7 @@
   "bugs": {
     "url": "https://github.com/tohidulbothub/Tohidul-bot/issues"
   },
-  "homepage": "https://github.com/YANDEVA/BotPack#readme",
+  "homepage": "https://github.com/tohidulbothub/Tohidul-bot/blob/main/README.md",
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.24.0",
