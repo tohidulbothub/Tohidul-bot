@@ -436,12 +436,6 @@ function initializeBot() {
     global.client.api = api;
     global.config.version = config.version;
 
-    // Log bot info once
-    logger.log(
-      `[ BOT_INFO ] success!\n[ NAME ]: ${global.config.BOTNAME || "Bot Messenger"} \n[ BotID ]: ${api.getCurrentUserID()}\n[ PREFIX ]: ${global.config.PREFIX}`,
-      "LOADED"
-    );
-
     // Load commands
     await loadCommands();
 
@@ -641,6 +635,12 @@ async function startListening(api) {
   const startupTime = ((Date.now() - global.client.timeStart) / 1000).toFixed(2);
   logger.log(`✓ System ready! Commands: ${global.client.commands.size}, Events: ${global.client.events.size}`, "READY");
   logger.log(`⏱️ Startup time: ${startupTime}s`, "READY");
+  
+  // Log bot info at the very end
+  logger.log(
+    `[ BOT_INFO ] success!\n[ NAME ]: ${global.config.BOTNAME || "Bot Messenger"} \n[ BotID ]: ${api.getCurrentUserID()}\n[ PREFIX ]: ${global.config.PREFIX}`,
+    "LOADED"
+  );
 
   // Load listener
   const listener = require('./includes/listen.js');
