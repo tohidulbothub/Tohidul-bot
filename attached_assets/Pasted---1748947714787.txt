@@ -1,0 +1,230 @@
+
+╭━━┳━┳╮╭┳━━╮╱╭━━┳━┳━━╮╱╭╮╭┳┳┳━━╮
+╰╮╭┫┃┃╰╯┣┃┣┻━┫╭╮┃┃┣╮╭┻━┫╰╯┃┃┃╭╮┃
+╱┃┃┃┃┃╭╮┣┃┣┳━┫╭╮┃┃┃┃┣━━┫╭╮┃┃┃╭╮┃
+╱╰╯╰━┻╯╰┻━━╯╱╰━━┻━╯╰╯╱╱╰╯╰┻━┻━━╯
+⫸ TBH ➤ [ WEBSERVER ] Web server initialized successfully
+⫸ TBH ➤ [ STARTER ] Initializing TOHI-BOT-HUB System...
+⫸ TBH ➤ [ CONFIG ] Configuration loaded successfully
+⫸ TBH ➤ [ CONFIG ] Configuration applied successfully
+⫸ TBH ➤ [ LANGUAGE ] Language pack loaded: en
+⫸ TBH ➤ [ APPSTATE ] Bot appstate loaded and validated successfully
+
+──DATABASE─●
+⫸ TBH ➤ [ DATABASE ] ✓ Connected to JSON database successfully!
+⫸ TBH ➤ [ WEBSERVER ] Web server running on port 5000
+⫸ TBH ➤ [ DATABASE ] [ CONNECT ] Done logging in.
+⫸ TBH ➤ [ DATABASE ] [ CONNECT ] Account's message region: ODN
+⫸ TBH ➤ [ DATABASE ] [ CONNECT ] Done logging in.
+⫸ TBH ➤ [ CUSTOM ] Custom functions loaded successfully
+⫸ TBH ➤ [ APPSTATE ] Appstate saved successfully
+⫸ TBH ➤ [ LOADED ] [ BOT_INFO ] success!
+[ NAME ]: MA KI MA 
+[ BotID ]: 61577053166787
+[ PREFIX ]: /
+
+──LOADING COMMANDS─●
+⫸ TBH ➤ [ COMMAND ] ✓ 4k loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ cricket loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ dalle loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ accept loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ adc loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ adduser loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ admin loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ admins loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ai loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ album loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ allbox loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ alldl loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ alluser loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ anicouple loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ antiout loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ antispam loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ approve loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ arrest loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ art loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ autodl loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ automsg loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ autoreact loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ autoseen loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ avt loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ baby loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ban loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ busy loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ catbox loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ checktt loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ cleancache loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ code loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ cmd loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ config loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ convert loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ count loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ cover loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ daily loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ dictionary loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ download loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ edit loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ emojimix loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ eval loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ fbcover loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ fbvideo loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ flag loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ fluxpro loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ font loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ friends loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ gcimg loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ gcm loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ gemini loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ gemini2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ getlink loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ goiadmin loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ google loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ grammar loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ group loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ groups loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tid loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ hack loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ help loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ idst loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ iloveu loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ imagedata loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ searchimage loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ imagine loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ text loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ imgur loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ inbox loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ info loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ insta loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ install loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ join loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ joinallgc loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ joke loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ kickall loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ king loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ kiss loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ language loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love3 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love4 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love5 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love6 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ love7 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ lyrics loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ manga loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ married loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ marriedv2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ meta loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ mia loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ bal loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ murgi2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ murgi loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ 😒 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ npx2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ npx3 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ Obot loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ operator loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ operatornoti loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ out loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ pairlove loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ pairv2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ pending loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ping loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ pinterest loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ play loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ poli loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ post loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ prefix loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ profile loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ propose loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ qrscan loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ scan loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ queen loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ quiz loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ quotes loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ rank loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ rankup loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ react loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ reminder loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ removebg loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ report loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ resend loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ restart loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ review loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ random loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ rndm loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ run loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ say2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ sendfile loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ sendnoti loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ setdatagroup loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ setdatauser loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ setmoney loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ setprefix loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ settings loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ shairi loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ sharecontact loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ shell loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ sim loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ sing loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ slap loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ slot loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ snippet loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ song loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ video loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ spam loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ spamkick loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ spotify loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ spy loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ss loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ stalk loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ stylefont loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ surah loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ talkvm loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ teach loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ textart loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ thid loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tik loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tiksr loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tikstalk loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tikmp3 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tiktok loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ tiktokid loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ time loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ toilet loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ translate loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ttt loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ twitter loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ uid loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ unfont loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ uns loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ uptime loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ user loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ip loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ users loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ uid2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ v2a loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ video2 loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ wattpad loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ weather loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ wiki loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ work loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ say loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ youtube loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ yt loaded successfully
+⫸ TBH ➤ [ COMMAND ] ✓ ytb loaded successfully
+⫸ TBH ➤ [ COMMAND ] Commands loaded: 189 successful, 0 failed
+
+──LOADING EVENTS─●
+⫸ TBH ➤ [ EVENT ] ✓ admin noti loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ antijoin loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ botLeave loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ joinNoti loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ leave loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ mentionBot loaded successfully
+⫸ TBH ➤ [ EVENT ] ✓ pendingApproval loaded successfully
+⫸ TBH ➤ [ EVENT ] Events loaded: 7 successful, 0 failed
+
+──BOT READY─●
+⫸ TBH ➤ [ READY ] ✓ System ready! Commands: 189, Events: 7
+⫸ TBH ➤ [ READY ] ⏱️ Startup time: 3.83s
