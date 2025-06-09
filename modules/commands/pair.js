@@ -69,32 +69,74 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 7. Draw avatars (left: boy, right: girl) with corrected positions
-    // Left avatar (boy): position (252, 492) with size 200x200
+    // 7. Draw avatars with proper positioning and sizing
+    // Calculate responsive sizes based on canvas dimensions
+    const avatarSize = Math.min(canvas.width * 0.15, 300); // Max 300px, responsive to canvas width
+    const borderSize = avatarSize + 20;
+    
+    // Left avatar (boy) - positioned from left side
+    const leftX = canvas.width * 0.15; // 15% from left
+    const leftY = canvas.height * 0.4;  // 40% from top
+    
+    // Draw border for left avatar
     ctx.save();
     ctx.beginPath();
-    ctx.arc(252 + 100, 492 + 100, 100, 0, Math.PI * 2, true);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(avt1, 252, 492, 200, 200);
+    ctx.arc(leftX + avatarSize/2, leftY + avatarSize/2, borderSize/2, 0, Math.PI * 2, true);
+    ctx.fillStyle = "#FFD700";
+    ctx.fill();
     ctx.restore();
-
-    // Right avatar (girl): position adjusted for canvas width
-    const rightX = canvas.width - 452; // 200px avatar + 252px margin from right
+    
+    // Draw left avatar with circular clipping
     ctx.save();
     ctx.beginPath();
-    ctx.arc(rightX + 100, 522 + 100, 100, 0, Math.PI * 2, true);
+    ctx.arc(leftX + avatarSize/2, leftY + avatarSize/2, avatarSize/2, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt2, rightX, 522, 200, 200);
+    ctx.drawImage(avt1, leftX, leftY, avatarSize, avatarSize);
     ctx.restore();
 
-    // 8. Draw names under each avatar with proper positioning
-    ctx.font = "bold 32px Arial";
-    ctx.fillStyle = "#fff";
+    // Right avatar (girl) - positioned from right side
+    const rightX = canvas.width * 0.85 - avatarSize; // 15% margin from right
+    const rightY = canvas.height * 0.4;  // 40% from top
+    
+    // Draw border for right avatar
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(rightX + avatarSize/2, rightY + avatarSize/2, borderSize/2, 0, Math.PI * 2, true);
+    ctx.fillStyle = "#FF69B4";
+    ctx.fill();
+    ctx.restore();
+    
+    // Draw right avatar with circular clipping
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(rightX + avatarSize/2, rightY + avatarSize/2, avatarSize/2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(avt2, rightX, rightY, avatarSize, avatarSize);
+    ctx.restore();
+
+    // 8. Draw names with responsive font size and positioning
+    const nameFontSize = Math.min(canvas.width * 0.04, 60); // Responsive font size
+    ctx.font = `bold ${nameFontSize}px Arial`;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
     ctx.textAlign = "center";
-    ctx.fillText(name1, 252 + 100, 492 + 200 + 40); // left name: centered under left avatar
-    ctx.fillText(name2, rightX + 100, 522 + 200 + 40); // right name: centered under right avatar
+    
+    // Add shadow for better visibility
+    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    
+    // Position names below avatars
+    const nameY = leftY + avatarSize + nameFontSize + 20;
+    ctx.strokeText(name1, leftX + avatarSize/2, nameY);
+    ctx.fillText(name1, leftX + avatarSize/2, nameY);
+    
+    ctx.strokeText(name2, rightX + avatarSize/2, nameY);
+    ctx.fillText(name2, rightX + avatarSize/2, nameY);
 
     // Reset shadow for other elements
     ctx.shadowColor = "transparent";
@@ -102,27 +144,36 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // 9. Draw random percentage with beautiful styling
+    // 9. Draw random percentage with responsive positioning
     const percentage = Math.floor(Math.random() * 100) + 1;
-    ctx.font = "bold 120px Arial";
+    const percentageFontSize = Math.min(canvas.width * 0.08, 150); // Responsive font size
+    ctx.font = `bold ${percentageFontSize}px Arial`;
     ctx.fillStyle = "#FF69B4";
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 6;
     ctx.textAlign = "center";
+
+    // Reset shadow first
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 
     // Add glow effect for percentage
     ctx.shadowColor = "#FF1493";
-    ctx.shadowBlur = 20;
+    ctx.shadowBlur = 25;
 
-    ctx.strokeText(`${percentage}%`, canvas.width / 2, 900);
-    ctx.fillText(`${percentage}%`, canvas.width / 2, 900);
+    const percentageY = canvas.height * 0.25; // 25% from top
+    ctx.strokeText(`${percentage}%`, canvas.width / 2, percentageY);
+    ctx.fillText(`${percentage}%`, canvas.width / 2, percentageY);
 
     // Reset shadow
     ctx.shadowColor = "transparent";
     ctx.shadowBlur = 0;
 
-    // 10. Draw beautiful wish message with gradient
-    ctx.font = "bold 90px Arial";
+    // 10. Draw beautiful wish message with responsive positioning
+    const messageFontSize = Math.min(canvas.width * 0.05, 80); // Responsive font size
+    ctx.font = `bold ${messageFontSize}px Arial`;
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
     gradient.addColorStop(0, "#FFD700");
     gradient.addColorStop(0.5, "#FF69B4");
@@ -133,14 +184,15 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.lineWidth = 3;
     ctx.textAlign = "center";
 
-    // Add shadow for wish message
+    // Reset and add shadow for wish message
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
     ctx.shadowBlur = 15;
     ctx.shadowOffsetX = 4;
     ctx.shadowOffsetY = 4;
 
-    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, 1250);
-    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, 1250);
+    const messageY = canvas.height * 0.85; // 85% from top
+    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
+    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
 
     // 11. Save & cleanup
     const imgBuffer = canvas.toBuffer();
