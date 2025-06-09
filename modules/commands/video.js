@@ -22,19 +22,19 @@ module.exports.config = {
 module.exports.handleReply = async function({ api, event, handleReply }) {
   const ytdl = global.nodemodule["@distube/ytdl-core"];
   const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
-  
+
   try {
     const info = await ytdl.getInfo(handleReply.link[event.body - 1]);
     let body = info.videoDetails.title;
-    
+
     api.sendMessage(`Processing video... \n-----------\n${body}\n-----------\nPlease Wait !`, event.threadID, (err, info) =>
     setTimeout(() => {api.unsendMessage(info.messageID) } , 100000));
-    
+
     const stream = ytdl(handleReply.link[event.body - 1], { 
       filter: 'videoandaudio',
       quality: 'lowest'
     });
-    
+
     stream.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`))
       .on("close", () => {
         if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`), event.messageID);
@@ -46,7 +46,8 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
       .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n ${error.message}`, event.threadID, event.messageID));
   }
   catch (error) {
-    api.sendMessage("❎Unable to process your request!", event.threadID, event.messageID);
+    console.log('Video download error:', error);
+    api.sendMessage("❎Unable to process your request! The video may be unavailable or restricted.", event.threadID, event.messageID);
   }
   return api.unsendMessage(handleReply.messageID);
 }
@@ -68,12 +69,12 @@ module.exports.run = async function({ api, event, args }) {
     try {
       var id = args[0].split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
       (id[2] !== undefined) ? id = id[2].split(/[^0-9a-z_\-]/i)[0] : id = id[0];
-      
+
       const stream = ytdl(args[0], { 
         filter: 'videoandaudio',
         quality: 'lowest'
       });
-      
+
       stream.pipe(createWriteStream(__dirname + `/cache/${id}.mp4`))
         .on("close", () => {
           if (statSync(__dirname + `/cache/${id}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.mp4`), event.messageID);

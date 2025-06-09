@@ -1,4 +1,3 @@
-
 module.exports.config = {
   name: "sing",
   version: "1.0.5",
@@ -23,7 +22,7 @@ module.exports.config = {
 };
 
 module.exports.handleReply = async function({ api, event, handleReply }) {
-  const ytdl = global.nodemodule["ytdl-core"];
+  const ytdl = global.nodemodule["@distube/ytdl-core"];
   const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
   ytdl.getInfo(handleReply.link[event.body - 1]).then(res => {
   let body = res.videoDetails.title;
@@ -49,7 +48,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
 }
 
 module.exports.run = async function({ api, event, args }) {
-  const ytdl = global.nodemodule["ytdl-core"];
+  const ytdl = global.nodemodule["@distube/ytdl-core"];
   const YouTubeAPI = global.nodemodule["simple-youtube-api"];
   const scdl = global.nodemodule["soundcloud-downloader"].default;
   const axios = global.nodemodule["axios"];
