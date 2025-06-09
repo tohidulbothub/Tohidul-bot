@@ -1,5 +1,7 @@
 const fs = require("fs-extra");
 const moment = require("moment-timezone");
+const axios = require("axios");
+const path = require("path");
 
 module.exports.config = {
   name: "admin",
@@ -22,7 +24,8 @@ module.exports.run = async function({ api, event }) {
   // }
 
   const now = moment().tz("Asia/Dhaka").format("DD/MM/YYYY hh:mm:ss A");
-  const imagePath = __dirname + "/cache/admin.png";  // Use your local image path
+  const imageUrl = "https://i.postimg.cc/nhM2PPjW/admin.png";
+  const imagePath = path.join(__dirname, "cache", `admin_${Date.now()}.png`);
 
   const ownerInfo =
     `╭─────〔 👑 𝐁𝐎𝐓 𝐎𝐖𝐍𝐄𝐑 𝐈𝐍𝐅𝐎 👑 〕─────╮\n` +
@@ -45,13 +48,48 @@ module.exports.run = async function({ api, event }) {
     `╰──────────────────────────────╯\n` +
     `💌 𝑪𝒓𝒆𝒂𝒕𝒆𝒅 𝒃𝒚 𝑻𝑶𝑯𝑰𝑫𝑼𝑳 𝑩𝑶𝑻`;
 
-  // Check if the file exists before sending
-  if (!fs.existsSync(imagePath)) {
-    return api.sendMessage(ownerInfo + "\n\n[⛔] admin.png ফাইলটি cache ফোল্ডারে নেই!", event.threadID);
-  }
+  try {
+    // Download the image from URL
+    const response = await axios({
+      url: imageUrl,
+      method: 'GET',
+      responseType: 'stream',
+      timeout: 10000
+    });
 
-  return api.sendMessage({
-    body: ownerInfo,
-    attachment: fs.createReadStream(imagePath)
-  }, event.threadID);
+    // Ensure cache directory exists
+    const cacheDir = path.dirname(imagePath);
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
+    // Write image to cache
+    const writer = fs.createWriteStream(imagePath);
+    response.data.pipe(writer);
+
+    await new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+
+    // Send message with image and auto-cleanup
+    return api.sendMessage({
+      body: ownerInfo,
+      attachment: fs.createReadStream(imagePath)
+    }, event.threadID, () => {
+      // Auto cleanup after sending
+      if (fs.existsSync(imagePath)) {
+        try {
+          fs.unlinkSync(imagePath);
+          console.log(`[ADMIN] Cleaned up cache file: ${imagePath}`);
+        } catch (cleanupError) {
+          console.log(`[ADMIN] Cache cleanup warning: ${cleanupError.message}`);
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error("[ADMIN] Error downloading image:", error.message);
+    return api.sendMessage(ownerInfo + "\n\n[⛔] ছবি ডাউনলোড করতে সমস্যা হয়েছে!", event.threadID);
+  }
 };
