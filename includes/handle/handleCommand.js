@@ -4,51 +4,36 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
   const stringSimilarity = require("string-similarity");
   const moment = require("moment-timezone");
   const logger = require("../../utils/log");
-  const { readFileSync, writeFileSync } = require("fs-extra");
+  const { readdirSync, readFileSync, writeFileSync } = require("fs-extra");
+  const { join, resolve } = require('path');
   const { execSync } = require('child_process');
   const axios = require('axios');
+  const chalk = require('chalk');
 
-  // Function to calculate string similarity (Levenshtein distance)
-  function levenshteinDistance(str1, str2) {
-    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
-
-    for (let i = 0; i <= str1.length; i += 1) {
-      matrix[0][i] = i;
-    }
-
-    for (let j = 0; j <= str2.length; j += 1) {
-      matrix[j][0] = j;
-    }
-
-    for (let j = 1; j <= str2.length; j += 1) {
-      for (let i = 1; i <= str1.length; i += 1) {
-        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
-        matrix[j][i] = Math.min(
-          matrix[j][i - 1] + 1, // deletion
-          matrix[j - 1][i] + 1, // insertion
-          matrix[j - 1][i - 1] + indicator, // substitution
+// Helper function for command suggestion
+function levenshteinDistance(str1, str2) {
+  const matrix = [];
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j;
+  }
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
         );
       }
     }
-
-    return matrix[str2.length][str1.length];
   }
-
-  // Function to find similar commands
-  function findSimilarCommands(input, commands, maxSuggestions = 3) {
-    const similarities = commands.map(cmd => ({
-      command: cmd,
-      distance: levenshteinDistance(input.toLowerCase(), cmd.toLowerCase()),
-      similarity: 1 - (levenshteinDistance(input.toLowerCase(), cmd.toLowerCase()) / Math.max(input.length, cmd.length))
-    }));
-
-    // Filter commands with reasonable similarity (>= 0.3) and sort by similarity
-    return similarities
-      .filter(item => item.similarity >= 0.3 || item.distance <= 2)
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, maxSuggestions)
-      .map(item => item.command);
-  }
+  return matrix[str2.length][str1.length];
+}
 
   // Cache for frequently accessed data
   const commandCache = new Map();
@@ -492,54 +477,52 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     activeCmd = false;
 
     if (!command) {
-      // Only suggest commands if user typed with prefix
-      if (!commandName.startsWith(PREFIX)) {
-        return; // Don't suggest anything for non-prefix text
-      }
-      
-      // Check if this is just the prefix alone
-      if (commandName === PREFIX) {
-        return;
-      }
-      
-      // Find similar commands using string similarity
-      const allCommands = [];
-      
-      // Collect all command names and aliases
+      // Check if command exists by alias
       for (const [cmdName, cmdModule] of commands.entries()) {
-        allCommands.push(cmdName);
         if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
-          allCommands.push(...cmdModule.config.aliases);
+          if (cmdModule.config.aliases.includes(commandName)) {
+            command = cmdModule;
+            break;
+          }
         }
       }
-      
-      // Get the command part without prefix
-      const userInput = commandName.slice(PREFIX.length);
-      const suggestions = findSimilarCommands(userInput, allCommands, 3);
+    }
 
-      let suggestionText = "";
-      if (suggestions.length > 0) {
-        suggestionText = `\n\n💡 Did you mean:\n${suggestions.map((cmd, i) => {
-          // Check if this command requires prefix
-          let cmdObj = commands.get(cmd);
-          if (!cmdObj) {
-            // Find by alias
-            for (const [name, module] of commands.entries()) {
-              if (module.config && module.config.aliases && module.config.aliases.includes(cmd)) {
-                cmdObj = module;
-                break;
-              }
+    if (!command) {
+      // Only show suggestions for prefix commands
+      if (body && body.startsWith(PREFIX)) {
+        // Command not found - suggest similar commands
+        const allCommands = [];
+
+        // Collect all command names and aliases that use prefix
+        for (const [cmdName, cmdModule] of commands.entries()) {
+          if (!cmdModule.config || cmdModule.config.usePrefix !== false) {
+            allCommands.push(cmdName);
+            if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+              allCommands.push(...cmdModule.config.aliases);
             }
           }
-          
-          const needsPrefix = !cmdObj || cmdObj.config.usePrefix !== false;
-          return `${i + 1}. ${needsPrefix ? PREFIX : ''}${cmd}`;
-        }).join('\n')}`;
+        }
+
+        // Find similar commands using simple string matching
+        const suggestions = allCommands.filter(cmd => 
+          cmd.includes(commandName) || 
+          commandName.includes(cmd) ||
+          levenshteinDistance(cmd, commandName) <= 2
+        ).slice(0, 3);
+
+        let suggestionText = "";
+        if (suggestions.length > 0) {
+          suggestionText = `\n\n💡 Did you mean:\n${suggestions.map((cmd, i) => {
+            return `${i + 1}. ${PREFIX}${cmd}`;
+          }).join('\n')}`;
+        }
+
+        const errorMessage = `❌ This command not exist please try another!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
+
+        return api.sendMessage(errorMessage, threadID, messageID);
       }
-
-      const errorMessage = `❌ This command not exist please try another!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
-
-      return api.sendMessage(errorMessage, threadID, messageID);
+      return; // No prefix, just ignore
     }
   };
 };
