@@ -74,7 +74,10 @@ const ignoredErrors = [
   'ECONNRESET',
   'ETIMEDOUT',
   'ENOTFOUND',
-  'ENOENT: no such file or directory'
+  'ENOENT: no such file or directory',
+  'Could not extract functions',
+  'Unable to retrieve video playback data',
+  'YouTube changed their API'
 ];
 
 function shouldIgnoreError(error) {

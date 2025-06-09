@@ -1,5 +1,5 @@
 const fs = require('fs');
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 const { resolve } = require('path');
 async function downloadMusicFromYoutube(link, path) {
   var timestart = Date.now();
@@ -11,8 +11,8 @@ async function downloadMusicFromYoutube(link, path) {
     rejectFunc = reject;
   });
     ytdl(link, {
-            filter: format =>
-                format.quality == 'tiny' && format.audioBitrate == 48 && format.hasAudio == true
+            filter: 'audioonly',
+            quality: 'lowestaudio'
         }).pipe(fs.createWriteStream(path))
         .on("close", async () => {
             var data = await ytdl.getInfo(link)

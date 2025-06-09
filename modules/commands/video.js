@@ -9,7 +9,7 @@ module.exports.config = {
   usages: "video [Text]",
   cooldowns: 10,
   dependencies: {
-    "ytdl-core": "",
+    "@distube/ytdl-core": "",
     "simple-youtube-api": "",
     "fs-extra": "",
     "axios": ""
@@ -20,33 +20,36 @@ module.exports.config = {
 };
 
 module.exports.handleReply = async function({ api, event, handleReply }) {
-  const ytdl = global.nodemodule["ytdl-core"];
+  const ytdl = global.nodemodule["@distube/ytdl-core"];
   const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
-  ytdl.getInfo(handleReply.link[event.body - 1]).then(res => {
-  let body = res.videoDetails.title;
-  api.sendMessage(`Processing video... \n-----------\n${body}\n-----------\nPlease Wait !`, event.threadID, (err, info) =>
-  setTimeout(() => {api.unsendMessage(info.messageID) } , 100000));
-    });
+  
   try {
-    ytdl.getInfo(handleReply.link[event.body - 1]).then(res => {
-    let body = res.videoDetails.title;
-    ytdl(handleReply.link[event.body - 1])
-      .pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`))
+    const info = await ytdl.getInfo(handleReply.link[event.body - 1]);
+    let body = info.videoDetails.title;
+    
+    api.sendMessage(`Processing video... \n-----------\n${body}\n-----------\nPlease Wait !`, event.threadID, (err, info) =>
+    setTimeout(() => {api.unsendMessage(info.messageID) } , 100000));
+    
+    const stream = ytdl(handleReply.link[event.body - 1], { 
+      filter: 'videoandaudio',
+      quality: 'lowest'
+    });
+    
+    stream.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`))
       .on("close", () => {
         if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`), event.messageID);
         else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`), event.messageID)
       })
-      .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n no such file or directory`, event.threadID, event.messageID));
-  });
+      .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n ${error.message}`, event.threadID, event.messageID));
   }
-  catch {
+  catch (error) {
     api.sendMessage("❎Unable to process your request!", event.threadID, event.messageID);
   }
   return api.unsendMessage(handleReply.messageID);
 }
 
 module.exports.run = async function({ api, event, args }) {
-  const ytdl = global.nodemodule["ytdl-core"];
+  const ytdl = global.nodemodule["@distube/ytdl-core"];
   const YouTubeAPI = global.nodemodule["simple-youtube-api"];
   const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
 
@@ -60,17 +63,22 @@ module.exports.run = async function({ api, event, args }) {
 
   if (urlValid) {
     try {
-            var id = args[0].split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+      var id = args[0].split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
       (id[2] !== undefined) ? id = id[2].split(/[^0-9a-z_\-]/i)[0] : id = id[0];
-      ytdl(args[0])
-        .pipe(createWriteStream(__dirname + `/cache/${id}.mp4`))
+      
+      const stream = ytdl(args[0], { 
+        filter: 'videoandaudio',
+        quality: 'lowest'
+      });
+      
+      stream.pipe(createWriteStream(__dirname + `/cache/${id}.mp4`))
         .on("close", () => {
           if (statSync(__dirname + `/cache/${id}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.mp4`), event.messageID);
           else return api.sendMessage({attachment: createReadStream(__dirname + `/cache/${id}.mp4`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.mp4`) , event.messageID)
         })
-        .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \nno such file or directory`, event.threadID, event.messageID));
+        .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n${error.message}`, event.threadID, event.messageID));
     }
-    catch {
+    catch (error) {
       api.sendMessage("Unable to process your request!", event.threadID, event.messageID);
     }
 
