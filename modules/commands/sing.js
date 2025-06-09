@@ -92,11 +92,12 @@ module.exports.run = async function({ api, event, args }) {
               try {
                 if (fs.existsSync(filePath)) {
                   fs.unlinkSync(filePath);
+                  console.log(`[SING] Cache file deleted: ${fileName}`);
                 }
               } catch (deleteError) {
-                console.log('File cleanup error:', deleteError.message);
+                console.log(`[SING] Cache cleanup error: ${deleteError.message}`);
               }
-            }, 3000);
+            }, 2000); // Reduced timeout for faster cleanup
           }, messageID);
         });
 
@@ -118,7 +119,12 @@ module.exports.run = async function({ api, event, args }) {
 
           // Clean up on error
           if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+            try {
+              fs.unlinkSync(filePath);
+              console.log(`[SING] Error cleanup: ${fileName} deleted`);
+            } catch (cleanupError) {
+              console.log(`[SING] Error cleanup failed: ${cleanupError.message}`);
+            }
           }
         });
 

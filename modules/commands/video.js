@@ -38,7 +38,10 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     stream.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`))
       .on("close", () => {
         if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`), event.messageID);
-        else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`), event.messageID)
+        else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`)}, event.threadID, () => {
+          unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp4`);
+          console.log(`[VIDEO] Cache file deleted: ${handleReply.link[event.body - 1]}.mp4`);
+        }, event.messageID)
       })
       .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n ${error.message}`, event.threadID, event.messageID));
   }
@@ -74,7 +77,10 @@ module.exports.run = async function({ api, event, args }) {
       stream.pipe(createWriteStream(__dirname + `/cache/${id}.mp4`))
         .on("close", () => {
           if (statSync(__dirname + `/cache/${id}.mp4`).size > 26214400) return api.sendMessage('File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.mp4`), event.messageID);
-          else return api.sendMessage({attachment: createReadStream(__dirname + `/cache/${id}.mp4`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.mp4`) , event.messageID)
+          else return api.sendMessage({attachment: createReadStream(__dirname + `/cache/${id}.mp4`)}, event.threadID, () => {
+            unlinkSync(__dirname + `/cache/${id}.mp4`);
+            console.log(`[VIDEO] Cache file deleted: ${id}.mp4`);
+          }, event.messageID)
         })
         .on("error", (error) => api.sendMessage(`There was a problem while processing the request, error: \n${error.message}`, event.threadID, event.messageID));
     }
@@ -169,8 +175,15 @@ return api.sendMessage({attachment: imgthumnail, body: body}, event.threadID,(er
   event.messageID);
     }
   }
+  // Clean up thumbnail cache files
   for(let ii = 1; ii < 7 ; ii++) {
-  unlinkSync(__dirname + `/cache/${ii}.png`)}
+    try {
+      unlinkSync(__dirname + `/cache/${ii}.png`);
+      console.log(`[VIDEO] Thumbnail cache deleted: ${ii}.png`);
+    } catch(err) {
+      // File might not exist, ignore error
+    }
+  }
 
 
 

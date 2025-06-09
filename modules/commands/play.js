@@ -50,8 +50,14 @@ module.exports.handleReply = async function ({ api, event, handleReply }) {
         api.unsendMessage(handleReply.messageID)
         return api.sendMessage({ 
             body: `title : ${data.title}\ntime : ${this.convertHMS(data.dur)}\nprocessing time : ${Math.floor((Date.now()- data.timestart)/1000)} seconds`,
-            attachment: fs.createReadStream(path)}, event.threadID, ()=> fs.unlinkSync(path), 
-         event.messageID)
+            attachment: fs.createReadStream(path)}, event.threadID, () => {
+              try {
+                fs.unlinkSync(path);
+                console.log(`[PLAY] Cache file deleted: ${event.senderID}.mp3`);
+              } catch(err) {
+                console.log(`[PLAY] Cache cleanup error: ${err.message}`);
+              }
+            }, event.messageID)
             
     }
     catch (e) { return console.log(e) }
@@ -79,8 +85,14 @@ module.exports.run = async function ({ api, event, args }) {
             if (fs.statSync(path).size > 26214400) return api.sendMessage('file cannot be sent because it is larger than 25MB.', event.threadID, () => fs.unlinkSync(path), event.messageID);
             return api.sendMessage({ 
                 body: `title : ${data.title}\ntime : ${this.convertHMS(data.dur)}\nprocessing time : ${Math.floor((Date.now()- data.timestart)/1000)} seconds`,
-                attachment: fs.createReadStream(path)}, event.threadID, ()=> fs.unlinkSync(path), 
-            event.messageID)
+                attachment: fs.createReadStream(path)}, event.threadID, () => {
+                  try {
+                    fs.unlinkSync(path);
+                    console.log(`[PLAY] Cache file deleted: sing-${event.senderID}.mp3`);
+                  } catch(err) {
+                    console.log(`[PLAY] Cache cleanup error: ${err.message}`);
+                  }
+                }, event.messageID)
             
         }
         catch (e) { return console.log(e) }
