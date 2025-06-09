@@ -117,5 +117,8 @@
     "Repository": "https://github.com/TOHI-BOT-HUB/TOHI-BOT-HUB",
     "License": "MIT"
   },
-  "autoCleanCache": true
+  "autoCleanCache": true,
+  "video2": {
+    "YOUTUBE_API": "AIzaSyBtiD442srhczDpcg8xbhinP423BeUFXB8"
+  }
 }
