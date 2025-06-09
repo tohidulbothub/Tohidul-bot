@@ -84,7 +84,7 @@
     "url": "git+https://github.com/tohidulbothub/Tohidul-bot.git"
   },
   "bugs": {
-    "url": "https://github.com/YANDEVA/BotPack/issues"
+    "url": "https://github.com/tohidulbothub/Tohidul-bot/issues"
   },
   "homepage": "https://github.com/YANDEVA/BotPack#readme",
   "devDependencies": {
