@@ -492,18 +492,14 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     activeCmd = false;
 
     if (!command) {
-      // Check if this is a number (likely a video selection reply)
-      const trimmedBody = body ? body.trim() : '';
-      if (/^\d+$/.test(trimmedBody)) {
-        return; // Don't suggest commands for number replies
+      // Only suggest commands if user typed with prefix
+      if (!commandName.startsWith(PREFIX)) {
+        return; // Don't suggest anything for non-prefix text
       }
       
-      // Check if user is trying to use a command (starts with prefix or looks like a command)
-      const looksLikeCommand = commandName.startsWith(PREFIX) || 
-                              (trimmedBody.length > 0 && !trimmedBody.includes(' ') && trimmedBody.length < 20);
-      
-      if (!looksLikeCommand) {
-        return; // Don't suggest commands for regular text
+      // Check if this is just the prefix alone
+      if (commandName === PREFIX) {
+        return;
       }
       
       // Find similar commands using string similarity
@@ -517,14 +513,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         }
       }
       
-      // Determine what user typed (with or without prefix)
-      let userInput = commandName;
-      if (commandName.startsWith(PREFIX)) {
-        userInput = commandName.slice(PREFIX.length);
-      } else if (body && !body.startsWith(PREFIX)) {
-        userInput = body.trim().split(' ')[0];
-      }
-      
+      // Get the command part without prefix
+      const userInput = commandName.slice(PREFIX.length);
       const suggestions = findSimilarCommands(userInput, allCommands, 3);
 
       let suggestionText = "";
@@ -547,8 +537,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         }).join('\n')}`;
       }
 
-      const displayCmd = commandName.startsWith(PREFIX) ? commandName : (body ? body.trim().split(' ')[0] : commandName);
-      const errorMessage = `❌ Command "${displayCmd}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
+      const errorMessage = `❌ Command "${commandName}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
 
       return api.sendMessage(errorMessage, threadID, messageID);
     }
