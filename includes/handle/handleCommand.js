@@ -435,7 +435,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         command.run(Obj);
         timestamps.set(senderID, dateNow);
 
-        
+
         return;
       }
     } catch (e) {
