@@ -23,12 +23,12 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
   try {
     // Use given link or default to your provided link, but validate it's a proper URL
     let bgUrl = "https://i.postimg.cc/vB3XWjQv/PARI-FN-1.jpg"; // default
-    
+
     // Check if args[0] is provided and is a valid URL
     if (args[0] && (args[0].startsWith('http://') || args[0].startsWith('https://'))) {
       bgUrl = args[0];
     }
-    
+
     const pathImg = __dirname + "/cache/pairlove_bg.png";
     const pathAvt1 = __dirname + "/cache/pairlove_male.png";
     const pathAvt2 = __dirname + "/cache/pairlove_female.png";
@@ -69,68 +69,32 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 7. Draw avatars with beautiful circular borders
-    // Left avatar (boy): updated position and size (252, 492, 965x965)
-    const leftCenterX = 252 + 965/2;
-    const leftCenterY = 492 + 965/2;
-    const radius = 965/2;
-    
-    // Draw border for left avatar
+    // 7. Draw avatars (left: boy, right: girl) with corrected positions
+    // Left avatar (boy): position (252, 492) with size 200x200
     ctx.save();
     ctx.beginPath();
-    ctx.arc(leftCenterX, leftCenterY, radius + 15, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#FFD700";
-    ctx.fill();
-    ctx.restore();
-    
-    // Draw left avatar
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(leftCenterX, leftCenterY, radius, 0, Math.PI * 2, true);
+    ctx.arc(252 + 100, 492 + 100, 100, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt1, 252, 492, 965, 965);
+    ctx.drawImage(avt1, 252, 492, 200, 200);
     ctx.restore();
 
-    // Right avatar (girl): updated position and size (3365, 522, 965x965)
-    const rightCenterX = 3365 + 965/2;
-    const rightCenterY = 522 + 965/2;
-    
-    // Draw border for right avatar
+    // Right avatar (girl): position adjusted for canvas width
+    const rightX = canvas.width - 452; // 200px avatar + 252px margin from right
     ctx.save();
     ctx.beginPath();
-    ctx.arc(rightCenterX, rightCenterY, radius + 15, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#FF69B4";
-    ctx.fill();
-    ctx.restore();
-    
-    // Draw right avatar
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(rightCenterX, rightCenterY, radius, 0, Math.PI * 2, true);
+    ctx.arc(rightX + 100, 522 + 100, 100, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt2, 3365, 522, 965, 965);
+    ctx.drawImage(avt2, rightX, 522, 200, 200);
     ctx.restore();
 
-    // 8. Draw names under each box with better styling
-    ctx.font = "bold 80px Arial";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 3;
+    // 8. Draw names under each avatar with proper positioning
+    ctx.font = "bold 32px Arial";
+    ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    
-    // Add shadow effect for names
-    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
-    
-    ctx.strokeText(name1, 734, 1732); // left name position with better centering
-    ctx.fillText(name1, 734, 1732);
-    
-    ctx.strokeText(name2, 3847, 1744); // right name position with better centering  
-    ctx.fillText(name2, 3847, 1744);
+    ctx.fillText(name1, 252 + 100, 492 + 200 + 40); // left name: centered under left avatar
+    ctx.fillText(name2, rightX + 100, 522 + 200 + 40); // right name: centered under right avatar
 
     // Reset shadow for other elements
     ctx.shadowColor = "transparent";
@@ -145,11 +109,11 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 4;
     ctx.textAlign = "center";
-    
+
     // Add glow effect for percentage
     ctx.shadowColor = "#FF1493";
     ctx.shadowBlur = 20;
-    
+
     ctx.strokeText(`${percentage}%`, canvas.width / 2, 900);
     ctx.fillText(`${percentage}%`, canvas.width / 2, 900);
 
@@ -163,18 +127,18 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     gradient.addColorStop(0, "#FFD700");
     gradient.addColorStop(0.5, "#FF69B4");
     gradient.addColorStop(1, "#FF1493");
-    
+
     ctx.fillStyle = gradient;
     ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 3;
     ctx.textAlign = "center";
-    
+
     // Add shadow for wish message
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
     ctx.shadowBlur = 15;
     ctx.shadowOffsetX = 4;
     ctx.shadowOffsetY = 4;
-    
+
     ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, 1250);
     ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, 1250);
 
