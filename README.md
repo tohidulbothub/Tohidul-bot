@@ -1,7 +1,7 @@
 # 🤖 TOHI-BOT-HUB
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.8.0-brightgreen?style=for-the-badge" alt="Version">
+  <img src="https://i.postimg.cc/nhM2PPjW/admin.png" alt="Version">
   <img src="https://img.shields.io/badge/Node.js-18.x-success?style=for-the-badge&logo=node.js" alt="Node.js">
   <img src="https://img.shields.io/badge/Platform-Facebook_Messenger-blue?style=for-the-badge&logo=messenger" alt="Platform">
 </p>
