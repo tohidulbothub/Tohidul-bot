@@ -21,8 +21,14 @@ module.exports.config = {
 
 module.exports.run = async function ({ args, Users, Threads, api, event }) {
   try {
-    // Use given link or default to your provided link
-    const bgUrl = args[0] || "https://i.postimg.cc/vB3XWjQv/PARI-FN-1.jpg";
+    // Use given link or default to your provided link, but validate it's a proper URL
+    let bgUrl = "https://i.postimg.cc/vB3XWjQv/PARI-FN-1.jpg"; // default
+    
+    // Check if args[0] is provided and is a valid URL
+    if (args[0] && (args[0].startsWith('http://') || args[0].startsWith('https://'))) {
+      bgUrl = args[0];
+    }
+    
     const pathImg = __dirname + "/cache/pairlove_bg.png";
     const pathAvt1 = __dirname + "/cache/pairlove_male.png";
     const pathAvt2 = __dirname + "/cache/pairlove_female.png";
