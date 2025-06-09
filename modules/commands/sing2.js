@@ -2,6 +2,7 @@ module.exports.config = {
   name: "sing2",
   version: "1.0.5",
   hasPermssion: 0,
+  usePrefix: true,
   credits: "HChong",
   description: "Play music via YouTube link, SoundCloud or search keyword",
   commandCategory: "media",

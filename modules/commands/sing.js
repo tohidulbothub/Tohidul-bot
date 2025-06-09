@@ -9,7 +9,7 @@ module.exports.config = {
   usages: "[link or content need search]",
   cooldowns: 10,
   dependencies: {
-    "ytdl-core": "",
+    "@distube/ytdl-core": "",
     "simple-youtube-api": "",
     "soundcloud-downloader": "",
     "fs-extra": "",
@@ -35,7 +35,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     ytdl(handleReply.link[event.body - 1])
       .pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`))
       .on("close", () => {
-        if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`).size > 26214400) return api.sendMessage('❌File cannot be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID);
+        if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`).size > 52428800) return api.sendMessage('❌File cannot be sent because it is larger than 50MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID);
         else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`), event.messageID)
       })
       .on("error", (error) => api.sendMessage(`There was a problem processing the request, error: \n${error}`, event.threadID, event.messageID));
@@ -71,7 +71,7 @@ module.exports.run = async function({ api, event, args }) {
       ytdl(args[0])
         .pipe(createWriteStream(__dirname + `/cache/${id}.m4a`))
         .on("close", () => {
-          if (statSync(__dirname + `/cache/${id}.m4a`).size > 26214400) return api.sendMessage('❌The file could not be sent because it is larger than 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`), event.messageID);
+          if (statSync(__dirname + `/cache/${id}.m4a`).size > 52428800) return api.sendMessage('❌The file could not be sent because it is larger than 50MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`), event.messageID);
           else return api.sendMessage({body : `${body}`, attachment: createReadStream(__dirname + `/cache/${id}.m4a`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.m4a`) , event.messageID)
         })
         .on("error", (error) => api.sendMessage(`❌There was a problem while processing the request, error: \n${error}`, event.threadID, event.messageID));
