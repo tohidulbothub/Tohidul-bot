@@ -120,5 +120,9 @@
   "autoCleanCache": true,
   "video2": {
     "YOUTUBE_API": "AIzaSyBtiD442srhczDpcg8xbhinP423BeUFXB8"
+  },
+  "sing2": {
+    "YOUTUBE_API": "AIzaSyBtiD442srhczDpcg8xbhinP423BeUFXB8",
+    "SOUNDCLOUD_API": "MMJhwmfTYJVFm9TiUdmYYyrf6Pzpzf3YN1"
   }
 }
