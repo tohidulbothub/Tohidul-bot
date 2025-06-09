@@ -1,11 +1,12 @@
 
-const { loadImage, createCanvas } = require("canvas");
+const { loadImage, createCanvas, registerFont } = require("canvas");
 const fs = require("fs-extra");
 const axios = require("axios");
+const path = require("path");
 
 module.exports.config = {
   name: "pairlove",
-  version: "2.1.0",
+  version: "2.2.0",
   permssion: 0,
   usePrefix: true,
   credits: "TOHI-BOT-HUB & Copilot",
@@ -54,10 +55,10 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const id2 = partner.id;
     const name2 = await Users.getNameUser(id2);
 
-    // 4. Download profile pictures
-    const avt1Buffer = (await axios.get(`https://graph.facebook.com/${id1}/picture?width=300&height=300&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: "arraybuffer" })).data;
+    // 4. Download profile pictures with higher resolution
+    const avt1Buffer = (await axios.get(`https://graph.facebook.com/${id1}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(pathAvt1, Buffer.from(avt1Buffer, "utf-8"));
-    const avt2Buffer = (await axios.get(`https://graph.facebook.com/${id2}/picture?width=300&height=300&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: "arraybuffer" })).data;
+    const avt2Buffer = (await axios.get(`https://graph.facebook.com/${id2}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(pathAvt2, Buffer.from(avt2Buffer, "utf-8"));
 
     // 5. Load images
@@ -65,65 +66,71 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const avt1 = await loadImage(pathAvt1);
     const avt2 = await loadImage(pathAvt2);
 
-    // 6. Setup canvas with fixed size for consistency
-    const canvas = createCanvas(800, 600);
+    // 6. Load custom font if available
+    const fontPath = path.join(__dirname, "tohibot_fonts", "CaviarDreams.ttf");
+    let fontFamily = "Arial";
+    if (fs.existsSync(fontPath)) {
+      try {
+        registerFont(fontPath, { family: "CaviarDreams" });
+        fontFamily = "CaviarDreams";
+      } catch (err) {
+        console.log("Font loading failed, using Arial");
+        fontFamily = "Arial";
+      }
+    }
+
+    // 7. Setup canvas with proper dimensions based on background
+    const canvas = createCanvas(bg.width, bg.height);
     const ctx = canvas.getContext("2d");
     
-    // Draw background scaled to fit canvas
+    // Draw background at full resolution
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 7. Draw avatars with fixed positions and sizes
-    const avatarSize = 120;
-    const leftX = 100;
-    const rightX = canvas.width - leftX - avatarSize;
-    const avatarY = 200;
+    // 8. Calculate avatar positions based on canvas size
+    const avatarSize = Math.min(canvas.width, canvas.height) * 0.15; // 15% of smaller dimension
+    const leftX = canvas.width * 0.15; // 15% from left
+    const rightX = canvas.width * 0.7; // 70% from left
+    const avatarY = canvas.height * 0.35; // 35% from top
 
-    // Draw left avatar (circular)
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(leftX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(avt1, leftX, avatarY, avatarSize, avatarSize);
-    ctx.restore();
+    // Helper function to draw circular avatar with border
+    function drawCircularAvatar(image, x, y, size, borderColor) {
+      // Draw border
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + size/2, y + size/2, size/2 + 8, 0, Math.PI * 2);
+      ctx.fillStyle = borderColor;
+      ctx.fill();
+      ctx.restore();
 
-    // Draw border for left avatar
-    ctx.beginPath();
-    ctx.arc(leftX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2 + 3, 0, Math.PI * 2);
-    ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 6;
-    ctx.stroke();
+      // Draw avatar (circular)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(image, x, y, size, size);
+      ctx.restore();
+    }
 
-    // Draw right avatar (circular)
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(rightX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(avt2, rightX, avatarY, avatarSize, avatarSize);
-    ctx.restore();
+    // 9. Draw avatars with better positioning
+    drawCircularAvatar(avt1, leftX, avatarY, avatarSize, "#FFD700");
+    drawCircularAvatar(avt2, rightX, avatarY, avatarSize, "#FF69B4");
 
-    // Draw border for right avatar
-    ctx.beginPath();
-    ctx.arc(rightX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2 + 3, 0, Math.PI * 2);
-    ctx.strokeStyle = "#FF69B4";
-    ctx.lineWidth = 6;
-    ctx.stroke();
-
-    // 8. Draw names below avatars
-    ctx.font = "bold 20px Arial";
+    // 10. Draw names below avatars with better styling
+    const fontSize = Math.max(24, canvas.width * 0.025);
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = "#FFFFFF";
     ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = Math.max(2, fontSize * 0.1);
     ctx.textAlign = "center";
     
-    // Add shadow for text
+    // Add shadow for text readability
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = fontSize * 0.2;
+    ctx.shadowOffsetX = fontSize * 0.08;
+    ctx.shadowOffsetY = fontSize * 0.08;
     
-    const nameY = avatarY + avatarSize + 30;
+    const nameY = avatarY + avatarSize + fontSize * 1.5;
     ctx.strokeText(name1, leftX + avatarSize/2, nameY);
     ctx.fillText(name1, leftX + avatarSize/2, nameY);
     
@@ -136,27 +143,32 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // 9. Draw percentage in center
+    // 11. Draw percentage in center with dynamic sizing
     const percentage = Math.floor(Math.random() * 100) + 1;
-    ctx.font = "bold 48px Arial";
+    const percentageFontSize = Math.max(48, canvas.width * 0.06);
+    ctx.font = `bold ${percentageFontSize}px ${fontFamily}`;
     ctx.fillStyle = "#FF1493";
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 4;
+    ctx.lineWidth = Math.max(4, percentageFontSize * 0.08);
     ctx.textAlign = "center";
 
-    // Add glow effect
+    // Add glow effect for percentage
     ctx.shadowColor = "#FF1493";
-    ctx.shadowBlur = 20;
+    ctx.shadowBlur = percentageFontSize * 0.4;
 
-    ctx.strokeText(`${percentage}%`, canvas.width / 2, 150);
-    ctx.fillText(`${percentage}%`, canvas.width / 2, 150);
+    const percentageY = canvas.height * 0.2;
+    ctx.strokeText(`${percentage}%`, canvas.width / 2, percentageY);
+    ctx.fillText(`${percentage}%`, canvas.width / 2, percentageY);
 
     // Reset shadow
     ctx.shadowColor = "transparent";
     ctx.shadowBlur = 0;
 
-    // 10. Draw wish message at bottom
-    ctx.font = "bold 24px Arial";
+    // 12. Draw wish message at bottom with dynamic sizing
+    const messageFontSize = Math.max(20, canvas.width * 0.025);
+    ctx.font = `bold ${messageFontSize}px ${fontFamily}`;
+    
+    // Create gradient for message
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
     gradient.addColorStop(0, "#FFD700");
     gradient.addColorStop(0.5, "#FF69B4");
@@ -164,40 +176,46 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
 
     ctx.fillStyle = gradient;
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = Math.max(2, messageFontSize * 0.1);
     ctx.textAlign = "center";
 
     // Add shadow for wish message
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 6;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = messageFontSize * 0.3;
+    ctx.shadowOffsetX = messageFontSize * 0.08;
+    ctx.shadowOffsetY = messageFontSize * 0.08;
 
-    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, canvas.height - 50);
-    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, canvas.height - 50);
+    const messageY = canvas.height - (canvas.height * 0.1);
+    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
+    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
 
-    // 11. Save & cleanup
+    // 13. Save the final image
     const imgBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imgBuffer);
 
-    // 12. Send message with proper mentions & delete temp files after send
+    // 14. Send message with proper mentions and cleanup
+    const messageBody = `✨ Love Percentage: ${percentage}% ✨\n💕 ${name1} ❤️ ${name2} 💕`;
+    
     return api.sendMessage({
-      body: `✨ @${name1} ❤️ @${name2} ✨`,
+      body: messageBody,
       mentions: [
-        { tag: name1, id: id1 },
-        { tag: name2, id: id2 }
+        { tag: name1, id: id1, fromIndex: messageBody.indexOf(name1) },
+        { tag: name2, id: id2, fromIndex: messageBody.indexOf(name2) }
       ],
       attachment: fs.createReadStream(pathImg)
     }, event.threadID, (err) => {
-        try {
-          fs.unlinkSync(pathImg);
-          fs.unlinkSync(pathAvt1);
-          fs.unlinkSync(pathAvt2);
-        } catch(e) {}
-      }, event.messageID);
+      // Cleanup temp files
+      try {
+        fs.unlinkSync(pathImg);
+        fs.unlinkSync(pathAvt1);
+        fs.unlinkSync(pathAvt2);
+      } catch(e) {
+        console.log("Cleanup error:", e.message);
+      }
+    }, event.messageID);
 
   } catch (err) {
-    console.error(err);
-    return api.sendMessage("কিছু সমস্যা হয়েছে! আবার চেষ্টা করুন।", event.threadID, event.messageID);
+    console.error("Pair command error:", err);
+    return api.sendMessage("❌ কিছু সমস্যা হয়েছে! আবার চেষ্টা করুন।", event.threadID, event.messageID);
   }
 };
