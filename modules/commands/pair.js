@@ -1,3 +1,4 @@
+
 const { loadImage, createCanvas } = require("canvas");
 const fs = require("fs-extra");
 const axios = require("axios");
@@ -64,116 +65,98 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     const avt1 = await loadImage(pathAvt1);
     const avt2 = await loadImage(pathAvt2);
 
-    // 6. Setup canvas (use bg's size)
-    const canvas = createCanvas(bg.width, bg.height);
+    // 6. Setup canvas with fixed size for consistency
+    const canvas = createCanvas(800, 600);
     const ctx = canvas.getContext("2d");
+    
+    // Draw background scaled to fit canvas
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 7. Draw avatars with proper positioning and sizing
-    // Calculate responsive sizes based on canvas dimensions
-    const avatarSize = Math.min(canvas.width * 0.15, 300); // Max 300px, responsive to canvas width
-    const borderSize = avatarSize + 20;
-    
-    // Left avatar (boy) - positioned from left side
-    const leftX = canvas.width * 0.15; // 15% from left
-    const leftY = canvas.height * 0.4;  // 40% from top
-    
+    // 7. Draw avatars with fixed positions and sizes
+    const avatarSize = 120;
+    const leftX = 100;
+    const rightX = canvas.width - leftX - avatarSize;
+    const avatarY = 200;
+
+    // Draw left avatar (circular)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(leftX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(avt1, leftX, avatarY, avatarSize, avatarSize);
+    ctx.restore();
+
     // Draw border for left avatar
+    ctx.beginPath();
+    ctx.arc(leftX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2 + 3, 0, Math.PI * 2);
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 6;
+    ctx.stroke();
+
+    // Draw right avatar (circular)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(leftX + avatarSize/2, leftY + avatarSize/2, borderSize/2, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#FFD700";
-    ctx.fill();
-    ctx.restore();
-    
-    // Draw left avatar with circular clipping
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(leftX + avatarSize/2, leftY + avatarSize/2, avatarSize/2, 0, Math.PI * 2, true);
+    ctx.arc(rightX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt1, leftX, leftY, avatarSize, avatarSize);
+    ctx.drawImage(avt2, rightX, avatarY, avatarSize, avatarSize);
     ctx.restore();
 
-    // Right avatar (girl) - positioned from right side
-    const rightX = canvas.width * 0.85 - avatarSize; // 15% margin from right
-    const rightY = canvas.height * 0.4;  // 40% from top
-    
     // Draw border for right avatar
-    ctx.save();
     ctx.beginPath();
-    ctx.arc(rightX + avatarSize/2, rightY + avatarSize/2, borderSize/2, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#FF69B4";
-    ctx.fill();
-    ctx.restore();
-    
-    // Draw right avatar with circular clipping
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(rightX + avatarSize/2, rightY + avatarSize/2, avatarSize/2, 0, Math.PI * 2, true);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(avt2, rightX, rightY, avatarSize, avatarSize);
-    ctx.restore();
+    ctx.arc(rightX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2 + 3, 0, Math.PI * 2);
+    ctx.strokeStyle = "#FF69B4";
+    ctx.lineWidth = 6;
+    ctx.stroke();
 
-    // 8. Draw names with responsive font size and positioning
-    const nameFontSize = Math.min(canvas.width * 0.04, 60); // Responsive font size
-    ctx.font = `bold ${nameFontSize}px Arial`;
+    // 8. Draw names below avatars
+    ctx.font = "bold 20px Arial";
     ctx.fillStyle = "#FFFFFF";
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 2;
     ctx.textAlign = "center";
     
-    // Add shadow for better visibility
+    // Add shadow for text
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
     
-    // Position names below avatars
-    const nameY = leftY + avatarSize + nameFontSize + 20;
+    const nameY = avatarY + avatarSize + 30;
     ctx.strokeText(name1, leftX + avatarSize/2, nameY);
     ctx.fillText(name1, leftX + avatarSize/2, nameY);
     
     ctx.strokeText(name2, rightX + avatarSize/2, nameY);
     ctx.fillText(name2, rightX + avatarSize/2, nameY);
 
-    // Reset shadow for other elements
+    // Reset shadow
     ctx.shadowColor = "transparent";
     ctx.shadowBlur = 0;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // 9. Draw random percentage with responsive positioning
+    // 9. Draw percentage in center
     const percentage = Math.floor(Math.random() * 100) + 1;
-    const percentageFontSize = Math.min(canvas.width * 0.08, 150); // Responsive font size
-    ctx.font = `bold ${percentageFontSize}px Arial`;
-    ctx.fillStyle = "#FF69B4";
+    ctx.font = "bold 48px Arial";
+    ctx.fillStyle = "#FF1493";
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 4;
     ctx.textAlign = "center";
 
-    // Reset shadow first
-    ctx.shadowColor = "transparent";
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-
-    // Add glow effect for percentage
+    // Add glow effect
     ctx.shadowColor = "#FF1493";
-    ctx.shadowBlur = 25;
+    ctx.shadowBlur = 20;
 
-    const percentageY = canvas.height * 0.25; // 25% from top
-    ctx.strokeText(`${percentage}%`, canvas.width / 2, percentageY);
-    ctx.fillText(`${percentage}%`, canvas.width / 2, percentageY);
+    ctx.strokeText(`${percentage}%`, canvas.width / 2, 150);
+    ctx.fillText(`${percentage}%`, canvas.width / 2, 150);
 
     // Reset shadow
     ctx.shadowColor = "transparent";
     ctx.shadowBlur = 0;
 
-    // 10. Draw beautiful wish message with responsive positioning
-    const messageFontSize = Math.min(canvas.width * 0.05, 80); // Responsive font size
-    ctx.font = `bold ${messageFontSize}px Arial`;
+    // 10. Draw wish message at bottom
+    ctx.font = "bold 24px Arial";
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
     gradient.addColorStop(0, "#FFD700");
     gradient.addColorStop(0.5, "#FF69B4");
@@ -181,18 +164,17 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
 
     ctx.fillStyle = gradient;
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2;
     ctx.textAlign = "center";
 
-    // Reset and add shadow for wish message
+    // Add shadow for wish message
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 4;
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
 
-    const messageY = canvas.height * 0.85; // 85% from top
-    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
-    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, messageY);
+    ctx.strokeText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, canvas.height - 50);
+    ctx.fillText("❤️ নতুন জুটিকে অনেক অনেক শুভেচ্ছা! ❤️", canvas.width / 2, canvas.height - 50);
 
     // 11. Save & cleanup
     const imgBuffer = canvas.toBuffer();
@@ -216,6 +198,6 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
 
   } catch (err) {
     console.error(err);
-    return api.sendMessage("কিছু সমস্যা হয়েছে! আবার চেষ্টা করুন।", event.threadID, event.messageID);
+    return api.sendMessage("কিছু সমস্যা হয়েছে! আবার চেষ্টা করুন।", event.threadID, event.messageID);
   }
 };
