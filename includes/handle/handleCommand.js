@@ -537,7 +537,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
         }).join('\n')}`;
       }
 
-      const errorMessage = `❌ Command "${commandName}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
+      const errorMessage = `❌ This command not exist please try another!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
 
       return api.sendMessage(errorMessage, threadID, messageID);
     }
