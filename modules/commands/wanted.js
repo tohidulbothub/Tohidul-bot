@@ -33,11 +33,16 @@ module.exports.run = async ({ event, api, args, Users }) => {
     // Remove mention tags from args and join the rest
     var filteredArgs = args.filter(arg => !arg.includes('@'));
     if (filteredArgs.length > 0) {
-      currency = filteredArgs.join(' ');
+      var currencyInput = filteredArgs.join(' ').trim();
+      // Take only the first character as currency
+      if (currencyInput.length > 0) {
+        currency = currencyInput.charAt(0);
+      }
     }
   }
   
-  if (!currency || currency.trim() === '') {
+  // Ensure currency is a single character
+  if (!currency || currency.length !== 1) {
     currency = '$';
   }
   
