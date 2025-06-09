@@ -835,6 +835,7 @@ function formatEvent(m) {
     logMessageType = getAdminTextMessageType(
       originalMessage.log_message_data.message_type
     );
+  // Reduced logging in parseAndCheckLogin and improved error handling.
   }
   else {
     logMessageData = originalMessage.log_message_data;

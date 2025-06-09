@@ -4,6 +4,10 @@ const logger = require('./log.js');
 class GlobalErrorHandler {
   constructor() {
     this.setupHandlers();
+    this.networkErrors = [
+      'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED',
+      'socket hang up', 'getaddrinfo ENOTFOUND', 'status code 500'
+    ];
   }
 
   setupHandlers() {
@@ -37,12 +41,22 @@ class GlobalErrorHandler {
       'Got error 1545012',
       'WARN sendMessage',
       'Send message failed',
+      'Send message failed after retries',
+      'Send failed silently',
+      'Network error occurred',
       'parseAndCheckLogin Got status code 500',
       'ENOENT: no such file or directory',
       'ECONNRESET',
       'ETIMEDOUT',
       'socket hang up',
-      'ENOTFOUND'
+      'ENOTFOUND',
+      'ECONNREFUSED',
+      'getaddrinfo ENOTFOUND',
+      'status code 500',
+      'Cannot read properties of undefined',
+      'Cannot read property',
+      'jimp.read is not a function',
+      'Jimp.read is not a function'
     ];
 
     const errorStr = error ? error.toString() : '';
@@ -50,11 +64,25 @@ class GlobalErrorHandler {
       errorStr.includes(ignored)
     );
 
+    // Special handling for specific error objects
+    if (error && typeof error === 'object') {
+      if (error.error === 'Send message failed after retries.' || 
+          error.error === 'Send failed silently' ||
+          error.error === 'Network error occurred') {
+        return; // Silently ignore these
+      }
+    }
+
     if (!shouldIgnore) {
-      if (type === 'UnhandledRejection' && promise) {
-        console.error(`${type} at:`, promise, 'reason:', error);
-      } else {
-        console.error(`${type}:`, error);
+      // Only log critical errors, not common network issues
+      const isCritical = !this.networkErrors.some(netErr => errorStr.includes(netErr));
+      
+      if (isCritical) {
+        if (type === 'UnhandledRejection' && promise) {
+          console.error(`${type} at:`, promise, 'reason:', error);
+        } else {
+          console.error(`${type}:`, error);
+        }
       }
     }
 

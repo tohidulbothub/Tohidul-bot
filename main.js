@@ -86,10 +86,21 @@ function shouldIgnoreError(error) {
 process.on('unhandledRejection', (reason, promise) => {
   const shouldIgnore = shouldIgnoreError(reason) || 
                       (reason && reason.error === 'Send message failed.') ||
+                      (reason && reason.error === 'Send message failed after retries.') ||
+                      (reason && reason.error === 'Send failed silently') ||
+                      (reason && reason.error === 'Network error occurred') ||
                       (reason && reason.toString().includes('status code 500'));
 
   if (!shouldIgnore) {
-    logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
+    // Only log if it's not a common network error
+    const reasonStr = reason ? reason.toString() : '';
+    const isCommonNetworkError = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'socket hang up'].some(err => 
+      reasonStr.includes(err)
+    );
+    
+    if (!isCommonNetworkError) {
+      logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
+    }
   }
 });
 

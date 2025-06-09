@@ -90,6 +90,13 @@ module.exports.run = async function({ api, event }) {
 
   } catch (error) {
     console.error("[ADMIN] Error downloading image:", error.message);
-    return api.sendMessage(ownerInfo + "\n\n[⛔] ছবি ডাউনলোড করতে সমস্যা হয়েছে!", event.threadID);
+    
+    // Always try to send the text message even if image fails
+    try {
+      return api.sendMessage(ownerInfo + "\n\n[⛔] ছবি ডাউনলোড করতে সমস্যা হয়েছে!", event.threadID);
+    } catch (sendError) {
+      // Silent fail if even text message fails
+      console.error("[ADMIN] Failed to send fallback message:", sendError.message);
+    }
   }
 };

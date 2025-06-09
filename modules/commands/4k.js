@@ -55,6 +55,11 @@ module.exports.run = async function ({
     }, _0x4c4974);
     _0x35648a.unsendMessage(_0x2a6e15.messageID);
   } catch (_0x5def0b) {
-    _0x35648a.sendMessage("Error processing image: " + _0x5def0b.message, _0x505ee2, _0x4c4974);
+    try {
+      _0x35648a.sendMessage("Error processing image: " + _0x5def0b.message, _0x505ee2, _0x4c4974);
+    } catch (sendError) {
+      // Silent fail if message send fails
+      console.log("[4K] Failed to send error message:", sendError.message);
+    }
   }
 };

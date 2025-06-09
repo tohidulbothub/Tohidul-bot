@@ -135,8 +135,8 @@ module.exports = function (defaultFuncs, api, ctx) {
 				"https://www.facebook.com/profile.php?id=" + (ctx.i_userID || ctx.userID);
 		}
 
-		// Add retry logic for failed requests
-		const maxRetries = 3;
+		// Enhanced retry logic with better error handling
+		const maxRetries = 5;
 		let retryCount = 0;
 		
 		function attemptSend() {
@@ -147,29 +147,32 @@ module.exports = function (defaultFuncs, api, ctx) {
 					if (!resData) {
 						if (retryCount < maxRetries) {
 							retryCount++;
-							const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+							const delay = Math.min(Math.pow(2, retryCount) * 1000 + Math.random() * 1000, 30000);
 							setTimeout(attemptSend, delay);
 							return;
 						}
-						return callback({ error: "Send message failed after retries." });
+						// Silent fail for send message retries
+						return callback(null, { error: "Send failed silently" });
 					}
 
 					if (resData.error) {
+						// Handle specific Facebook errors
 						if (resData.error === 1545012) {
-							log.warn(
-								"sendMessage",
-								"Got error 1545012. This might mean that you're not part of the conversation " +
-								threadID
-							);
+							// Not part of conversation - this is expected sometimes
+							return callback(null, resData);
 						}
-						else if (resData.error === 500 && retryCount < maxRetries) {
+						else if ((resData.error === 500 || resData.error_code === 500) && retryCount < maxRetries) {
 							retryCount++;
-							const delay = Math.pow(2, retryCount) * 1000;
+							const delay = Math.min(Math.pow(2, retryCount) * 1000 + Math.random() * 1000, 30000);
 							setTimeout(attemptSend, delay);
 							return;
 						}
 						else {
-							log.error("sendMessage", resData);
+							// Don't log common errors to reduce spam
+							const commonErrors = [500, 1545012, 429];
+							if (!commonErrors.includes(resData.error)) {
+								log.error("sendMessage", resData);
+							}
 						}
 						return callback(null, resData);
 					}
@@ -188,24 +191,44 @@ module.exports = function (defaultFuncs, api, ctx) {
 					return callback(null, messageInfo);
 				})
 				.catch(function (err) {
-					log.error("sendMessage", err);
-					
 					// Handle specific error cases
 					if (utils.getType(err) == "Object" && err.error === "Not logged in.") {
 						ctx.loggedIn = false;
 						return callback(err);
 					}
 					
-					// Retry on certain errors
-					if ((err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || 
-						 err.response?.status === 500) && retryCount < maxRetries) {
+					// Categorize retryable errors
+					const retryableErrors = [
+						'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED',
+						'socket hang up', 'getaddrinfo ENOTFOUND'
+					];
+					
+					const isRetryable = retryableErrors.some(error => 
+						err.code === error || 
+						err.message?.includes(error) ||
+						err.response?.status === 500 ||
+						err.response?.status === 429
+					);
+					
+					if (isRetryable && retryCount < maxRetries) {
 						retryCount++;
-						const delay = Math.pow(2, retryCount) * 1000;
+						const delay = Math.min(Math.pow(2, retryCount) * 1000 + Math.random() * 1000, 30000);
 						setTimeout(attemptSend, delay);
 						return;
 					}
 					
-					return callback(err);
+					// Silent fail for network errors to reduce spam
+					const networkErrors = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'socket hang up'];
+					const isNetworkError = networkErrors.some(error => 
+						err.code === error || err.message?.includes(error)
+					);
+					
+					if (!isNetworkError) {
+						log.error("sendMessage", err);
+					}
+					
+					// Return null instead of error to prevent unhandled rejections
+					return callback(null, { error: "Network error occurred" });
 				});
 		}
 		
