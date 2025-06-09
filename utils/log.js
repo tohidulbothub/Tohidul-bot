@@ -147,52 +147,56 @@ module.exports = {
     
     switch (type) {
       case "warn":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ ERROR ] `) + coloredText + "\n",
+        console.log(
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().error(`[ WARN ] `) + coloredText
         );
         break;
       case "error":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + coloredText + "\n");
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.bold.hex("#ff0000").bold(`[ ERROR ] `) + coloredText);
         break;
       case "load":
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + coloredText + "\n");
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ NEW USER ] `) + coloredText);
+        break;
+      case "debug":
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.cyan(`[ DEBUG ] `) + coloredText);
+        break;
+      case "info":
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.blue(`[ INFO ] `) + coloredText);
         break;
       default:
-        process.stderr.write(
+        console.log(
           getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${String(type).toUpperCase()} ] `) +
-            coloredText +
-            "\n",
+            coloredText
         );
     }
   },
   error: (text, type) => {
-    process.stderr.write(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text + "\n");
+    console.log(getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ ${type} ] `) + text);
   },
   err: (text, type) => {
-    process.stderr.write(
-      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+    console.log(
+      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text
     );
   },
   warn: (text, type) => {
-    process.stderr.write(
-      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text + "\n",
+    console.log(
+      getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ ${type} ] `) + text
     );
   },
   loader: (data, option) => {
     switch (option) {
       case "warn":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`),
-          data + "\n",
+        console.log(
+          getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ] `) + data
         );
         break;
       case "error":
-        process.stderr.write(
-          getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data + "\n",
+        console.log(
+          getThemeColors().main(`⫸ TBH ➤ `) + chalk.hex("#ff0000")(`[ SYSTEM ] `) + data
         );
         break;
       default:
-        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ]`), data);
+        console.log(getThemeColors().main(`⫸ TBH ➤ `) + getThemeColors().subcolor(`[ SYSTEM ] `) + data);
         break;
     }
   },

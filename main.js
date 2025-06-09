@@ -57,67 +57,14 @@ global.moduleData = new Array();
 global.language = new Object();
 global.account = new Object();
 
-// Enhanced error handling with filtering
-const ignoredErrors = [
-  'Rate limited',
-  'status code 429',
-  'Too Many Requests',
-  'jimp.read is not a function',
-  'Jimp.read is not a function',
-  'not part of the conversation',
-  'Max retries reached for API call',
-  'Background download error',
-  'Avatar processing error',
-  'Got error 1545012',
-  'WARN sendMessage',
-  'socket hang up',
-  'ECONNRESET',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  'ENOENT: no such file or directory',
-  'Could not extract functions',
-  'Unable to retrieve video playback data',
-  'YouTube changed their API'
-];
-
-function shouldIgnoreError(error) {
-  const errorStr = error ? error.toString() : '';
-  return ignoredErrors.some(ignored => errorStr.includes(ignored));
-}
-
-// Global error handlers with better filtering
+// Global error handlers - show all logs
 process.on('unhandledRejection', (reason, promise) => {
-  const shouldIgnore = shouldIgnoreError(reason) || 
-                      (reason && reason.error === 'Send message failed.') ||
-                      (reason && reason.error === 'Send message failed after retries.') ||
-                      (reason && reason.error === 'Send failed silently') ||
-                      (reason && reason.error === 'Network error occurred') ||
-                      (reason && reason.toString().includes('status code 500'));
-
-  if (!shouldIgnore) {
-    // Only log if it's not a common network error
-    const reasonStr = reason ? reason.toString() : '';
-    const isCommonNetworkError = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'socket hang up'].some(err => 
-      reasonStr.includes(err)
-    );
-    
-    if (!isCommonNetworkError) {
-      logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
-    }
-  }
+  logger.log(`Unhandled Rejection: ${reason}`, "ERROR");
 });
 
 process.on('uncaughtException', (error) => {
-  if (!shouldIgnoreError(error)) {
-    logger.log(`Uncaught Exception: ${error}`, "ERROR");
-  }
-});
-
-process.on('uncaughtException', (error) => {
-  if (!shouldIgnoreError(error)) {
-    logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
-  }
-
+  logger.log(`Uncaught Exception: ${error.message}`, "ERROR");
+  
   // Handle critical errors that need restart
   const criticalErrors = ['ECONNRESET', 'ENOTFOUND', 'socket hang up', 'Network Error'];
   const isCritical = criticalErrors.some(err => error.message && error.message.includes(err));
@@ -650,7 +597,7 @@ async function startListening(api) {
 
   
   
-  // Start listening with enhanced error handling
+  // Start listening with full error logging
   global.handleListen = api.listenMqtt(async (error, event) => {
     if (error) {
       // Handle critical login errors
@@ -659,12 +606,10 @@ async function startListening(api) {
         return process.exit(1);
       }
 
-      // Filter ready state and common errors
-      if (error.type === 'ready' || shouldIgnoreError(error)) {
-        return;
+      // Log all errors except ready state
+      if (error.type !== 'ready') {
+        logger.log(`Listen error: ${error}`, "LISTEN");
       }
-
-      logger.log(`Listen error: ${error}`, "LISTEN");
       return;
     }
 
