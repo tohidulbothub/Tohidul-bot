@@ -493,22 +493,50 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
 
     if (!command) {
       // Find similar commands using string similarity
-      const allCommands = Array.from(global.client.commands.keys());
-      const suggestions = findSimilarCommands(commandName, allCommands, 3);
+      const allCommands = [];
+      
+      // Collect all command names and aliases
+      for (const [cmdName, cmdModule] of commands.entries()) {
+        allCommands.push(cmdName);
+        if (cmdModule.config && cmdModule.config.aliases && Array.isArray(cmdModule.config.aliases)) {
+          allCommands.push(...cmdModule.config.aliases);
+        }
+      }
+      
+      // Determine what user typed (with or without prefix)
+      let userInput = commandName;
+      if (commandName.startsWith(PREFIX)) {
+        userInput = commandName.slice(PREFIX.length);
+      } else if (body && !body.startsWith(PREFIX)) {
+        userInput = body.trim().split(' ')[0];
+      }
+      
+      const suggestions = findSimilarCommands(userInput, allCommands, 3);
 
       let suggestionText = "";
       if (suggestions.length > 0) {
-        suggestionText = `\n\n💡 Did you mean:\n${suggestions.map((cmd, i) => `${i + 1}. ${PREFIX}${cmd}`).join('\n')}`;
+        suggestionText = `\n\n💡 Did you mean:\n${suggestions.map((cmd, i) => {
+          // Check if this command requires prefix
+          let cmdObj = commands.get(cmd);
+          if (!cmdObj) {
+            // Find by alias
+            for (const [name, module] of commands.entries()) {
+              if (module.config && module.config.aliases && module.config.aliases.includes(cmd)) {
+                cmdObj = module;
+                break;
+              }
+            }
+          }
+          
+          const needsPrefix = !cmdObj || cmdObj.config.usePrefix !== false;
+          return `${i + 1}. ${needsPrefix ? PREFIX : ''}${cmd}`;
+        }).join('\n')}`;
       }
 
-      const errorMessage = `❌ Command "${PREFIX}${commandName}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
+      const displayCmd = commandName.startsWith(PREFIX) ? commandName : (body ? body.trim().split(' ')[0] : commandName);
+      const errorMessage = `❌ Command "${displayCmd}" not found!${suggestionText}\n\n📝 Type ${PREFIX}help to see all available commands.\n\n🚩 Made by TOHIDUL`;
 
-      if (global.config.DeveloperMode == true) {
-        return api.sendMessage(errorMessage, threadID, messageID);
-      }
-      else {
-        return api.sendMessage(errorMessage, threadID, messageID);
-      }
+      return api.sendMessage(errorMessage, threadID, messageID);
     }
   };
 };
