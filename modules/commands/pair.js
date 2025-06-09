@@ -86,11 +86,11 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     // Draw background at full resolution
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    // 8. Calculate avatar positions based on canvas size
-    const avatarSize = Math.min(canvas.width, canvas.height) * 0.15; // 15% of smaller dimension
-    const leftX = canvas.width * 0.15; // 15% from left
-    const rightX = canvas.width * 0.7; // 70% from left
-    const avatarY = canvas.height * 0.35; // 35% from top
+    // 8. Calculate avatar positions based on canvas size (BIGGER PHOTOS)
+    const avatarSize = Math.min(canvas.width, canvas.height) * 0.25; // 25% of smaller dimension (increased from 15%)
+    const leftX = canvas.width * 0.12; // 12% from left
+    const rightX = canvas.width * 0.63; // 63% from left  
+    const avatarY = canvas.height * 0.25; // 25% from top (moved up)
 
     // Helper function to draw circular avatar with border
     function drawCircularAvatar(image, x, y, size, borderColor) {
@@ -116,21 +116,21 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     drawCircularAvatar(avt1, leftX, avatarY, avatarSize, "#FFD700");
     drawCircularAvatar(avt2, rightX, avatarY, avatarSize, "#FF69B4");
 
-    // 10. Draw names below avatars with better styling
-    const fontSize = Math.max(24, canvas.width * 0.025);
+    // 10. Draw names below avatars with better styling (BIGGER TEXT)
+    const fontSize = Math.max(36, canvas.width * 0.04); // Increased font size
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = "#FFFFFF";
     ctx.strokeStyle = "#000000";
-    ctx.lineWidth = Math.max(2, fontSize * 0.1);
+    ctx.lineWidth = Math.max(3, fontSize * 0.12);
     ctx.textAlign = "center";
     
     // Add shadow for text readability
-    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = fontSize * 0.2;
-    ctx.shadowOffsetX = fontSize * 0.08;
-    ctx.shadowOffsetY = fontSize * 0.08;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+    ctx.shadowBlur = fontSize * 0.3;
+    ctx.shadowOffsetX = fontSize * 0.1;
+    ctx.shadowOffsetY = fontSize * 0.1;
     
-    const nameY = avatarY + avatarSize + fontSize * 1.5;
+    const nameY = avatarY + avatarSize + fontSize * 1.8;
     ctx.strokeText(name1, leftX + avatarSize/2, nameY);
     ctx.fillText(name1, leftX + avatarSize/2, nameY);
     
@@ -143,20 +143,20 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // 11. Draw percentage in center with dynamic sizing
+    // 11. Draw percentage in center with dynamic sizing (BIGGER PERCENTAGE)
     const percentage = Math.floor(Math.random() * 100) + 1;
-    const percentageFontSize = Math.max(48, canvas.width * 0.06);
+    const percentageFontSize = Math.max(72, canvas.width * 0.08); // Increased size
     ctx.font = `bold ${percentageFontSize}px ${fontFamily}`;
     ctx.fillStyle = "#FF1493";
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = Math.max(4, percentageFontSize * 0.08);
+    ctx.lineWidth = Math.max(6, percentageFontSize * 0.1);
     ctx.textAlign = "center";
 
     // Add glow effect for percentage
     ctx.shadowColor = "#FF1493";
-    ctx.shadowBlur = percentageFontSize * 0.4;
+    ctx.shadowBlur = percentageFontSize * 0.5;
 
-    const percentageY = canvas.height * 0.2;
+    const percentageY = canvas.height * 0.15; // Moved up
     ctx.strokeText(`${percentage}%`, canvas.width / 2, percentageY);
     ctx.fillText(`${percentage}%`, canvas.width / 2, percentageY);
 
@@ -194,13 +194,13 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     fs.writeFileSync(pathImg, imgBuffer);
 
     // 14. Send message with proper mentions and cleanup
-    const messageBody = `✨ Love Percentage: ${percentage}% ✨\n💕 ${name1} ❤️ ${name2} 💕`;
+    const messageBody = `✨ Love Percentage: ${percentage}% ✨\n💕 @${name1} ❤️ @${name2} 💕`;
     
     return api.sendMessage({
       body: messageBody,
       mentions: [
-        { tag: name1, id: id1, fromIndex: messageBody.indexOf(name1) },
-        { tag: name2, id: id2, fromIndex: messageBody.indexOf(name2) }
+        { tag: `@${name1}`, id: id1 },
+        { tag: `@${name2}`, id: id2 }
       ],
       attachment: fs.createReadStream(pathImg)
     }, event.threadID, (err) => {
