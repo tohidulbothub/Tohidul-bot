@@ -492,6 +492,20 @@ module.exports = function ({ api, models, Users, Threads, Currencies, ...rest })
     activeCmd = false;
 
     if (!command) {
+      // Check if this is a number (likely a video selection reply)
+      const trimmedBody = body ? body.trim() : '';
+      if (/^\d+$/.test(trimmedBody)) {
+        return; // Don't suggest commands for number replies
+      }
+      
+      // Check if user is trying to use a command (starts with prefix or looks like a command)
+      const looksLikeCommand = commandName.startsWith(PREFIX) || 
+                              (trimmedBody.length > 0 && !trimmedBody.includes(' ') && trimmedBody.length < 20);
+      
+      if (!looksLikeCommand) {
+        return; // Don't suggest commands for regular text
+      }
+      
       // Find similar commands using string similarity
       const allCommands = [];
       
