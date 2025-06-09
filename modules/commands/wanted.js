@@ -22,11 +22,20 @@ module.exports.run = async ({ event, api, args, Users }) => {
       }
    let { senderID, threadID, messageID } = event;
   var id = Object.keys(event.mentions)[0] || event.senderID;
-  var currency = args.toString().replace(/,/g,  '  ')
+  var currency = args.join(' ') || '$';
+  
+  if (!currency || currency.trim() === '') {
+    currency = '$';
+  }
+  
   var avatar = (await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)).body;
 
   let img = await new DIG.Wanted().getImage(avatar, currency);
   var path_wanted = __dirname + "/cache/wetd.png";
-  fs.writeFileSync(path_wanted, img);
+  if (img && img instanceof Buffer) {
+    fs.writeFileSync(path_wanted, img);
+  } else {
+    return api.sendMessage("❌ Failed to generate wanted image", event.threadID, event.messageID);
+  }
   api.sendMessage({attachment: fs.createReadStream(path_wanted)}, event.threadID, () => fs.unlinkSync(path_wanted), event.messageID);
 }
