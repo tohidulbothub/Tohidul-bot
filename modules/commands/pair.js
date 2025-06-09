@@ -70,30 +70,30 @@ module.exports.run = async function ({ args, Users, Threads, api, event }) {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
     // 7. Draw avatars (left: boy, right: girl) with updated positions
-    // Left avatar (boy): more left & higher (x=110, y=216)
+    // Left avatar (boy): updated position and size (252, 492, 965x965)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(204, 250, 100, 0, Math.PI * 2, true);
+    ctx.arc(252 + 965/2, 492 + 965/2, 965/2, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt1, 110, 216, 188, 188);
+    ctx.drawImage(avt1, 252, 492, 965, 965);
     ctx.restore();
 
-    // Right avatar (girl): more right & higher (x=1330, y=210)
+    // Right avatar (girl): updated position and size (3365, 522, 965x965)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(1424, 250, 100, 0, Math.PI * 2, true);
+    ctx.arc(3365 + 965/2, 522 + 965/2, 965/2, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avt2, 1330, 210, 188, 188);
+    ctx.drawImage(avt2, 3365, 522, 965, 965);
     ctx.restore();
 
     // 8. Draw names under each box with new positions
     ctx.font = "bold 36px Arial";
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    ctx.fillText(name1, 204, 445); // left
-    ctx.fillText(name2, 1424, 440); // right
+    ctx.fillText(name1, 293, 1732); // left name position
+    ctx.fillText(name2, 3405, 1744); // right name position
 
     // 9. Draw random percentage (center, below LOVE)
     const percentage = Math.floor(Math.random() * 100) + 1;
